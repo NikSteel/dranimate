@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>819BDD26-35EF-4A23-8FCA-8BDCC0129E61</string>
+	<key>IDESourceControlProjectName</key>
+	<string>dranimate</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>0FEF33F6-C0BB-42CD-9B90-77DAE653B9DC</key>
+		<string>https://github.com/cmuartfab/dranimate.git</string>
+		<key>3DF8FC0B-1879-4CD2-AC45-0BA124D163F8</key>
+		<string>https://github.com/golanlevin/ofxPuppet.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>dranimate.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>0FEF33F6-C0BB-42CD-9B90-77DAE653B9DC</key>
+		<string>../..</string>
+		<key>3DF8FC0B-1879-4CD2-AC45-0BA124D163F8</key>
+		<string>../../../../../../of_v0.8.3_osx_release/addons/ofxPuppet</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/cmuartfab/dranimate.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>0FEF33F6-C0BB-42CD-9B90-77DAE653B9DC</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0FEF33F6-C0BB-42CD-9B90-77DAE653B9DC</string>
+			<key>IDESourceControlWCCName</key>
+			<string>dranimate</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>3DF8FC0B-1879-4CD2-AC45-0BA124D163F8</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxPuppet</string>
+		</dict>
+	</array>
+</dict>
+</plist>
