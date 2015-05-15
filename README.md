@@ -2,9 +2,9 @@
 
 current required addons (will most likely change in the future):
 
-<a href="https://github.com/ofZach/ofxPuppet">ofxPuppet</a>
-<a href="https://github.com/Bryce-Summers/ofxButterfly">ofxButterfly</a>
-<a href="https://github.com/satoruhiga/ofxObjLoader">ofxObjLoader</a>
+<a href="https://github.com/ofZach/ofxPuppet">ofxPuppet</a><br />
+<a href="https://github.com/Bryce-Summers/ofxButterfly">ofxButterfly</a><br />
+<a href="https://github.com/satoruhiga/ofxObjLoader">ofxObjLoader</a><br />
 
 code to use ofxButterfly with ofxPuppet is from <a href="https://github.com/Bryce-Summers/ofxButterfly">Bryce Summers</a>
 
