@@ -3,11 +3,12 @@
 //--------------------------------------------------------------
 void ofApp::setup()
 {
+    
     // Initialize the mesh.
     mesh.load("hand-2014-151v-R.ply");
     
     // Setup its original texture coordinates.
-    int len = mesh.getNumVertices();
+    int len = mesh.getNumVertices(); 
     for(int i = 0; i < len; i++)
     {
         ofVec2f vec = mesh.getVertex(i);

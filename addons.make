@@ -1,0 +1,4 @@
+ofxOpenCv
+ofxButterfly
+ofxCv
+ofxPuppet
