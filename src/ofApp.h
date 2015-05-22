@@ -1,13 +1,14 @@
 #pragma once
 
-#include "ofxTriangleMesh.h"
 #include "ofMain.h"
-#include "ofMesh.h"
+
 #include "ofxPuppetInteractive.h"
 #include "ofxButterfly.h"
+#include "ofxTriangleMesh.h"
 #include "ofxOpenCv.h"
-#include "ofxGui.h"
 #include "ofxCv.h"
+#include "ofxGui.h"
+#include "ofxOscReceiver.h"
 
 class ofApp : public ofBaseApp
 {
@@ -25,12 +26,14 @@ public:
     void generateMeshFromImage();
     void loadAndCleanupImage(string fn);
     void saveCurrentPuppet();
+    void recieveOsc();
     
     // mesh & puppet
     
     ofMesh mesh, subdivided;
    	ofxPuppetInteractive puppet;
     ofxButterfly butterfly;
+    vector<int> puppetControlIndices;
     
     int subs = 0;
     
@@ -47,6 +50,10 @@ public:
     
     ofPolyline line;
     ofxTriangleMesh triangleMesh;
+    
+    // osc
+    
+    ofxOscReceiver receiver;
     
     // state
     

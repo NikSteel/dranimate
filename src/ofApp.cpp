@@ -11,6 +11,8 @@ void ofApp::setup() {
     
     state = LOAD_IMAGE;
     
+    receiver.setup(8000);
+    
 }
 
 void ofApp::update() {
@@ -34,6 +36,8 @@ void ofApp::update() {
             
             // fix the subdivided mesh to the mesh deformed by the puppet
             butterfly.fixMesh(puppet.getDeformedMesh(), subdivided);
+            
+            recieveOsc();
             
             break;
             
@@ -153,10 +157,9 @@ void ofApp::keyReleased(int key) {
             if(key == 'e') {
                 
                 ofFileDialogResult saveFileResult = ofSystemSaveDialog("mesh.ply", "where to save mesh?");
-                if (openFileResult.bSuccess){
-                    loadAndCleanupImage(openFileResult.getPath());
+                if (saveFileResult.bSuccess){
+                    ofLog() << saveFileResult.getPath();
                 }
-                 
                 
                 //mesh.save(imageFilename+"-mesh.ply");
             }
@@ -292,6 +295,48 @@ void ofApp::loadAndCleanupImage(string fn) {
     texture = image.getTextureReference();
     
     state = IMAGE_SETTINGS;
+    
+}
+
+void ofApp::recieveOsc() {
+    
+    //http://talk.olab.io/t/osc-communication-between-maxmsp-and-openframeworks/121/3
+    
+    // testing controlling control points with osc
+    
+    float gyroX = 0;
+    float gyroY = 0;
+    
+    bool gotX = false;
+    bool gotY = false;
+    
+    // check for waiting messages
+	while(receiver.hasWaitingMessages()) {
+        
+		// get the next message
+		ofxOscMessage m;
+		receiver.getNextMessage(&m);
+        
+		// check for gryo message
+		if(m.getAddress() == "/aOSC/gyro/x"){
+            gyroX = m.getArgAsFloat(0);
+            gotX = true;
+		}
+        
+        if(m.getAddress() == "/aOSC/gyro/y"){
+            gyroY = m.getArgAsFloat(0);
+            gotY = true;
+		}
+        
+	}
+    
+    if(gotX && gotY &&
+       puppet.controlPointsVector.size() > 0) {
+        int controlPointIndex = puppet.controlPointsVector[0];
+        ofVec2f controlPointPosition = mesh.getVertex(controlPointIndex);
+        puppet.setControlPoint(controlPointIndex,
+                               controlPointPosition + ofVec2f(gyroY,gyroX));
+    }
     
 }
 
