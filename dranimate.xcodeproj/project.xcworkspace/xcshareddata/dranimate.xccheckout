@@ -10,7 +10,7 @@
 	<string>dranimate</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>0FEF33F6-C0BB-42CD-9B90-77DAE653B9DC</key>
+		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
 		<string>https://github.com/cmuartfab/dranimate.git</string>
 		<key>6AFE2971-18C6-4027-A62F-F273D6A9D852</key>
 		<string>https://github.com/golanlevin/ofxPuppet.git</string>
@@ -19,24 +19,24 @@
 	<string>dranimate.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>0FEF33F6-C0BB-42CD-9B90-77DAE653B9DC</key>
+		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
 		<string>../..</string>
 		<key>6AFE2971-18C6-4027-A62F-F273D6A9D852</key>
-		<string>../../../../../addons/ofxPuppet</string>
+		<string>../../../addons/ofxPuppet</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/cmuartfab/dranimate.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>0FEF33F6-C0BB-42CD-9B90-77DAE653B9DC</string>
+	<string>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>0FEF33F6-C0BB-42CD-9B90-77DAE653B9DC</string>
+			<string>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</string>
 			<key>IDESourceControlWCCName</key>
 			<string>dranimate</string>
 		</dict>
