@@ -22,6 +22,7 @@ public:
     
     void updateSubdivisionMesh();
     void generateMeshFromImage();
+    void loadAndCleanupImage(string fn);
     
     // mesh & puppet
     
@@ -58,7 +59,7 @@ public:
     
     ofxPanel gui;
     ofxSlider<int> imageThreshold;
-    ofxSlider<int> subdivisions;
+    ofxToggle invert;
     ofxToggle drawWireframe;
     
 };

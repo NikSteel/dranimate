@@ -6,6 +6,7 @@ void ofApp::setup() {
     
     gui.setup();
     gui.add(imageThreshold.setup("image threshold", 86, 0, 255));
+    gui.add(invert.setup("invert", true));
     gui.add(drawWireframe.setup("draw wireframe", true));
     
     state = LOAD_IMAGE;
@@ -22,7 +23,7 @@ void ofApp::update() {
         
         cvImage.setFromPixels(image.getPixelsRef().getChannel(1));
         cvImage.threshold(imageThreshold);
-        cvImage.invert();
+        if(invert) cvImage.invert();
         
         // find contours from thresholded image
         
@@ -114,10 +115,9 @@ void ofApp::keyReleased(int key) {
             ofFileDialogResult openFileResult = ofSystemLoadDialog("Select an image:",true);
             
             if (openFileResult.bSuccess){
-                image.loadImage(openFileResult.getPath());
-                texture = image.getTextureReference();
                 
-                state = IMAGE_SETTINGS;
+                loadAndCleanupImage(openFileResult.getPath());
+                
             }
             
         }
@@ -230,6 +230,32 @@ void ofApp::generateMeshFromImage() {
     
 }
 
+void ofApp::loadAndCleanupImage(string fn) {
+    
+    image.loadImage(fn);
+    
+    // scale down image to a good size for the mesh generator
+    
+    float whRatio = (float)image.width/(float)image.height;
+    image.resize(400*whRatio, 400);
+    
+    // replace alpha channel with white
+    
+    for(int x = 0; x < image.width; x++) {
+        for(int y = 0; y < image.height; y++) {
+            ofColor c = image.getColor(x, y);
+            if(c.a == 0) {
+                image.setColor(x, y, ofColor(255,255,255));
+            }
+        }
+    }
+    
+    texture = image.getTextureReference();
+    
+    state = IMAGE_SETTINGS;
+    
+}
+
 // lets us drag an image into the window to load it - very convenient
 
 void ofApp::dragEvent(ofDragInfo info)
@@ -237,10 +263,8 @@ void ofApp::dragEvent(ofDragInfo info)
     
     if(info.files.size() > 0)
     {
-        image.loadImage(info.files.at(0));
-        texture = image.getTextureReference();
+        loadAndCleanupImage(info.files.at(0));
         
-        state = IMAGE_SETTINGS;
     }
     
 }
