@@ -1,11 +1,13 @@
 #pragma once
 
+#include "ofxTriangleMesh.h"
 #include "ofMain.h"
 #include "ofMesh.h"
 #include "ofxPuppetInteractive.h"
 #include "ofxButterfly.h"
-
-//#include <Accelerate/Accelerate.h>
+#include "ofxOpenCv.h"
+#include "ofxGui.h"
+#include "ofxCv.h"
 
 class ofApp : public ofBaseApp
 {
@@ -15,32 +17,48 @@ public:
     void update();
     void draw();
     
-    void keyPressed(int key);
     void keyReleased(int key);
-    void mouseMoved(int x, int y );
-    void mouseDragged(int x, int y, int button);
-    void mousePressed(int x, int y, int button);
-    void mouseReleased(int x, int y, int button);
-    void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
-    void gotMessage(ofMessage msg);
     
-    // The meshes that will be used for the subdivision and puppeteering.
+    void updateSubdivisionMesh();
+    void generateMeshFromImage();
+    
+    // mesh & puppet
+    
     ofMesh mesh, subdivided;
-    
-    // The puppet class.
    	ofxPuppetInteractive puppet;
-    
     ofxButterfly butterfly;
     
-    /* The number of subdivisions that should be performed on the
-     * deformed mesh of the puppet at every frame.
-     */
     int subs = 0;
     
-    ofTexture texture;
-    bool bShowWireframe;
+    // image
     
-private:
-    void updateSubdivisionMesh();
+    ofImage image;
+    ofTexture texture;
+    ofxCvGrayscaleImage cvImage;
+    ofxCv::ContourFinder contourFinder;
+    
+    // triangulation
+    
+    ofPolyline line;
+    ofxTriangleMesh triangleMesh;
+    
+    // state
+    
+    enum State {
+        LOAD_IMAGE,
+        IMAGE_SETTINGS,
+        MESH_GENERATED
+    };
+    State state;
+    
+    // gui
+    
+    bool drawGui;
+    
+    ofxPanel gui;
+    ofxSlider<int> imageThreshold;
+    ofxSlider<int> subdivisions;
+    ofxToggle drawWireframe;
+    
 };

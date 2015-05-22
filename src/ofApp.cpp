@@ -1,151 +1,168 @@
 #include "ofApp.h"
 
-//--------------------------------------------------------------
-void ofApp::setup()
-{
+void ofApp::setup() {
     
-    // Initialize the mesh.
-    mesh.load("hand-2014-151v-R.ply");
+    drawGui = true;
     
-    // Setup its original texture coordinates.
-    int len = mesh.getNumVertices(); 
-    for(int i = 0; i < len; i++)
-    {
-        ofVec2f vec = mesh.getVertex(i);
-        mesh.addTexCoord(vec);
+    gui.setup();
+    gui.add(imageThreshold.setup("image threshold", 86, 0, 255));
+    gui.add(drawWireframe.setup("draw wireframe", true));
+    
+    state = LOAD_IMAGE;
+    
+}
+
+void ofApp::update() {
+    
+    ofShowCursor();
+    
+    if(state == IMAGE_SETTINGS) {
+        
+        // threshold image
+        
+        cvImage.setFromPixels(image.getPixelsRef().getChannel(1));
+        cvImage.threshold(imageThreshold);
+        cvImage.invert();
+        
+        // find contours from thresholded image
+        
+        contourFinder.setMinArea(1000);
+        contourFinder.setMaxArea(640*480);
+        //contourFinder.setFindHoles(true);
+        contourFinder.setSortBySize(true);
+        
+        //contourFinder.setThreshold(contourThreshold);
+        contourFinder.findContours(ofxCv::toCv(cvImage));
+        
     }
     
-    // Initialize the puppet.
-    puppet.setup(mesh);
-    //puppet.setControlPoint(0);
-    puppet.setControlPoint(1);
-    
-    //puppet.setControlPoint(2, ofVec2f(100,100));
-    
-    updateSubdivisionMesh();
-    
-    
-    // Load the hand texture into the mesh.
-    ofImage image;
-    image.loadImage("hand-R.png");
-    texture = image.getTextureReference();
-    bShowWireframe = false;
-    
+    if(state == MESH_GENERATED) {
+        puppet.update();
+    }
     
 }
 
-//--------------------------------------------------------------
-void ofApp::update()
-{
-    ofShowCursor();
-    puppet.update();
-}
-
-//--------------------------------------------------------------
-void ofApp::draw()
-{
-    /*
-     ofBackground(ofColor::black);
-     
-     // Draw the original edges white.
-     ofSetColor(ofColor::white);
-     mesh.drawWireframe();
-     
-     // Draw the new subdivided edges in yellow.
-     ofSetColor(ofColor::yellow);
-     subdivided.drawWireframe();
-     */
+void ofApp::draw() {
     
     ofSetColor(255);
     ofBackground(0);
-	//puppet.drawWireframe();
+	
+    if(state == LOAD_IMAGE) {
     
-    // Adapt the subdivided mesh to teh puppet's deformation.
-    butterfly.fixMesh(puppet.getDeformedMesh(), subdivided);
-    
-    
-    texture.bind();
-    
-    // Draw the corect mesh.
-    subdivided.drawFaces();
-    
-    texture.unbind();
-    
-    //----------------
-    if (bShowWireframe){
-        glLineWidth(1.0);
-        subdivided.drawWireframe();
+        ofSetColor(255,255,255);
+        ofDrawBitmapString("Drag file into window or press 'l' to load an image", 300, 30);
+        
+    } else if(state == IMAGE_SETTINGS) {
+        
+        // draw thresholded image
+        
+        ofSetColor(255,255,255);
+        cvImage.draw(0, 0);
+        
+        // draw contours found from the thresholded image
+        
+        ofSetColor(255, 0, 0);
+        contourFinder.draw();
+        
+        ofSetColor(255,255,255);
+        ofDrawBitmapString("Press 'm' to generate mesh when ready", 300, 30);
+        
+    } else if (state == MESH_GENERATED) {
+        
+        // fix the subdivided mesh to the mesh deformed by the puppet
+        
+        butterfly.fixMesh(puppet.getDeformedMesh(), subdivided);
+        
+        // draw the subdivided mesh textured with our image
+        
+        texture.bind();
+        subdivided.drawFaces();
+        texture.unbind();
+        
+        // draw the wireframe as well
+        
+        if (drawWireframe){
+            glLineWidth(1.0);
+            ofSetColor(0,255,50);
+            subdivided.drawWireframe();
+        }
+        
+        // debug stuff
+        
+        puppet.drawControlPoints();
+        
+        int xMargin = 300;
+        ofSetColor(255,255,255);
+        ofDrawBitmapString("# Subdivisions: " + ofToString(subs), xMargin, 30);
+        ofDrawBitmapString("Press <Right Arrow> to increase the edge subdivisions", xMargin, 50);
+        ofDrawBitmapString("Press <Left  Arrow> to decrease the edge subdivisions", xMargin, 70);
+        ofDrawBitmapString("Press 'w' to show wireframe", xMargin, 90);
     }
     
-  	puppet.drawControlPoints();
-    
-    int xMargin = 10;
-    ofSetColor(ofColor::wheat);
-    ofDrawBitmapString("# Subdivisions: " + ofToString(subs), xMargin, 30);
-    ofDrawBitmapString("Press <Right Arrow> to increase the edge subdivisions", xMargin, 50);
-    ofDrawBitmapString("Press <Left  Arrow> to decrease the edge subdivisions", xMargin, 70);
-    ofDrawBitmapString("Press 'w' to show wireframe", xMargin, 90);
+    if(drawGui) gui.draw();
     
 }
 
-//--------------------------------------------------------------
-void ofApp::keyPressed(int key)
-{
+void ofApp::keyReleased(int key) {
+    
+    switch (state) {
+            
+    case LOAD_IMAGE:
+        
+        if(key == 'l') {
+            
+            ofFileDialogResult openFileResult = ofSystemLoadDialog("Select an image:",true);
+            
+            if (openFileResult.bSuccess){
+                image.loadImage(openFileResult.getPath());
+                texture = image.getTextureReference();
+                
+                state = IMAGE_SETTINGS;
+            }
+            
+        }
+        
+        break;
+        
+    case IMAGE_SETTINGS:
+        
+        if(key == 'm') {
+            generateMeshFromImage();
+        }
+        
+        break;
+
+    case MESH_GENERATED:
+        
+        // left/right controls how many subdivisions to use for smoothing the mesh
+            
+        if (key == OF_KEY_RIGHT) {
+            subs++;
+            updateSubdivisionMesh();
+        }
+        if (key == OF_KEY_LEFT && subs > 0) {
+            subs--;
+            updateSubdivisionMesh();
+        }
+        
+        break;
+        
+    default:
+        break;
+            
+    }
+    
+    if(key == 'g') {
+        drawGui = !drawGui;
+    }
     
 }
 
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key)
-{
+void ofApp::updateSubdivisionMesh() {
     
-    // More subdividing.
-    if(key == 'm' || key == OF_KEY_RIGHT)
-    {
-        subs++;
-        updateSubdivisionMesh();
-    }
-    
-    // Less subdividing.
-    if((key == 'l' || key == OF_KEY_LEFT) && subs > 0)
-    {
-        subs--;
-        updateSubdivisionMesh();
-    }
-    
-    if (key == 'w'){
-        bShowWireframe = !bShowWireframe;
-    }
-    
-    /*
-     * Below code may be used if you wish to subdivide the puppet's source mesh
-     * instead of just subdividing its output mesh.
-     * If this is used then the subdivided point may be used as control point in the puppeteering.
-     */
-    
-    /*
-     // Store control points.
-     std::map<int, ofVec2f> points;
-     puppet.getControlPoints(points);
-     
-     // Subdivide the mesh.
-     mesh = butterfly.subdivide(mesh, 1);
-     puppet.setup(mesh);
-     
-     // Replace the control point positions.
-     for(auto iter = points.begin(); iter != points.end(); ++iter)
-     {
-     puppet.setControlPoint(iter -> first, iter -> second);
-     }
-     
-     }*/
-}
-
-void ofApp::updateSubdivisionMesh()
-{
     butterfly.topology_start(mesh);
     
-    for(int i = 0; i < subs; i++)
-    {
+    for(int i = 0; i < subs; i++) {
         butterfly.topology_subdivide_boundary();
     }
     
@@ -153,45 +170,77 @@ void ofApp::updateSubdivisionMesh()
     
 }
 
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
+
+void ofApp::generateMeshFromImage() {
+    
+    // create a polyline with all of the contour points
+    
+    vector<cv::Point> contour = contourFinder.getContour(0);
+    for(int i = 0; i < contour.size(); i++) {
+        line.addVertex(contour[i].x,contour[i].y);
+    }
+    
+    // use that polyline to generate a mesh with ofxTriangleMesh !!
+    // (code from ofxTriangleMesh example)
+    
+    if (line.size() > 2){
+        
+        ofPolyline lineRespaced = line;
+        
+        // add the last point (so when we resample, it's a closed polygon)
+        lineRespaced.addVertex(lineRespaced[0]);
+        
+        // resample
+        lineRespaced = lineRespaced.getResampledBySpacing(20);
+        
+        // I want to make sure the first point and the last point are not the same, since triangle is unhappy:
+        lineRespaced.getVertices().erase(lineRespaced.getVertices().begin());
+        
+        // if we have a proper set of points, mesh them:
+        if (lineRespaced.size() > 5){
+            
+            // angle constraint = 28
+            // size constraint = -1 (don't constraint triangles by size);
+            triangleMesh.triangulate(lineRespaced, 28, -1);
+            
+        }
+    }
+    
+    mesh = triangleMesh.triangulatedMesh;
+    
+    // reset mesh texture coords to match with the image
+    
+    int len = mesh.getNumVertices();
+    for(int i = 0; i < len; i++) {
+        ofVec2f vec = mesh.getVertex(i);
+        mesh.addTexCoord(vec);
+    }
+    
+    // setup puppet
+    
+    puppet.setup(mesh);
+    puppet.setControlPoint(1);
+    
+    // setup smooth subdivided mesh
+    
+    updateSubdivisionMesh();
+    
+    
+    state = MESH_GENERATED;
     
 }
 
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-    
-}
+// lets us drag an image into the window to load it - very convenient
 
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-    
-}
-
-//--------------------------------------------------------------
-// Allows the user to drag files into the window.
 void ofApp::dragEvent(ofDragInfo info)
 {
     
     if(info.files.size() > 0)
     {
-        mesh.load(info.files.at(0));
-        puppet.setup(mesh);
+        image.loadImage(info.files.at(0));
+        texture = image.getTextureReference();
+        
+        state = IMAGE_SETTINGS;
     }
     
 }
