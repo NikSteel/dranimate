@@ -151,12 +151,12 @@ void ofApp::keyReleased(int key) {
             }
             
             if(key == 'e') {
-                /*
+                
                 ofFileDialogResult saveFileResult = ofSystemSaveDialog("mesh.ply", "where to save mesh?");
                 if (openFileResult.bSuccess){
                     loadAndCleanupImage(openFileResult.getPath());
                 }
-                 */
+                 
                 
                 //mesh.save(imageFilename+"-mesh.ply");
             }
