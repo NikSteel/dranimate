@@ -21,8 +21,10 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     
     void updateSubdivisionMesh();
+    void findImageContours();
     void generateMeshFromImage();
     void loadAndCleanupImage(string fn);
+    void saveCurrentPuppet();
     
     // mesh & puppet
     
@@ -38,6 +40,8 @@ public:
     ofTexture texture;
     ofxCvGrayscaleImage cvImage;
     ofxCv::ContourFinder contourFinder;
+    
+    int IMAGE_BASE_SIZE = 400;
     
     // triangulation
     
@@ -61,5 +65,6 @@ public:
     ofxSlider<int> imageThreshold;
     ofxToggle invert;
     ofxToggle drawWireframe;
+    ofxToggle wiggleAllPoints;
     
 };

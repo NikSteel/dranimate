@@ -5,7 +5,7 @@ void ofApp::setup() {
     drawGui = true;
     
     gui.setup();
-    gui.add(imageThreshold.setup("image threshold", 86, 0, 255));
+    gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
     gui.add(invert.setup("invert", true));
     gui.add(drawWireframe.setup("draw wireframe", true));
     
@@ -17,28 +17,26 @@ void ofApp::update() {
     
     ofShowCursor();
     
-    if(state == IMAGE_SETTINGS) {
-        
-        // threshold image
-        
-        cvImage.setFromPixels(image.getPixelsRef().getChannel(1));
-        cvImage.threshold(imageThreshold);
-        if(invert) cvImage.invert();
-        
-        // find contours from thresholded image
-        
-        contourFinder.setMinArea(1000);
-        contourFinder.setMaxArea(640*480);
-        //contourFinder.setFindHoles(true);
-        contourFinder.setSortBySize(true);
-        
-        //contourFinder.setThreshold(contourThreshold);
-        contourFinder.findContours(ofxCv::toCv(cvImage));
-        
-    }
-    
-    if(state == MESH_GENERATED) {
-        puppet.update();
+    switch(state) {
+            
+        case LOAD_IMAGE:
+            break;
+            
+        case IMAGE_SETTINGS:
+            
+            findImageContours();
+            
+            break;
+            
+        case MESH_GENERATED:
+            
+            puppet.update();
+            
+            // fix the subdivided mesh to the mesh deformed by the puppet
+            butterfly.fixMesh(puppet.getDeformedMesh(), subdivided);
+            
+            break;
+            
     }
     
 }
@@ -47,57 +45,62 @@ void ofApp::draw() {
     
     ofSetColor(255);
     ofBackground(0);
-	
-    if(state == LOAD_IMAGE) {
     
-        ofSetColor(255,255,255);
-        ofDrawBitmapString("Drag file into window or press 'l' to load an image", 300, 30);
+    switch(state) {
+            
+        case LOAD_IMAGE:
+            
+            ofSetColor(255,255,255);
+            ofDrawBitmapString("Drag file into window or press 'l' to load an image", 300, 30);
+            
+            break;
+    
+        case IMAGE_SETTINGS:
         
-    } else if(state == IMAGE_SETTINGS) {
+            // draw thresholded image
+            
+            ofSetColor(255,255,255);
+            cvImage.draw(0, 0);
+            
+            // draw contours found from the thresholded image
+            
+            ofSetColor(255, 0, 0);
+            contourFinder.draw();
+            
+            ofSetColor(255,255,255);
+            ofDrawBitmapString("Press 'm' to generate mesh when ready", 300, 30);
         
-        // draw thresholded image
+            break;
         
-        ofSetColor(255,255,255);
-        cvImage.draw(0, 0);
-        
-        // draw contours found from the thresholded image
-        
-        ofSetColor(255, 0, 0);
-        contourFinder.draw();
-        
-        ofSetColor(255,255,255);
-        ofDrawBitmapString("Press 'm' to generate mesh when ready", 300, 30);
-        
-    } else if (state == MESH_GENERATED) {
-        
-        // fix the subdivided mesh to the mesh deformed by the puppet
-        
-        butterfly.fixMesh(puppet.getDeformedMesh(), subdivided);
-        
-        // draw the subdivided mesh textured with our image
-        
-        texture.bind();
-        subdivided.drawFaces();
-        texture.unbind();
-        
-        // draw the wireframe as well
-        
-        if (drawWireframe){
-            glLineWidth(1.0);
-            ofSetColor(0,255,50);
-            subdivided.drawWireframe();
-        }
-        
-        // debug stuff
-        
-        puppet.drawControlPoints();
-        
-        int xMargin = 300;
-        ofSetColor(255,255,255);
-        ofDrawBitmapString("# Subdivisions: " + ofToString(subs), xMargin, 30);
-        ofDrawBitmapString("Press <Right Arrow> to increase the edge subdivisions", xMargin, 50);
-        ofDrawBitmapString("Press <Left  Arrow> to decrease the edge subdivisions", xMargin, 70);
-        ofDrawBitmapString("Press 'w' to show wireframe", xMargin, 90);
+        case MESH_GENERATED:
+            
+            // draw the subdivided mesh textured with our image
+            
+            texture.bind();
+            subdivided.drawFaces();
+            texture.unbind();
+            
+            // draw the wireframe as well
+            
+            if (drawWireframe){
+                glLineWidth(1.0);
+                ofSetColor(0,255,50);
+                subdivided.drawWireframe();
+            }
+            
+            // debug stuff
+            
+            puppet.drawControlPoints();
+            
+            int xMargin = 300;
+            ofSetColor(255,255,255);
+            ofDrawBitmapString("# Subdivisions: " + ofToString(subs), xMargin, 30);
+            ofDrawBitmapString("Press <Right Arrow> to increase the edge subdivisions", xMargin, 50);
+            ofDrawBitmapString("Press <Left  Arrow> to decrease the edge subdivisions", xMargin, 70);
+            ofDrawBitmapString("Press 'w' to show wireframe", xMargin, 90);
+            
+            break;
+            
     }
     
     if(drawGui) gui.draw();
@@ -108,47 +111,60 @@ void ofApp::keyReleased(int key) {
     
     switch (state) {
             
-    case LOAD_IMAGE:
-        
-        if(key == 'l') {
+        case LOAD_IMAGE:
             
-            ofFileDialogResult openFileResult = ofSystemLoadDialog("Select an image:",true);
-            
-            if (openFileResult.bSuccess){
+            if(key == 'l') {
                 
-                loadAndCleanupImage(openFileResult.getPath());
+                ofFileDialogResult openFileResult = ofSystemLoadDialog("Select an image:",true);
+                
+                if (openFileResult.bSuccess){
+                    loadAndCleanupImage(openFileResult.getPath());
+                }
                 
             }
             
-        }
-        
-        break;
-        
-    case IMAGE_SETTINGS:
-        
-        if(key == 'm') {
-            generateMeshFromImage();
-        }
-        
-        break;
-
-    case MESH_GENERATED:
-        
-        // left/right controls how many subdivisions to use for smoothing the mesh
+            break;
             
-        if (key == OF_KEY_RIGHT) {
-            subs++;
-            updateSubdivisionMesh();
-        }
-        if (key == OF_KEY_LEFT && subs > 0) {
-            subs--;
-            updateSubdivisionMesh();
-        }
+        case IMAGE_SETTINGS:
+            
+            if(key == 'm') {
+                generateMeshFromImage();
+            }
+            
+            break;
+
+        case MESH_GENERATED:
+            
+            // left/right controls how many subdivisions to use for smoothing the mesh
+                
+            if (key == OF_KEY_RIGHT) {
+                subs++;
+                updateSubdivisionMesh();
+            }
+            if (key == OF_KEY_LEFT && subs > 0) {
+                subs--;
+                updateSubdivisionMesh();
+            }
+                
+            if(key == 'w') {
+                drawWireframe = !drawWireframe;
+            }
+            
+            if(key == 'e') {
+                /*
+                ofFileDialogResult saveFileResult = ofSystemSaveDialog("mesh.ply", "where to save mesh?");
+                if (openFileResult.bSuccess){
+                    loadAndCleanupImage(openFileResult.getPath());
+                }
+                 */
+                
+                //mesh.save(imageFilename+"-mesh.ply");
+            }
         
-        break;
-        
-    default:
-        break;
+            break;
+            
+        default:
+            break;
             
     }
     
@@ -170,6 +186,25 @@ void ofApp::updateSubdivisionMesh() {
     
 }
 
+void ofApp::findImageContours() {
+    
+    // threshold image
+    
+    cvImage.setFromPixels(image.getPixelsRef().getChannel(1));
+    cvImage.threshold(imageThreshold);
+    if(invert) cvImage.invert();
+    
+    // find contours from thresholded image
+    
+    contourFinder.setMinArea(1000);
+    contourFinder.setMaxArea(640*480);
+    //contourFinder.setFindHoles(true);
+    contourFinder.setSortBySize(true);
+    
+    //contourFinder.setThreshold(100);
+    contourFinder.findContours(ofxCv::toCv(cvImage));
+    
+}
 
 void ofApp::generateMeshFromImage() {
     
@@ -201,7 +236,7 @@ void ofApp::generateMeshFromImage() {
             
             // angle constraint = 28
             // size constraint = -1 (don't constraint triangles by size);
-            triangleMesh.triangulate(lineRespaced, 28, -1);
+            triangleMesh.triangulate(lineRespaced, 20, -1);
             
         }
     }
@@ -219,7 +254,6 @@ void ofApp::generateMeshFromImage() {
     // setup puppet
     
     puppet.setup(mesh);
-    puppet.setControlPoint(1);
     
     // setup smooth subdivided mesh
     
@@ -237,7 +271,12 @@ void ofApp::loadAndCleanupImage(string fn) {
     // scale down image to a good size for the mesh generator
     
     float whRatio = (float)image.width/(float)image.height;
-    image.resize(400*whRatio, 400);
+    if(image.width > image.height) {
+        image.resize(IMAGE_BASE_SIZE*whRatio, IMAGE_BASE_SIZE);
+    } else {
+        whRatio = (float)image.height/(float)image.width;
+        image.resize(IMAGE_BASE_SIZE, IMAGE_BASE_SIZE*whRatio);
+    }
     
     // replace alpha channel with white
     
@@ -256,15 +295,18 @@ void ofApp::loadAndCleanupImage(string fn) {
     
 }
 
+void ofApp::saveCurrentPuppet() {
+    
+    
+    
+}
+
 // lets us drag an image into the window to load it - very convenient
 
-void ofApp::dragEvent(ofDragInfo info)
-{
+void ofApp::dragEvent(ofDragInfo info) {
     
-    if(info.files.size() > 0)
-    {
+    if(info.files.size() > 0) {
         loadAndCleanupImage(info.files.at(0));
-        
     }
     
 }
