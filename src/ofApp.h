@@ -1,3 +1,10 @@
+/*possible things to try:
+  - proper depth testing for when limbs move
+    on top of each other
+  - restrict control point movement to avoid jelly 
+  -
+*/
+
 #pragma once
 
 #include "ofMain.h"
@@ -10,6 +17,8 @@
 #include "ofxGui.h"
 #include "ofxOscReceiver.h"
 
+#include "Puppet.h"
+
 class ofApp : public ofBaseApp
 {
     
@@ -18,38 +27,26 @@ public:
     void update();
     void draw();
     
+    void recieveOsc();
     void keyReleased(int key);
     void dragEvent(ofDragInfo dragInfo);
+    void saveCurrentPuppet();
     
-    void updateSubdivisionMesh();
+    Puppet newPuppet;
+    vector<Puppet> puppets;
+    
+    // mesh generation
+    
     void findImageContours();
     void generateMeshFromImage();
     void loadAndCleanupImage(string fn);
-    void saveCurrentPuppet();
-    void recieveOsc();
-    
-    // mesh & puppet
-    
-    ofMesh mesh, subdivided;
-   	ofxPuppetInteractive puppet;
-    ofxButterfly butterfly;
-    vector<int> puppetControlIndices;
-    
-    int subs = 0;
-    
-    // image
-    
-    ofImage image;
-    ofTexture texture;
-    ofxCvGrayscaleImage cvImage;
-    ofxCv::ContourFinder contourFinder;
     
     int IMAGE_BASE_SIZE = 400;
     
-    // triangulation
-    
     ofPolyline line;
     ofxTriangleMesh triangleMesh;
+    ofxCvGrayscaleImage cvImage;
+    ofxCv::ContourFinder contourFinder;
     
     // osc
     
@@ -68,10 +65,11 @@ public:
     
     bool drawGui;
     
-    ofxPanel gui;
+    ofxPanel imageSettingsGui;
     ofxSlider<int> imageThreshold;
     ofxToggle invert;
+    
+    ofxPanel meshGeneratedGui;
     ofxToggle drawWireframe;
-    ofxToggle wiggleAllPoints;
     
 };

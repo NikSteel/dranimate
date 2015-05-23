@@ -4,10 +4,12 @@ void ofApp::setup() {
     
     drawGui = true;
     
-    gui.setup();
-    gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
-    gui.add(invert.setup("invert", true));
-    gui.add(drawWireframe.setup("draw wireframe", true));
+    imageSettingsGui.setup();
+    imageSettingsGui.add(imageThreshold.setup("image threshold", 254, 0, 255));
+    imageSettingsGui.add(invert.setup("invert", true));
+    
+    meshGeneratedGui.setup();
+    meshGeneratedGui.add(drawWireframe.setup("draw wireframe", true));
     
     state = LOAD_IMAGE;
     
@@ -32,10 +34,7 @@ void ofApp::update() {
             
         case MESH_GENERATED:
             
-            puppet.update();
-            
-            // fix the subdivided mesh to the mesh deformed by the puppet
-            butterfly.fixMesh(puppet.getDeformedMesh(), subdivided);
+            newPuppet.update();
             
             recieveOsc();
             
@@ -74,40 +73,17 @@ void ofApp::draw() {
             ofSetColor(255,255,255);
             ofDrawBitmapString("Press 'm' to generate mesh when ready", 300, 30);
         
+            if(drawGui) imageSettingsGui.draw();
+            
             break;
         
         case MESH_GENERATED:
             
-            // draw the subdivided mesh textured with our image
+            newPuppet.draw(drawWireframe);
             
-            texture.bind();
-            subdivided.drawFaces();
-            texture.unbind();
-            
-            // draw the wireframe as well
-            
-            if (drawWireframe){
-                glLineWidth(1.0);
-                ofSetColor(0,255,50);
-                subdivided.drawWireframe();
-            }
-            
-            // debug stuff
-            
-            puppet.drawControlPoints();
-            
-            int xMargin = 300;
-            ofSetColor(255,255,255);
-            ofDrawBitmapString("# Subdivisions: " + ofToString(subs), xMargin, 30);
-            ofDrawBitmapString("Press <Right Arrow> to increase the edge subdivisions", xMargin, 50);
-            ofDrawBitmapString("Press <Left  Arrow> to decrease the edge subdivisions", xMargin, 70);
-            ofDrawBitmapString("Press 'w' to show wireframe", xMargin, 90);
-            
-            break;
+            if(drawGui) meshGeneratedGui.draw();
             
     }
-    
-    if(drawGui) gui.draw();
     
 }
 
@@ -139,21 +115,6 @@ void ofApp::keyReleased(int key) {
 
         case MESH_GENERATED:
             
-            // left/right controls how many subdivisions to use for smoothing the mesh
-                
-            if (key == OF_KEY_RIGHT) {
-                subs++;
-                updateSubdivisionMesh();
-            }
-            if (key == OF_KEY_LEFT && subs > 0) {
-                subs--;
-                updateSubdivisionMesh();
-            }
-                
-            if(key == 'w') {
-                drawWireframe = !drawWireframe;
-            }
-            
             if(key == 'e') {
                 
                 ofFileDialogResult saveFileResult = ofSystemSaveDialog("mesh.ply", "where to save mesh?");
@@ -177,23 +138,11 @@ void ofApp::keyReleased(int key) {
     
 }
 
-void ofApp::updateSubdivisionMesh() {
-    
-    butterfly.topology_start(mesh);
-    
-    for(int i = 0; i < subs; i++) {
-        butterfly.topology_subdivide_boundary();
-    }
-    
-    subdivided = butterfly.topology_end();
-    
-}
-
 void ofApp::findImageContours() {
     
     // threshold image
     
-    cvImage.setFromPixels(image.getPixelsRef().getChannel(1));
+    cvImage.setFromPixels(newPuppet.image.getPixelsRef().getChannel(1));
     cvImage.threshold(imageThreshold);
     if(invert) cvImage.invert();
     
@@ -244,55 +193,50 @@ void ofApp::generateMeshFromImage() {
         }
     }
     
-    mesh = triangleMesh.triangulatedMesh;
-    
+    newPuppet.mesh = triangleMesh.triangulatedMesh;
+
     // reset mesh texture coords to match with the image
     
-    int len = mesh.getNumVertices();
+    int len = newPuppet.mesh.getNumVertices();
     for(int i = 0; i < len; i++) {
-        ofVec2f vec = mesh.getVertex(i);
-        mesh.addTexCoord(vec);
+        ofVec2f vec = newPuppet.mesh.getVertex(i);
+        newPuppet.mesh.addTexCoord(vec);
     }
     
     // setup puppet
     
-    puppet.setup(mesh);
+    newPuppet.puppet.setup(newPuppet.mesh);
     
-    // setup smooth subdivided mesh
-    
-    updateSubdivisionMesh();
-    
-    
+    newPuppet.updateSubdivisionMesh();
+
     state = MESH_GENERATED;
     
 }
 
 void ofApp::loadAndCleanupImage(string fn) {
     
-    image.loadImage(fn);
+    newPuppet.image.loadImage(fn);
     
     // scale down image to a good size for the mesh generator
     
-    float whRatio = (float)image.width/(float)image.height;
-    if(image.width > image.height) {
-        image.resize(IMAGE_BASE_SIZE*whRatio, IMAGE_BASE_SIZE);
+    float whRatio = (float)newPuppet.image.width/(float)newPuppet.image.height;
+    if(newPuppet.image.width > newPuppet.image.height) {
+        newPuppet.image.resize(IMAGE_BASE_SIZE*whRatio, IMAGE_BASE_SIZE);
     } else {
-        whRatio = (float)image.height/(float)image.width;
-        image.resize(IMAGE_BASE_SIZE, IMAGE_BASE_SIZE*whRatio);
+        whRatio = (float)newPuppet.image.height/(float)newPuppet.image.width;
+        newPuppet.image.resize(IMAGE_BASE_SIZE, IMAGE_BASE_SIZE*whRatio);
     }
     
     // replace alpha channel with white
     
-    for(int x = 0; x < image.width; x++) {
-        for(int y = 0; y < image.height; y++) {
-            ofColor c = image.getColor(x, y);
+    for(int x = 0; x < newPuppet.image.width; x++) {
+        for(int y = 0; y < newPuppet.image.height; y++) {
+            ofColor c = newPuppet.image.getColor(x, y);
             if(c.a == 0) {
-                image.setColor(x, y, ofColor(255,255,255));
+                newPuppet.image.setColor(x, y, ofColor(255,255,255));
             }
         }
     }
-    
-    texture = image.getTextureReference();
     
     state = IMAGE_SETTINGS;
     
@@ -330,6 +274,7 @@ void ofApp::recieveOsc() {
         
 	}
     
+    /*
     if(gotX && gotY &&
        puppet.controlPointsVector.size() > 0) {
         int controlPointIndex = puppet.controlPointsVector[0];
@@ -337,6 +282,7 @@ void ofApp::recieveOsc() {
         puppet.setControlPoint(controlPointIndex,
                                controlPointPosition + ofVec2f(gyroY,gyroX));
     }
+     */
     
 }
 

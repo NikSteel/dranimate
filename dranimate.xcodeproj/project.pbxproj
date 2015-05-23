@@ -31,6 +31,7 @@
 		201628BE1B0FCDB400BBA2B9 /* OscPrintReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628B01B0FCDB400BBA2B9 /* OscPrintReceivedElements.cpp */; };
 		201628BF1B0FCDB400BBA2B9 /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628B21B0FCDB400BBA2B9 /* OscReceivedElements.cpp */; };
 		201628C01B0FCDB400BBA2B9 /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628B41B0FCDB400BBA2B9 /* OscTypes.cpp */; };
+		201628C31B11267C00BBA2B9 /* Puppet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628C11B11267C00BBA2B9 /* Puppet.cpp */; };
 		204C0FA1A182022F87FA91F6 /* ofxButterfly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C426D533404EE2BDAFFF79B /* ofxButterfly.cpp */; };
 		206D74A11B0657270017477D /* ETF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 206D74841B0657270017477D /* ETF.cpp */; };
 		206D74A21B0657270017477D /* fdog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 206D74851B0657270017477D /* fdog.cpp */; };
@@ -190,6 +191,8 @@
 		201628B31B0FCDB400BBA2B9 /* OscReceivedElements.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscReceivedElements.h; sourceTree = "<group>"; };
 		201628B41B0FCDB400BBA2B9 /* OscTypes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OscTypes.cpp; sourceTree = "<group>"; };
 		201628B51B0FCDB400BBA2B9 /* OscTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscTypes.h; sourceTree = "<group>"; };
+		201628C11B11267C00BBA2B9 /* Puppet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Puppet.cpp; sourceTree = "<group>"; };
+		201628C21B11267C00BBA2B9 /* Puppet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Puppet.h; sourceTree = "<group>"; };
 		206D74791B0657270017477D /* ofxCv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxCv.h; sourceTree = "<group>"; };
 		206D747B1B0657270017477D /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		206D747F1B0657270017477D /* ETF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETF.h; sourceTree = "<group>"; };
@@ -1142,6 +1145,8 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				201628C11B11267C00BBA2B9 /* Puppet.cpp */,
+				201628C21B11267C00BBA2B9 /* Puppet.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1273,6 +1278,7 @@
 				206D74A51B0657270017477D /* Distance.cpp in Sources */,
 				FB09C6B2A1DA0EA217240CB8 /* ofxCvGrayscaleImage.cpp in Sources */,
 				201628B61B0FCDB400BBA2B9 /* ofxOscBundle.cpp in Sources */,
+				201628C31B11267C00BBA2B9 /* Puppet.cpp in Sources */,
 				E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */,
 				206D74A61B0657270017477D /* Flow.cpp in Sources */,
 				63020F16C7E8DED980111241 /* ofxCvImage.cpp in Sources */,
