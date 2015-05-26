@@ -1,6 +1,7 @@
 # dranimate
+Instructions:
 
-current required addons (will most likely change in the future):<br />
+1.  install the following ofx addons before trying to compile:<br />
 <a href="https://github.com/ofZach/ofxPuppet">ofxPuppet</a><br />
 <a href="https://github.com/Bryce-Summers/ofxButterfly">ofxButterfly</a><br />
 <a href="https://github.com/ofZach/ofxTriangleMesh">ofxTriangleMesh</a><br />
@@ -10,5 +11,8 @@ current required addons (will most likely change in the future):<br />
 <a href="http://openframeworks.cc/documentation/ofxXmlSettings/ofxXmlSettings.html">ofxXMLSetgings</a><br />
 <a href="http://openframeworks.cc/documentation/ofxGui/ofxGui.html">ofxGUI</a>
 
+2.  clone this repo, place the "dranimate" folder in ".../of_v0.8.4_osx_release/apps/myApps/"
+3.  open the xcode project and compile
 
-the code to use ofxButterfly with ofxPuppet is by <a href="https://github.com/Bryce-Summers/ofxButterfly">Bryce Summers</a>. thanks bryce!!!
+Credits:
+the code to use ofxButterfly with ofxPuppet is by <a href="https://github.com/Bryce-Summers/ofxButterfly">Bryce Summers</a>. thanks bryce.
