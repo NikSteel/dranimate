@@ -1,0 +1,19 @@
+<controlPoints>
+    <controlPoint>
+        <index>149</index>
+        <osc>"none"</osc>
+    </controlPoint>
+    <controlPoint>
+        <index>169</index>
+        <osc>"none"</osc>
+    </controlPoint>
+    <controlPoint>
+        <index>109</index>
+        <osc>"none"</osc>
+    </controlPoint>
+    <controlPoint>
+        <index>178</index>
+        <osc-x>"/aOSC/gyro/x"</osc-x>
+        <osc-y>"/aOSC/gyro/y"</osc-y>
+    </controlPoint>
+</controlPoints>

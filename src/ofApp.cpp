@@ -11,7 +11,7 @@ void ofApp::setup() {
     meshGeneratedGui.setup();
     meshGeneratedGui.add(drawWireframe.setup("draw wireframe", true));
     
-    state = PUPPET_STAGE;
+    state = LOAD_IMAGE;
     
     receiver.setup(8000);
     
@@ -121,6 +121,12 @@ void ofApp::keyReleased(int key) {
                 
             }
             
+            if(key == 's') {
+             
+                state = PUPPET_STAGE;
+                
+            }
+            
             break;
             
         case IMAGE_SETTINGS:
@@ -172,7 +178,7 @@ void ofApp::findImageContours() {
     
     // threshold image
     
-    cvImage.setFromPixels(newPuppet.image.getPixelsRef().getChannel(1));
+    cvImage.setFromPixels(newPuppet.noAlphaImage.getPixelsRef().getChannel(1));
     cvImage.threshold(imageThreshold);
     if(invert) cvImage.invert();
     
@@ -256,13 +262,15 @@ void ofApp::loadAndCleanupImage(string fn) {
         newPuppet.image.resize(IMAGE_BASE_SIZE, IMAGE_BASE_SIZE*whRatio);
     }
     
+    newPuppet.noAlphaImage = newPuppet.image;
+    
     // replace alpha channel with white
     
-    for(int x = 0; x < newPuppet.image.width; x++) {
-        for(int y = 0; y < newPuppet.image.height; y++) {
-            ofColor c = newPuppet.image.getColor(x, y);
+    for(int x = 0; x < newPuppet.noAlphaImage.width; x++) {
+        for(int y = 0; y < newPuppet.noAlphaImage.height; y++) {
+            ofColor c = newPuppet.noAlphaImage.getColor(x, y);
             if(c.a == 0) {
-                newPuppet.image.setColor(x, y, ofColor(255,255,255));
+                newPuppet.noAlphaImage.setColor(x, y, ofColor(255,255,255));
             }
         }
     }
@@ -291,12 +299,12 @@ void ofApp::recieveOsc() {
 		receiver.getNextMessage(&m);
         
 		// check for gryo message
-		if(m.getAddress() == "/aOSC/gyro/x"){
+		if(m.getAddress() == "/aOSC/gyro/x") {
             gyroX = m.getArgAsFloat(0);
             gotX = true;
 		}
         
-        if(m.getAddress() == "/aOSC/gyro/y"){
+        if(m.getAddress() == "/aOSC/gyro/y") {
             gyroY = m.getArgAsFloat(0);
             gotY = true;
 		}
@@ -360,11 +368,35 @@ void ofApp::exportCurrentPuppet() {
 
 void ofApp::loadPuppet(string path) {
     
+    // load image
     newPuppet.image.loadImage(path + "/image.png");
     newPuppet.mesh.load(path + "/mesh.ply");
     
+    
+    // load mesh
     newPuppet.puppet.setup(newPuppet.mesh);
     newPuppet.updateSubdivisionMesh();
+    
+    // load control points & osc settings
+    ofxXmlSettings controlPoints;
+    if(controlPoints.loadFile(path + "/controlPoints.xml")){
+        
+        controlPoints.pushTag("controlPoints");
+        int nControlPoints = controlPoints.getNumTags("controlPoint");
+        
+        for(int i = 0; i < nControlPoints; i++){
+            
+            controlPoints.pushTag("controlPoint", i);
+            
+            int controlPointIndex = controlPoints.getValue("index", 0);
+            newPuppet.puppet.setControlPoint(controlPointIndex);
+            
+            controlPoints.popTag();
+            
+        }
+        
+        controlPoints.popTag();
+    }
     
     state = MESH_GENERATED;
 

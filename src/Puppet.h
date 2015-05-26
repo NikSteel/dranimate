@@ -31,6 +31,7 @@ public:
     // image
     
     ofImage image;
+    ofImage noAlphaImage;
     
 };
 
