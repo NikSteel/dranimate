@@ -31,18 +31,16 @@ public:
     void update();
     void draw(bool drawWireframe);
     
-    void updateSubdivisionMesh();
+    void regenerateSubdivisionMesh();
     
-    void addControlPoint(int index,
-                         string message,
-                         OSCNamespace::ControlType controlType);
+    void addControlPoint(int index, vector<OSCNamespace> namespaces);
     
     // mesh & puppet
     
     ofMesh mesh, subdivided;
    	ofxPuppet puppet;
     ofxButterfly butterfly;
-    vector<int> puppetControlIndices;
+    vector<ControlPoint> controlPoints;
     
     int subs = 2;
     

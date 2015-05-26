@@ -2,6 +2,7 @@
 #define __dranimate__ControlPoint__
 
 #include <iostream>
+#include <vector>
 
 #include "OSCNamespace.h"
 
@@ -10,7 +11,7 @@ class ControlPoint {
 public:
     
     int index;
-    OSCNamespace osc;
+    vector<OSCNamespace> oscNamespaces;
     
 };
 

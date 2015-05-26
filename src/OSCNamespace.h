@@ -1,19 +1,16 @@
 #ifndef __dranimate__OSCNamespace__
 #define __dranimate__OSCNamespace__
 
+using namespace std;
+
 #include <iostream>
 
 class OSCNamespace {
     
 public:
     
-    enum ControlType {
-        X,
-        Y,
-    };
-    
-    std::string name;
-    ControlType controlType;
+    string message;
+    string controlType;
     
 };
 

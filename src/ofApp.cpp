@@ -251,31 +251,43 @@ void ofApp::recieveOsc() {
 		ofxOscMessage m;
 		receiver.getNextMessage(&m);
         
-		// check for gryo message
-		if(m.getAddress() == "/aOSC/gyro/x") {
-            gyroX = m.getArgAsFloat(0);
-            gotX = true;
-            ofLog() << "x: " << gyroX;
-		}
+        // loop through all osc namespaces in each control point
+        // ->holy moly! fix this code up!
         
-        if(m.getAddress() == "/aOSC/gyro/y") {
-            gyroY = m.getArgAsFloat(0);
-            gotY = true;
-            ofLog() << "y: " << gyroY;
-		}
+        for(int i = 0; i < newPuppet.controlPoints.size(); i++) {
+            
+            ControlPoint controlPoint = newPuppet.controlPoints[i];
+            vector<OSCNamespace> namespaces = controlPoint.oscNamespaces;
+            
+            for(int j = 0; j < namespaces.size(); j++) {
+                
+                OSCNamespace namesp = namespaces[j];
+                
+                if(namesp.message == m.getAddress()) {
+                    
+                    ofLog() << "match for " << m.getAddress();
+                    
+                    float value = m.getArgAsFloat(0);
+                    
+                    if(namesp.controlType == "x") {
+                        
+                    } else if(namesp.controlType == "y") {
+                        ofLog() << "match for " << namesp.controlType;
+                        
+                        int controlPointIndex = controlPoint.index;
+                        ofVec2f controlPointPosition = newPuppet.mesh.getVertex(controlPointIndex);
+                        controlPointPosition.x += value;
+                        newPuppet.puppet.setControlPoint(controlPointIndex,
+                                                         controlPointPosition);
+                    }
+                
+                }
+                
+            }
+            
+        }
         
 	}
-    
-    // temp code, testing osc
-    // this is really ugly code but it's leaving soon. -zach
-    
-    if(gotX && gotY &&
-       newPuppet.puppet.controlPointsVector.size() > 0) {
-        int controlPointIndex = newPuppet.puppet.controlPointsVector[0];
-        ofVec2f controlPointPosition = newPuppet.mesh.getVertex(controlPointIndex);
-        newPuppet.puppet.setControlPoint(controlPointIndex,
-                                         controlPointPosition + ofVec2f(gyroY,gyroX));
-    }
     
 }
 

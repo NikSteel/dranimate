@@ -8,28 +8,45 @@ void Puppet::load(string path) {
     // load mesh
     mesh.load(path + "/mesh.ply");
     puppet.setup(mesh);
-    updateSubdivisionMesh();
+    regenerateSubdivisionMesh();
     
     // load control points & osc settings
     ofxXmlSettings controlPoints;
     if(controlPoints.loadFile(path + "/controlPoints.xml")){
         
-        controlPoints.pushTag("controlPoints");
         int nControlPoints = controlPoints.getNumTags("controlPoint");
-        
         for(int i = 0; i < nControlPoints; i++) {
             
             controlPoints.pushTag("controlPoint", i);
             
             int controlPointIndex = controlPoints.getValue("index", 0);
-            puppet.setControlPoint(controlPointIndex);
-            puppet.controlPointsVector.push_back(controlPointIndex);
+            
+            vector<OSCNamespace> namespaces;
+            
+            int nNamespaces = controlPoints.getNumTags("oscNamespace");
+            for(int j = 0; j < nNamespaces; j++) {
+                
+                controlPoints.pushTag("oscNamespace", j);
+                
+                string message = controlPoints.getValue("message", "");
+                string controlType = controlPoints.getValue("controlType", "");
+                
+                OSCNamespace namesp;
+                namesp.message = message;
+                namesp.controlType = controlType;
+                
+                namespaces.push_back(namesp);
+                
+                controlPoints.popTag();
+                
+            }
+            
+            addControlPoint(controlPointIndex, namespaces);
             
             controlPoints.popTag();
             
         }
         
-        controlPoints.popTag();
     }
     
 }
@@ -49,20 +66,31 @@ void Puppet::save(string path) {
     image.saveImage(path + "/image.png");
     
     // control points
-    ofxXmlSettings controlPoints;
-    controlPoints.addTag("controlPoints");
-    controlPoints.pushTag("controlPoints");
-    for(int i = 0; i < puppet.controlPointsVector.size(); i++){
+    ofxXmlSettings controlPointsXML;
+    for(int i = 0; i < controlPoints.size(); i++){
         
-        controlPoints.addTag("controlPoint");
-        controlPoints.pushTag("controlPoint",i);
+        controlPointsXML.addTag("controlPoint");
+        controlPointsXML.pushTag("controlPoint",i);
         
-        controlPoints.addValue("index", puppet.controlPointsVector[i]);
-        controlPoints.popTag();
+        controlPointsXML.addValue("index", controlPoints[i].index);
+        
+        for(int j = 0; j < controlPoints[i].oscNamespaces.size(); j++) {
+            
+            controlPointsXML.addTag("oscNamespace");
+            controlPointsXML.pushTag("oscNamespace",j);
+            
+            OSCNamespace namesp = controlPoints[i].oscNamespaces[j];
+            controlPointsXML.addValue("message", namesp.message);
+            controlPointsXML.addValue("controlType", namesp.controlType);
+            
+            controlPointsXML.popTag();
+            
+        }
+        
+        controlPointsXML.popTag();
         
     }
-    controlPoints.popTag();
-    controlPoints.saveFile(path + "/controlPoints.xml");
+    controlPointsXML.saveFile(path + "/controlPoints.xml");
     
     
     // todo: save matrices that svd calculates to allow near-instant loading of puppets
@@ -74,7 +102,7 @@ void Puppet::setMesh(ofMesh m) {
     mesh = m;
     
     puppet.setup(mesh);
-    updateSubdivisionMesh();
+    regenerateSubdivisionMesh();
     
 }
 
@@ -109,7 +137,7 @@ void Puppet::draw(bool drawWireframe) {
     
 }
 
-void Puppet::updateSubdivisionMesh() {
+void Puppet::regenerateSubdivisionMesh() {
     
     butterfly.topology_start(mesh);
     
@@ -121,10 +149,13 @@ void Puppet::updateSubdivisionMesh() {
     
 }
 
-void Puppet::addControlPoint(int index,
-                             string message,
-                             OSCNamespace::ControlType controlType) {
+void Puppet::addControlPoint(int index, vector<OSCNamespace> namespaces) {
     
+    puppet.setControlPoint(index);
     
+    ControlPoint newControlPoint;
+    newControlPoint.index = index;
+    newControlPoint.oscNamespaces = namespaces;
+    controlPoints.push_back(newControlPoint);
     
 }
