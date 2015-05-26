@@ -42,7 +42,11 @@ void ofApp::update() {
             
         case PUPPET_STAGE:
             
+            for(int i = 0; i < puppets.size(); i++) {
+                puppets[i].update();
+            }
             
+            recieveOsc();
             
             break;
             
@@ -98,6 +102,12 @@ void ofApp::draw() {
             
             ofSetColor(255,255,255);
             ofDrawBitmapString("Press 'l' to load a puppet", 300, 30);
+            
+            for(int i = 0; i < puppets.size(); i++) {
+                puppets[i].draw(drawWireframe);
+            }
+            
+            if(drawGui) meshGeneratedGui.draw();
             
             break;
             
@@ -302,16 +312,19 @@ void ofApp::recieveOsc() {
 		if(m.getAddress() == "/aOSC/gyro/x") {
             gyroX = m.getArgAsFloat(0);
             gotX = true;
+            ofLog() << "x: " << gyroX;
 		}
         
         if(m.getAddress() == "/aOSC/gyro/y") {
             gyroY = m.getArgAsFloat(0);
             gotY = true;
+            ofLog() << "y: " << gyroY;
 		}
         
 	}
     
     // temp code, testing osc
+    // this is really ugly code but it's leaving soon. -zach
     
     if(gotX && gotY &&
        newPuppet.puppet.controlPointsVector.size() > 0) {
@@ -384,12 +397,13 @@ void ofApp::loadPuppet(string path) {
         controlPoints.pushTag("controlPoints");
         int nControlPoints = controlPoints.getNumTags("controlPoint");
         
-        for(int i = 0; i < nControlPoints; i++){
+        for(int i = 0; i < nControlPoints; i++) {
             
             controlPoints.pushTag("controlPoint", i);
             
             int controlPointIndex = controlPoints.getValue("index", 0);
             newPuppet.puppet.setControlPoint(controlPointIndex);
+            newPuppet.puppet.controlPointsVector.push_back(controlPointIndex);
             
             controlPoints.popTag();
             
@@ -397,6 +411,8 @@ void ofApp::loadPuppet(string path) {
         
         controlPoints.popTag();
     }
+    
+    puppets.push_back(newPuppet);
     
     state = MESH_GENERATED;
 

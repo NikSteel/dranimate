@@ -22,7 +22,7 @@ public:
     // mesh & puppet
     
     ofMesh mesh, subdivided;
-   	ofxPuppetInteractive puppet;
+   	ofxPuppet puppet;
     ofxButterfly butterfly;
     vector<int> puppetControlIndices;
     
