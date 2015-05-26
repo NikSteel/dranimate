@@ -32,6 +32,10 @@
 		201628BF1B0FCDB400BBA2B9 /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628B21B0FCDB400BBA2B9 /* OscReceivedElements.cpp */; };
 		201628C01B0FCDB400BBA2B9 /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628B41B0FCDB400BBA2B9 /* OscTypes.cpp */; };
 		201628C31B11267C00BBA2B9 /* Puppet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628C11B11267C00BBA2B9 /* Puppet.cpp */; };
+		201628CE1B13CD2700BBA2B9 /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628C71B13CD2700BBA2B9 /* ofxXmlSettings.cpp */; };
+		201628CF1B13CD2700BBA2B9 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628CA1B13CD2700BBA2B9 /* tinyxml.cpp */; };
+		201628D01B13CD2700BBA2B9 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628CC1B13CD2700BBA2B9 /* tinyxmlerror.cpp */; };
+		201628D11B13CD2700BBA2B9 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628CD1B13CD2700BBA2B9 /* tinyxmlparser.cpp */; };
 		204C0FA1A182022F87FA91F6 /* ofxButterfly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C426D533404EE2BDAFFF79B /* ofxButterfly.cpp */; };
 		206D74A11B0657270017477D /* ETF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 206D74841B0657270017477D /* ETF.cpp */; };
 		206D74A21B0657270017477D /* fdog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 206D74851B0657270017477D /* fdog.cpp */; };
@@ -193,6 +197,12 @@
 		201628B51B0FCDB400BBA2B9 /* OscTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscTypes.h; sourceTree = "<group>"; };
 		201628C11B11267C00BBA2B9 /* Puppet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Puppet.cpp; sourceTree = "<group>"; };
 		201628C21B11267C00BBA2B9 /* Puppet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Puppet.h; sourceTree = "<group>"; };
+		201628C71B13CD2700BBA2B9 /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxXmlSettings.cpp; sourceTree = "<group>"; };
+		201628C81B13CD2700BBA2B9 /* ofxXmlSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxXmlSettings.h; sourceTree = "<group>"; };
+		201628CA1B13CD2700BBA2B9 /* tinyxml.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml.cpp; sourceTree = "<group>"; };
+		201628CB1B13CD2700BBA2B9 /* tinyxml.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
+		201628CC1B13CD2700BBA2B9 /* tinyxmlerror.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
+		201628CD1B13CD2700BBA2B9 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
 		206D74791B0657270017477D /* ofxCv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxCv.h; sourceTree = "<group>"; };
 		206D747B1B0657270017477D /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		206D747F1B0657270017477D /* ETF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETF.h; sourceTree = "<group>"; };
@@ -672,6 +682,37 @@
 			path = osc;
 			sourceTree = "<group>";
 		};
+		201628C51B13CD2700BBA2B9 /* ofxXmlSettings */ = {
+			isa = PBXGroup;
+			children = (
+				201628C61B13CD2700BBA2B9 /* src */,
+				201628C91B13CD2700BBA2B9 /* libs */,
+			);
+			name = ofxXmlSettings;
+			sourceTree = "<group>";
+		};
+		201628C61B13CD2700BBA2B9 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				201628C71B13CD2700BBA2B9 /* ofxXmlSettings.cpp */,
+				201628C81B13CD2700BBA2B9 /* ofxXmlSettings.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxXmlSettings/src;
+			sourceTree = "<group>";
+		};
+		201628C91B13CD2700BBA2B9 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				201628CA1B13CD2700BBA2B9 /* tinyxml.cpp */,
+				201628CB1B13CD2700BBA2B9 /* tinyxml.h */,
+				201628CC1B13CD2700BBA2B9 /* tinyxmlerror.cpp */,
+				201628CD1B13CD2700BBA2B9 /* tinyxmlparser.cpp */,
+			);
+			name = libs;
+			path = ../../../addons/ofxXmlSettings/libs;
+			sourceTree = "<group>";
+		};
 		206D74771B0657270017477D /* ofxCv */ = {
 			isa = PBXGroup;
 			children = (
@@ -965,6 +1006,7 @@
 				2016281B1B0E4F0D00BBA2B9 /* ofxGui */,
 				201628391B0E5BD100BBA2B9 /* ofxTriangleMesh */,
 				2016288D1B0FCDB400BBA2B9 /* ofxOsc */,
+				201628C51B13CD2700BBA2B9 /* ofxXmlSettings */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -1273,6 +1315,7 @@
 				206D74AD1B0657270017477D /* Wrappers.cpp in Sources */,
 				250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */,
 				1D5F3298C2FA073628012944 /* ofxCvContourFinder.cpp in Sources */,
+				201628CE1B13CD2700BBA2B9 /* ofxXmlSettings.cpp in Sources */,
 				201628B91B0FCDB400BBA2B9 /* ofxOscSender.cpp in Sources */,
 				169D3C72FDE6C5590A1616F5 /* ofxCvFloatImage.cpp in Sources */,
 				206D74A51B0657270017477D /* Distance.cpp in Sources */,
@@ -1280,6 +1323,7 @@
 				201628B61B0FCDB400BBA2B9 /* ofxOscBundle.cpp in Sources */,
 				201628C31B11267C00BBA2B9 /* Puppet.cpp in Sources */,
 				E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */,
+				201628CF1B13CD2700BBA2B9 /* tinyxml.cpp in Sources */,
 				206D74A61B0657270017477D /* Flow.cpp in Sources */,
 				63020F16C7E8DED980111241 /* ofxCvImage.cpp in Sources */,
 				D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */,
@@ -1290,6 +1334,7 @@
 				206D74A91B0657270017477D /* ObjectFinder.cpp in Sources */,
 				204C0FA1A182022F87FA91F6 /* ofxButterfly.cpp in Sources */,
 				C120F6399E54AF8BD94A8FBB /* cube.cpp in Sources */,
+				201628D11B13CD2700BBA2B9 /* tinyxmlparser.cpp in Sources */,
 				F0D4B323F3C5DEAF5EF07A14 /* mesh.cpp in Sources */,
 				201628351B0E4F0D00BBA2B9 /* ofxToggle.cpp in Sources */,
 				206D74AB1B0657270017477D /* Tracker.cpp in Sources */,
@@ -1301,6 +1346,7 @@
 				201628411B0E5BD100BBA2B9 /* ofxTriangleMesh.cpp in Sources */,
 				201628B71B0FCDB400BBA2B9 /* ofxOscMessage.cpp in Sources */,
 				2016282E1B0E4F0D00BBA2B9 /* ofxBaseGui.cpp in Sources */,
+				201628D01B13CD2700BBA2B9 /* tinyxmlerror.cpp in Sources */,
 				AA05652D2D87ADBBAB4BAE34 /* RigidMeshDeformer2D.cpp in Sources */,
 				201628311B0E4F0D00BBA2B9 /* ofxLabel.cpp in Sources */,
 				E7307CC082182EDD5760474E /* TriangleMesh.cpp in Sources */,
@@ -1614,7 +1660,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)Debug";
-				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxCv/libs/CLD/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../../of_v0.8.3_osx_release/addons/ofxCv/libs/CLD/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/libs/ofxCv/include/ ../../../addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxTriangle/libs/Triangle/include/ ../../../addons/ofxCv/libs/ofxCv/include/";
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxCv/libs/CLD/include/ ../../../addons/ofxCv/libs/ofxCv/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/libs/CLD/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/libs/ofxCv/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxTriangle/libs/Triangle/include/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1703,7 +1749,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxCv/libs/CLD/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../../of_v0.8.3_osx_release/addons/ofxCv/libs/CLD/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/libs/ofxCv/include/ ../../../addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxTriangle/libs/Triangle/include/ ../../../addons/ofxCv/libs/ofxCv/include/";
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxCv/libs/CLD/include/ ../../../addons/ofxCv/libs/ofxCv/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/libs/CLD/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/libs/ofxCv/include/ ../../../../of_v0.8.3_osx_release/addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxTriangle/libs/Triangle/include/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -1,10 +1,3 @@
-/*possible things to try:
-  - proper depth testing for when limbs move
-    on top of each other
-  - restrict control point movement to avoid jelly 
-  -
-*/
-
 #pragma once
 
 #include "ofMain.h"
@@ -16,6 +9,7 @@
 #include "ofxCv.h"
 #include "ofxGui.h"
 #include "ofxOscReceiver.h"
+#include "ofxXmlSettings.h"
 
 #include "Puppet.h"
 
@@ -30,7 +24,9 @@ public:
     void recieveOsc();
     void keyReleased(int key);
     void dragEvent(ofDragInfo dragInfo);
-    void saveCurrentPuppet();
+    
+    void exportCurrentPuppet();
+    void loadPuppet(string fn);
     
     Puppet newPuppet;
     vector<Puppet> puppets;
@@ -57,7 +53,8 @@ public:
     enum State {
         LOAD_IMAGE,
         IMAGE_SETTINGS,
-        MESH_GENERATED
+        MESH_GENERATED,
+        PUPPET_STAGE
     };
     State state;
     

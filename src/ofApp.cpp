@@ -11,7 +11,7 @@ void ofApp::setup() {
     meshGeneratedGui.setup();
     meshGeneratedGui.add(drawWireframe.setup("draw wireframe", true));
     
-    state = LOAD_IMAGE;
+    state = PUPPET_STAGE;
     
     receiver.setup(8000);
     
@@ -37,6 +37,12 @@ void ofApp::update() {
             newPuppet.update();
             
             recieveOsc();
+            
+            break;
+            
+        case PUPPET_STAGE:
+            
+            
             
             break;
             
@@ -81,7 +87,19 @@ void ofApp::draw() {
             
             newPuppet.draw(drawWireframe);
             
+            ofSetColor(255,255,255);
+            ofDrawBitmapString("Press 'e' to export puppet", 300, 30);
+            
             if(drawGui) meshGeneratedGui.draw();
+            
+            break;
+            
+        case PUPPET_STAGE:
+            
+            ofSetColor(255,255,255);
+            ofDrawBitmapString("Press 'l' to load a puppet", 300, 30);
+            
+            break;
             
     }
     
@@ -116,15 +134,27 @@ void ofApp::keyReleased(int key) {
         case MESH_GENERATED:
             
             if(key == 'e') {
-                
-                ofFileDialogResult saveFileResult = ofSystemSaveDialog("mesh.ply", "where to save mesh?");
-                if (saveFileResult.bSuccess){
-                    ofLog() << saveFileResult.getPath();
-                }
-                
-                //mesh.save(imageFilename+"-mesh.ply");
+                exportCurrentPuppet();
+            }
+            
+            if(key == 'w') {
+                drawWireframe = !drawWireframe;
             }
         
+            break;
+            
+        case PUPPET_STAGE:
+            
+            if(key == 'l') {
+                
+                ofFileDialogResult openFileResult = ofSystemLoadDialog("Select a puppet directory:",true);
+                
+                if (openFileResult.bSuccess){
+                    loadPuppet(openFileResult.getPath());
+                }
+                
+            }
+            
             break;
             
         default:
@@ -206,7 +236,6 @@ void ofApp::generateMeshFromImage() {
     // setup puppet
     
     newPuppet.puppet.setup(newPuppet.mesh);
-    
     newPuppet.updateSubdivisionMesh();
 
     state = MESH_GENERATED;
@@ -274,30 +303,100 @@ void ofApp::recieveOsc() {
         
 	}
     
-    /*
+    // temp code, testing osc
+    
     if(gotX && gotY &&
-       puppet.controlPointsVector.size() > 0) {
-        int controlPointIndex = puppet.controlPointsVector[0];
-        ofVec2f controlPointPosition = mesh.getVertex(controlPointIndex);
-        puppet.setControlPoint(controlPointIndex,
-                               controlPointPosition + ofVec2f(gyroY,gyroX));
+       newPuppet.puppet.controlPointsVector.size() > 0) {
+        int controlPointIndex = newPuppet.puppet.controlPointsVector[0];
+        ofVec2f controlPointPosition = newPuppet.mesh.getVertex(controlPointIndex);
+        newPuppet.puppet.setControlPoint(controlPointIndex,
+                                         controlPointPosition + ofVec2f(gyroY,gyroX));
     }
-     */
     
 }
 
-void ofApp::saveCurrentPuppet() {
+void ofApp::exportCurrentPuppet() {
     
+    ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
     
+    if (saveFileResult.bSuccess){
+        
+        string path = saveFileResult.getPath();
+        
+        ofLog() << "making new directory at: " << path;
+        
+        // the folder itself
+        string mkdirCommandString = "mkdir " + path;
+        system(mkdirCommandString.c_str());
+        
+        // mesh
+        newPuppet.mesh.save(path + "/mesh.ply");
+        
+        // image
+        newPuppet.image.saveImage(path + "/image.png");
+        
+        // control points
+        ofxXmlSettings controlPoints;
+        controlPoints.addTag("controlPoints");
+        controlPoints.pushTag("controlPoints");
+        for(int i = 0; i < newPuppet.puppet.controlPointsVector.size(); i++){
+            
+            controlPoints.addTag("controlPoint");
+            controlPoints.pushTag("controlPoint",i);
+            
+            controlPoints.addValue("index", newPuppet.puppet.controlPointsVector[i]);
+            controlPoints.popTag();
+            
+        }
+        controlPoints.popTag();
+        controlPoints.saveFile(path + "/controlPoints.xml");
+        
+        
+        // todo: save matrices that svd calculates to allow near-instant loading of puppets
+        
+    }
     
 }
 
-// lets us drag an image into the window to load it - very convenient
+void ofApp::loadPuppet(string path) {
+    
+    newPuppet.image.loadImage(path + "/image.png");
+    newPuppet.mesh.load(path + "/mesh.ply");
+    
+    newPuppet.puppet.setup(newPuppet.mesh);
+    newPuppet.updateSubdivisionMesh();
+    
+    state = MESH_GENERATED;
+
+}
+
+// lets us drag an image/puppet directory into the window to load it - very convenient
 
 void ofApp::dragEvent(ofDragInfo info) {
     
-    if(info.files.size() > 0) {
-        loadAndCleanupImage(info.files.at(0));
+    switch (state) {
+            
+        case LOAD_IMAGE:
+            if(info.files.size() > 0) {
+                loadAndCleanupImage(info.files.at(0));
+            }
+            break;
+            
+        case IMAGE_SETTINGS:
+            break;
+            
+        case MESH_GENERATED:
+            break;
+            
+        case PUPPET_STAGE:
+            if(info.files.size() > 0) {
+                loadPuppet(info.files.at(0));
+            }
+            break;
+            
+        default:
+            break;
+            
     }
     
 }
