@@ -5,9 +5,9 @@ current required addons (will most likely change in the future):<br />
 <a href="https://github.com/Bryce-Summers/ofxButterfly">ofxButterfly</a><br />
 <a href="https://github.com/ofZach/ofxTriangleMesh">ofxTriangleMesh</a><br />
 <a href="https://github.com/satoruhiga/ofxObjLoader">ofxObjLoader</a><br />
-<a href="https://github.com/kylemcdonald/ofxCv">ofxCv</a>
-<a href="https://github.com/openframeworks/openFrameworks/tree/master/addons/ofxOsc">ofxOSC</a>
-<a href="http://openframeworks.cc/documentation/ofxXmlSettings/ofxXmlSettings.html">ofxXMLSetgings</a>
+<a href="https://github.com/kylemcdonald/ofxCv">ofxCv</a><br />
+<a href="https://github.com/openframeworks/openFrameworks/tree/master/addons/ofxOsc">ofxOSC</a><br />
+<a href="http://openframeworks.cc/documentation/ofxXmlSettings/ofxXmlSettings.html">ofxXMLSetgings</a><br />
 <a href="http://openframeworks.cc/documentation/ofxGui/ofxGui.html">ofxGUI</a>
 
 
