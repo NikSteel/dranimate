@@ -42,11 +42,7 @@ void ofApp::update() {
             
         case PUPPET_STAGE:
             
-            for(int i = 0; i < puppets.size(); i++) {
-                puppets[i].update();
-            }
-            
-            recieveOsc();
+            // todo: update all puppets and recieve osc
             
             break;
             
@@ -103,11 +99,7 @@ void ofApp::draw() {
             ofSetColor(255,255,255);
             ofDrawBitmapString("Press 'l' to load a puppet", 300, 30);
             
-            for(int i = 0; i < puppets.size(); i++) {
-                puppets[i].draw(drawWireframe);
-            }
-            
-            if(drawGui) meshGeneratedGui.draw();
+            // todo: draw all of the currently loaded puppets.
             
             break;
             
@@ -142,7 +134,12 @@ void ofApp::keyReleased(int key) {
         case IMAGE_SETTINGS:
             
             if(key == 'm') {
-                generateMeshFromImage();
+                
+                MeshGenerator mesher;
+                newPuppet.setMesh(mesher.generateMesh(contourFinder));
+                
+                state = MESH_GENERATED;
+                
             }
             
             break;
@@ -201,60 +198,6 @@ void ofApp::findImageContours() {
     
     //contourFinder.setThreshold(100);
     contourFinder.findContours(ofxCv::toCv(cvImage));
-    
-}
-
-void ofApp::generateMeshFromImage() {
-    
-    // create a polyline with all of the contour points
-    
-    vector<cv::Point> contour = contourFinder.getContour(0);
-    for(int i = 0; i < contour.size(); i++) {
-        line.addVertex(contour[i].x,contour[i].y);
-    }
-    
-    // use that polyline to generate a mesh with ofxTriangleMesh !!
-    // (code from ofxTriangleMesh example)
-    
-    if (line.size() > 2){
-        
-        ofPolyline lineRespaced = line;
-        
-        // add the last point (so when we resample, it's a closed polygon)
-        lineRespaced.addVertex(lineRespaced[0]);
-        
-        // resample
-        lineRespaced = lineRespaced.getResampledBySpacing(20);
-        
-        // I want to make sure the first point and the last point are not the same, since triangle is unhappy:
-        lineRespaced.getVertices().erase(lineRespaced.getVertices().begin());
-        
-        // if we have a proper set of points, mesh them:
-        if (lineRespaced.size() > 5){
-            
-            // angle constraint = 28
-            // size constraint = -1 (don't constraint triangles by size);
-            triangleMesh.triangulate(lineRespaced, 20, -1);
-            
-        }
-    }
-    
-    newPuppet.mesh = triangleMesh.triangulatedMesh;
-
-    // reset mesh texture coords to match with the image
-    
-    int len = newPuppet.mesh.getNumVertices();
-    for(int i = 0; i < len; i++) {
-        ofVec2f vec = newPuppet.mesh.getVertex(i);
-        newPuppet.mesh.addTexCoord(vec);
-    }
-    
-    // setup puppet
-    
-    newPuppet.puppet.setup(newPuppet.mesh);
-    newPuppet.updateSubdivisionMesh();
-
-    state = MESH_GENERATED;
     
 }
 
@@ -344,36 +287,7 @@ void ofApp::exportCurrentPuppet() {
         
         string path = saveFileResult.getPath();
         
-        ofLog() << "making new directory at: " << path;
-        
-        // the folder itself
-        string mkdirCommandString = "mkdir " + path;
-        system(mkdirCommandString.c_str());
-        
-        // mesh
-        newPuppet.mesh.save(path + "/mesh.ply");
-        
-        // image
-        newPuppet.image.saveImage(path + "/image.png");
-        
-        // control points
-        ofxXmlSettings controlPoints;
-        controlPoints.addTag("controlPoints");
-        controlPoints.pushTag("controlPoints");
-        for(int i = 0; i < newPuppet.puppet.controlPointsVector.size(); i++){
-            
-            controlPoints.addTag("controlPoint");
-            controlPoints.pushTag("controlPoint",i);
-            
-            controlPoints.addValue("index", newPuppet.puppet.controlPointsVector[i]);
-            controlPoints.popTag();
-            
-        }
-        controlPoints.popTag();
-        controlPoints.saveFile(path + "/controlPoints.xml");
-        
-        
-        // todo: save matrices that svd calculates to allow near-instant loading of puppets
+        newPuppet.save(path);
         
     }
     
@@ -381,38 +295,7 @@ void ofApp::exportCurrentPuppet() {
 
 void ofApp::loadPuppet(string path) {
     
-    // load image
-    newPuppet.image.loadImage(path + "/image.png");
-    newPuppet.mesh.load(path + "/mesh.ply");
-    
-    
-    // load mesh
-    newPuppet.puppet.setup(newPuppet.mesh);
-    newPuppet.updateSubdivisionMesh();
-    
-    // load control points & osc settings
-    ofxXmlSettings controlPoints;
-    if(controlPoints.loadFile(path + "/controlPoints.xml")){
-        
-        controlPoints.pushTag("controlPoints");
-        int nControlPoints = controlPoints.getNumTags("controlPoint");
-        
-        for(int i = 0; i < nControlPoints; i++) {
-            
-            controlPoints.pushTag("controlPoint", i);
-            
-            int controlPointIndex = controlPoints.getValue("index", 0);
-            newPuppet.puppet.setControlPoint(controlPointIndex);
-            newPuppet.puppet.controlPointsVector.push_back(controlPointIndex);
-            
-            controlPoints.popTag();
-            
-        }
-        
-        controlPoints.popTag();
-    }
-    
-    puppets.push_back(newPuppet);
+    newPuppet.load(path);
     
     state = MESH_GENERATED;
 

@@ -13,7 +13,13 @@
     </controlPoint>
     <controlPoint>
         <index>178</index>
-        <osc-x>"/aOSC/gyro/x"</osc-x>
-        <osc-y>"/aOSC/gyro/y"</osc-y>
+        <oscNamespace>
+            <message>"/aOSC/gyro/x"</message>
+            <controlType>X</controlType>
+        </oscNamespace>
+        <oscNamespace>
+            <message>"/aOSC/gyro/y"</message>
+            <controlType>Y</controlType>
+        </oscNamespace>
     </controlPoint>
 </controlPoints>

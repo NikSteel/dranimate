@@ -36,6 +36,9 @@
 		201628CF1B13CD2700BBA2B9 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628CA1B13CD2700BBA2B9 /* tinyxml.cpp */; };
 		201628D01B13CD2700BBA2B9 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628CC1B13CD2700BBA2B9 /* tinyxmlerror.cpp */; };
 		201628D11B13CD2700BBA2B9 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628CD1B13CD2700BBA2B9 /* tinyxmlparser.cpp */; };
+		201628D41B14F8FA00BBA2B9 /* ControlPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628D21B14F8FA00BBA2B9 /* ControlPoint.cpp */; };
+		201628D71B14FA6000BBA2B9 /* OSCNamespace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628D51B14FA6000BBA2B9 /* OSCNamespace.cpp */; };
+		201628DA1B14FDB600BBA2B9 /* MeshGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201628D81B14FDB600BBA2B9 /* MeshGenerator.cpp */; };
 		204C0FA1A182022F87FA91F6 /* ofxButterfly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C426D533404EE2BDAFFF79B /* ofxButterfly.cpp */; };
 		206D74A11B0657270017477D /* ETF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 206D74841B0657270017477D /* ETF.cpp */; };
 		206D74A21B0657270017477D /* fdog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 206D74851B0657270017477D /* fdog.cpp */; };
@@ -203,6 +206,12 @@
 		201628CB1B13CD2700BBA2B9 /* tinyxml.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
 		201628CC1B13CD2700BBA2B9 /* tinyxmlerror.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
 		201628CD1B13CD2700BBA2B9 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
+		201628D21B14F8FA00BBA2B9 /* ControlPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlPoint.cpp; sourceTree = "<group>"; };
+		201628D31B14F8FA00BBA2B9 /* ControlPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlPoint.h; sourceTree = "<group>"; };
+		201628D51B14FA6000BBA2B9 /* OSCNamespace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OSCNamespace.cpp; sourceTree = "<group>"; };
+		201628D61B14FA6000BBA2B9 /* OSCNamespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSCNamespace.h; sourceTree = "<group>"; };
+		201628D81B14FDB600BBA2B9 /* MeshGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeshGenerator.cpp; sourceTree = "<group>"; };
+		201628D91B14FDB600BBA2B9 /* MeshGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeshGenerator.h; sourceTree = "<group>"; };
 		206D74791B0657270017477D /* ofxCv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxCv.h; sourceTree = "<group>"; };
 		206D747B1B0657270017477D /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		206D747F1B0657270017477D /* ETF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETF.h; sourceTree = "<group>"; };
@@ -1189,6 +1198,12 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				201628C11B11267C00BBA2B9 /* Puppet.cpp */,
 				201628C21B11267C00BBA2B9 /* Puppet.h */,
+				201628D21B14F8FA00BBA2B9 /* ControlPoint.cpp */,
+				201628D31B14F8FA00BBA2B9 /* ControlPoint.h */,
+				201628D51B14FA6000BBA2B9 /* OSCNamespace.cpp */,
+				201628D61B14FA6000BBA2B9 /* OSCNamespace.h */,
+				201628D81B14FDB600BBA2B9 /* MeshGenerator.cpp */,
+				201628D91B14FDB600BBA2B9 /* MeshGenerator.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1339,16 +1354,19 @@
 				201628351B0E4F0D00BBA2B9 /* ofxToggle.cpp in Sources */,
 				206D74AB1B0657270017477D /* Tracker.cpp in Sources */,
 				206D74AC1B0657270017477D /* Utilities.cpp in Sources */,
+				201628DA1B14FDB600BBA2B9 /* MeshGenerator.cpp in Sources */,
 				7A89022DA7E4AC74E590C7F1 /* ofxPuppet.cpp in Sources */,
 				8DE9AA8AD7FA49DE31F9E7DC /* ofxPuppetInteractive.cpp in Sources */,
 				E7161150A55218B0CD306C22 /* LinearAlgebra.cpp in Sources */,
 				201628BC1B0FCDB400BBA2B9 /* UdpSocket.cpp in Sources */,
+				201628D41B14F8FA00BBA2B9 /* ControlPoint.cpp in Sources */,
 				201628411B0E5BD100BBA2B9 /* ofxTriangleMesh.cpp in Sources */,
 				201628B71B0FCDB400BBA2B9 /* ofxOscMessage.cpp in Sources */,
 				2016282E1B0E4F0D00BBA2B9 /* ofxBaseGui.cpp in Sources */,
 				201628D01B13CD2700BBA2B9 /* tinyxmlerror.cpp in Sources */,
 				AA05652D2D87ADBBAB4BAE34 /* RigidMeshDeformer2D.cpp in Sources */,
 				201628311B0E4F0D00BBA2B9 /* ofxLabel.cpp in Sources */,
+				201628D71B14FA6000BBA2B9 /* OSCNamespace.cpp in Sources */,
 				E7307CC082182EDD5760474E /* TriangleMesh.cpp in Sources */,
 				201628BA1B0FCDB400BBA2B9 /* IpEndpointName.cpp in Sources */,
 				42E666654C926D5DEE52BA88 /* WmlExtTriangleUtils.cpp in Sources */,

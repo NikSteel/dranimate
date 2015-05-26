@@ -12,6 +12,7 @@
 #include "ofxXmlSettings.h"
 
 #include "Puppet.h"
+#include "MeshGenerator.h"
 
 class ofApp : public ofBaseApp
 {
@@ -29,18 +30,14 @@ public:
     void loadPuppet(string fn);
     
     Puppet newPuppet;
-    vector<Puppet> puppets;
     
     // mesh generation
     
     void findImageContours();
-    void generateMeshFromImage();
     void loadAndCleanupImage(string fn);
     
     int IMAGE_BASE_SIZE = 400;
     
-    ofPolyline line;
-    ofxTriangleMesh triangleMesh;
     ofxCvGrayscaleImage cvImage;
     ofxCv::ContourFinder contourFinder;
     
