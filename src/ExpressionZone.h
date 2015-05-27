@@ -4,14 +4,16 @@
 #include <iostream>
 #include <vector>
 
+#include "ofMain.h"
 #include "OSCNamespace.h"
 
-class ControlPoint {
+class ExpressionZone {
     
 public:
     
-    int index;
+    int meshIndex;
     vector<OSCNamespace> oscNamespaces;
+    ofVec2f userControlledDisplacement;
     
 };
 

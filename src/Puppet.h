@@ -16,7 +16,7 @@
 #include "ofxTriangleMesh.h"
 #include "ofxXmlSettings.h"
 
-#include "ControlPoint.h"
+#include "ExpressionZone.h"
 #include "OSCNamespace.h"
 
 class Puppet {
@@ -26,6 +26,7 @@ public:
     void load(string path);
     void save(string path);
     
+    void setImage(ofImage img);
     void setMesh(ofMesh m);
     
     void update();
@@ -33,21 +34,23 @@ public:
     
     void regenerateSubdivisionMesh();
     
-    void addControlPoint(int index, vector<OSCNamespace> namespaces);
+    void addExpressionZone(int index);
+    void removeExpressionZone(int index);
+    void addNamespaceToExpressionZone(int index, OSCNamespace namesp);
     
     // mesh & puppet
     
     ofMesh mesh, subdivided;
    	ofxPuppet puppet;
     ofxButterfly butterfly;
-    vector<ControlPoint> controlPoints;
+    vector<ExpressionZone> expressionZones;
     
     int subs = 2;
     
     // image
     
+    int IMAGE_BASE_SIZE = 400;
     ofImage image;
-    ofImage noAlphaImage;
     
 };
 

@@ -11,39 +11,37 @@ void Puppet::load(string path) {
     regenerateSubdivisionMesh();
     
     // load control points & osc settings
-    ofxXmlSettings controlPoints;
-    if(controlPoints.loadFile(path + "/controlPoints.xml")){
+    ofxXmlSettings expressionZones;
+    if(expressionZones.loadFile(path + "/expressionZones.xml")) {
         
-        int nControlPoints = controlPoints.getNumTags("controlPoint");
-        for(int i = 0; i < nControlPoints; i++) {
+        int nexpressionZones = expressionZones.getNumTags("expressionZone");
+        for(int i = 0; i < nexpressionZones; i++) {
             
-            controlPoints.pushTag("controlPoint", i);
+            expressionZones.pushTag("expressionZone", i);
             
-            int controlPointIndex = controlPoints.getValue("index", 0);
+            int expressionZoneIndex = expressionZones.getValue("meshIndex", 0);
             
-            vector<OSCNamespace> namespaces;
+            addExpressionZone(expressionZoneIndex);
             
-            int nNamespaces = controlPoints.getNumTags("oscNamespace");
+            int nNamespaces = expressionZones.getNumTags("oscNamespace");
             for(int j = 0; j < nNamespaces; j++) {
                 
-                controlPoints.pushTag("oscNamespace", j);
+                expressionZones.pushTag("oscNamespace", j);
                 
-                string message = controlPoints.getValue("message", "");
-                string controlType = controlPoints.getValue("controlType", "");
+                string message = expressionZones.getValue("message", "");
+                string controlType = expressionZones.getValue("controlType", "");
                 
                 OSCNamespace namesp;
                 namesp.message = message;
                 namesp.controlType = controlType;
                 
-                namespaces.push_back(namesp);
+                addNamespaceToExpressionZone(expressionZoneIndex, namesp);
                 
-                controlPoints.popTag();
+                expressionZones.popTag();
                 
             }
             
-            addControlPoint(controlPointIndex, namespaces);
-            
-            controlPoints.popTag();
+            expressionZones.popTag();
             
         }
         
@@ -66,34 +64,50 @@ void Puppet::save(string path) {
     image.saveImage(path + "/image.png");
     
     // control points
-    ofxXmlSettings controlPointsXML;
-    for(int i = 0; i < controlPoints.size(); i++){
+    ofxXmlSettings expressionZonesXML;
+    for(int i = 0; i < expressionZones.size(); i++){
         
-        controlPointsXML.addTag("controlPoint");
-        controlPointsXML.pushTag("controlPoint",i);
+        expressionZonesXML.addTag("expressionZone");
+        expressionZonesXML.pushTag("expressionZone",i);
         
-        controlPointsXML.addValue("index", controlPoints[i].index);
+        expressionZonesXML.addValue("meshIndex", expressionZones[i].meshIndex);
         
-        for(int j = 0; j < controlPoints[i].oscNamespaces.size(); j++) {
+        for(int j = 0; j < expressionZones[i].oscNamespaces.size(); j++) {
             
-            controlPointsXML.addTag("oscNamespace");
-            controlPointsXML.pushTag("oscNamespace",j);
+            expressionZonesXML.addTag("oscNamespace");
+            expressionZonesXML.pushTag("oscNamespace",j);
             
-            OSCNamespace namesp = controlPoints[i].oscNamespaces[j];
-            controlPointsXML.addValue("message", namesp.message);
-            controlPointsXML.addValue("controlType", namesp.controlType);
+            OSCNamespace namesp = expressionZones[i].oscNamespaces[j];
+            expressionZonesXML.addValue("message", namesp.message);
+            expressionZonesXML.addValue("controlType", namesp.controlType);
             
-            controlPointsXML.popTag();
+            expressionZonesXML.popTag();
             
         }
         
-        controlPointsXML.popTag();
+        expressionZonesXML.popTag();
         
     }
-    controlPointsXML.saveFile(path + "/controlPoints.xml");
+    expressionZonesXML.saveFile(path + "/expressionZones.xml");
     
     
     // todo: save matrices that svd calculates to allow near-instant loading of puppets
+    
+}
+
+void Puppet::setImage(ofImage img) {
+    
+    image = img;
+    
+    // scale down image to a good size for the mesh generator
+    
+    float whRatio = (float)image.width/(float)image.height;
+    if(image.width > image.height) {
+        image.resize(IMAGE_BASE_SIZE*whRatio, IMAGE_BASE_SIZE);
+    } else {
+        whRatio = (float)image.height/(float)image.width;
+        image.resize(IMAGE_BASE_SIZE, IMAGE_BASE_SIZE*whRatio);
+    }
     
 }
 
@@ -107,6 +121,13 @@ void Puppet::setMesh(ofMesh m) {
 }
 
 void Puppet::update() {
+    
+    // add displacements to puppet control points
+    for(int i = 0; i < expressionZones.size(); i++) {
+        puppet.setControlPoint(expressionZones[i].meshIndex,
+                               mesh.getVertex(expressionZones[i].meshIndex)+
+                               expressionZones[i].userControlledDisplacement);
+    }
     
     puppet.update();
     
@@ -128,7 +149,7 @@ void Puppet::draw(bool drawWireframe) {
     if(drawWireframe) {
         glLineWidth(1.0);
         ofSetColor(0,255,50);
-        subdivided.drawWireframe();
+        puppet.getDeformedMesh().drawWireframe();
     }
 
     // debug stuff
@@ -149,13 +170,38 @@ void Puppet::regenerateSubdivisionMesh() {
     
 }
 
-void Puppet::addControlPoint(int index, vector<OSCNamespace> namespaces) {
+void Puppet::addExpressionZone(int meshIndex) {
     
-    puppet.setControlPoint(index);
+    puppet.setControlPoint(meshIndex);
     
-    ControlPoint newControlPoint;
-    newControlPoint.index = index;
-    newControlPoint.oscNamespaces = namespaces;
-    controlPoints.push_back(newControlPoint);
+    ExpressionZone newExpressionZone;
+    newExpressionZone.meshIndex = meshIndex;
+    expressionZones.push_back(newExpressionZone);
+    
+}
+
+void Puppet::removeExpressionZone(int meshIndex) {
+    
+    // todo
+    
+}
+
+void Puppet::addNamespaceToExpressionZone(int meshIndex, OSCNamespace namesp) {
+    
+    bool foundexpressionZoneAtIndex = false;
+    
+    for(int i = 0; i < expressionZones.size(); i++) {
+        if(expressionZones[i].meshIndex == meshIndex) {
+            expressionZones[i].oscNamespaces.push_back(namesp);
+            foundexpressionZoneAtIndex = true;
+            break;
+        }
+    }
+    
+    // warn if an invalid index was given to us
+    
+    if(!foundexpressionZoneAtIndex) {
+        ofLog() << "ERROR: control point at index " << meshIndex << " doesn't exist!";
+    }
     
 }

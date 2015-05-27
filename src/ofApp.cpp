@@ -2,18 +2,10 @@
 
 void ofApp::setup() {
     
-    drawGui = true;
-    
-    imageSettingsGui.setup();
-    imageSettingsGui.add(imageThreshold.setup("image threshold", 254, 0, 255));
-    imageSettingsGui.add(invert.setup("invert", true));
-    
-    meshGeneratedGui.setup();
-    meshGeneratedGui.add(drawWireframe.setup("draw wireframe", true));
+    receiver.setup(8000);
+    mesher.setup();
     
     state = LOAD_IMAGE;
-    
-    receiver.setup(8000);
     
 }
 
@@ -27,23 +19,16 @@ void ofApp::update() {
             break;
             
         case IMAGE_SETTINGS:
-            
-            findImageContours();
-            
+            mesher.update();
             break;
             
         case MESH_GENERATED:
-            
-            newPuppet.update();
-            
             recieveOsc();
-            
+            newPuppet.update();
             break;
             
         case PUPPET_STAGE:
-            
             // todo: update all puppets and recieve osc
-            
             break;
             
     }
@@ -66,20 +51,10 @@ void ofApp::draw() {
     
         case IMAGE_SETTINGS:
         
-            // draw thresholded image
-            
-            ofSetColor(255,255,255);
-            cvImage.draw(0, 0);
-            
-            // draw contours found from the thresholded image
-            
-            ofSetColor(255, 0, 0);
-            contourFinder.draw();
+            mesher.draw();
             
             ofSetColor(255,255,255);
             ofDrawBitmapString("Press 'm' to generate mesh when ready", 300, 30);
-        
-            if(drawGui) imageSettingsGui.draw();
             
             break;
         
@@ -87,10 +62,13 @@ void ofApp::draw() {
             
             newPuppet.draw(drawWireframe);
             
+            ofSetColor(255, 0, 0);
+            ofCircle(selectedVertexPosition.x-2,
+                     selectedVertexPosition.y-2,
+                     4);
+            
             ofSetColor(255,255,255);
             ofDrawBitmapString("Press 'e' to export puppet", 300, 30);
-            
-            if(drawGui) meshGeneratedGui.draw();
             
             break;
             
@@ -118,7 +96,9 @@ void ofApp::keyReleased(int key) {
                 ofFileDialogResult openFileResult = ofSystemLoadDialog("Select an image:",true);
                 
                 if (openFileResult.bSuccess){
-                    loadAndCleanupImage(openFileResult.getPath());
+                    newPuppet.setImage(openFileResult.getPath());
+                    mesher.setImage(newPuppet.image);
+                    state = IMAGE_SETTINGS;
                 }
                 
             }
@@ -135,8 +115,7 @@ void ofApp::keyReleased(int key) {
             
             if(key == 'm') {
                 
-                MeshGenerator mesher;
-                newPuppet.setMesh(mesher.generateMesh(contourFinder));
+                newPuppet.setMesh(mesher.generateMesh());
                 
                 state = MESH_GENERATED;
                 
@@ -147,7 +126,14 @@ void ofApp::keyReleased(int key) {
         case MESH_GENERATED:
             
             if(key == 'e') {
-                exportCurrentPuppet();
+                
+                ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
+                
+                if (saveFileResult.bSuccess){
+                    string path = saveFileResult.getPath();
+                    newPuppet.save(path);
+                }
+                
             }
             
             if(key == 'w') {
@@ -163,7 +149,8 @@ void ofApp::keyReleased(int key) {
                 ofFileDialogResult openFileResult = ofSystemLoadDialog("Select a puppet directory:",true);
                 
                 if (openFileResult.bSuccess){
-                    loadPuppet(openFileResult.getPath());
+                    newPuppet.load(openFileResult.getPath());
+                    state = MESH_GENERATED;
                 }
                 
             }
@@ -175,64 +162,22 @@ void ofApp::keyReleased(int key) {
             
     }
     
-    if(key == 'g') {
-        drawGui = !drawGui;
-    }
-    
-}
-
-void ofApp::findImageContours() {
-    
-    // threshold image
-    
-    cvImage.setFromPixels(newPuppet.noAlphaImage.getPixelsRef().getChannel(1));
-    cvImage.threshold(imageThreshold);
-    if(invert) cvImage.invert();
-    
-    // find contours from thresholded image
-    
-    contourFinder.setMinArea(1000);
-    contourFinder.setMaxArea(640*480);
-    //contourFinder.setFindHoles(true);
-    contourFinder.setSortBySize(true);
-    
-    //contourFinder.setThreshold(100);
-    contourFinder.findContours(ofxCv::toCv(cvImage));
-    
-}
-
-void ofApp::loadAndCleanupImage(string fn) {
-    
-    newPuppet.image.loadImage(fn);
-    
-    // scale down image to a good size for the mesh generator
-    
-    float whRatio = (float)newPuppet.image.width/(float)newPuppet.image.height;
-    if(newPuppet.image.width > newPuppet.image.height) {
-        newPuppet.image.resize(IMAGE_BASE_SIZE*whRatio, IMAGE_BASE_SIZE);
-    } else {
-        whRatio = (float)newPuppet.image.height/(float)newPuppet.image.width;
-        newPuppet.image.resize(IMAGE_BASE_SIZE, IMAGE_BASE_SIZE*whRatio);
-    }
-    
-    newPuppet.noAlphaImage = newPuppet.image;
-    
-    // replace alpha channel with white
-    
-    for(int x = 0; x < newPuppet.noAlphaImage.width; x++) {
-        for(int y = 0; y < newPuppet.noAlphaImage.height; y++) {
-            ofColor c = newPuppet.noAlphaImage.getColor(x, y);
-            if(c.a == 0) {
-                newPuppet.noAlphaImage.setColor(x, y, ofColor(255,255,255));
-            }
-        }
-    }
-    
-    state = IMAGE_SETTINGS;
-    
 }
 
 void ofApp::recieveOsc() {
+    
+    
+    // todo:
+    // new method:
+    // recieve osc message: add to hashtable with message/value pairing
+    
+    
+    
+    
+    // this is crazy code.
+    // this should really be its own organized little class.
+    
+    // ... no, just pass in the values to a new function in Puppet.
     
     //http://talk.olab.io/t/osc-communication-between-maxmsp-and-openframeworks/121/3
     
@@ -251,13 +196,17 @@ void ofApp::recieveOsc() {
 		ofxOscMessage m;
 		receiver.getNextMessage(&m);
         
+        float value = m.getArgAsFloat(0);
+        
         // loop through all osc namespaces in each control point
         // ->holy moly! fix this code up!
         
-        for(int i = 0; i < newPuppet.controlPoints.size(); i++) {
+        for(int i = 0; i < newPuppet.expressionZones.size(); i++) {
             
-            ControlPoint controlPoint = newPuppet.controlPoints[i];
-            vector<OSCNamespace> namespaces = controlPoint.oscNamespaces;
+            ExpressionZone expressionZone = newPuppet.expressionZones[i];
+            vector<OSCNamespace> namespaces = expressionZone.oscNamespaces;
+            
+            ofVec3f expressionZonePosition = newPuppet.mesh.getVertex(expressionZone.meshIndex);
             
             for(int j = 0; j < namespaces.size(); j++) {
                 
@@ -265,20 +214,10 @@ void ofApp::recieveOsc() {
                 
                 if(namesp.message == m.getAddress()) {
                     
-                    ofLog() << "match for " << m.getAddress();
-                    
-                    float value = m.getArgAsFloat(0);
-                    
                     if(namesp.controlType == "x") {
-                        
+                        newPuppet.expressionZones[i].userControlledDisplacement.y = value;
                     } else if(namesp.controlType == "y") {
-                        ofLog() << "match for " << namesp.controlType;
-                        
-                        int controlPointIndex = controlPoint.index;
-                        ofVec2f controlPointPosition = newPuppet.mesh.getVertex(controlPointIndex);
-                        controlPointPosition.x += value;
-                        newPuppet.puppet.setControlPoint(controlPointIndex,
-                                                         controlPointPosition);
+                        newPuppet.expressionZones[i].userControlledDisplacement.x = value;
                     }
                 
                 }
@@ -291,28 +230,6 @@ void ofApp::recieveOsc() {
     
 }
 
-void ofApp::exportCurrentPuppet() {
-    
-    ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
-    
-    if (saveFileResult.bSuccess){
-        
-        string path = saveFileResult.getPath();
-        
-        newPuppet.save(path);
-        
-    }
-    
-}
-
-void ofApp::loadPuppet(string path) {
-    
-    newPuppet.load(path);
-    
-    state = MESH_GENERATED;
-
-}
-
 // lets us drag an image/puppet directory into the window to load it - very convenient
 
 void ofApp::dragEvent(ofDragInfo info) {
@@ -320,9 +237,13 @@ void ofApp::dragEvent(ofDragInfo info) {
     switch (state) {
             
         case LOAD_IMAGE:
+            
             if(info.files.size() > 0) {
-                loadAndCleanupImage(info.files.at(0));
+                newPuppet.setImage(info.files.at(0));
+                mesher.setImage(newPuppet.image);
+                state = IMAGE_SETTINGS;
             }
+            
             break;
             
         case IMAGE_SETTINGS:
@@ -332,14 +253,64 @@ void ofApp::dragEvent(ofDragInfo info) {
             break;
             
         case PUPPET_STAGE:
+            
             if(info.files.size() > 0) {
-                loadPuppet(info.files.at(0));
+                newPuppet.load(info.files.at(0));
+                state = MESH_GENERATED;
             }
+            
             break;
             
         default:
             break;
             
     }
+    
+}
+
+// mouse stuff for selecting vertices/adding skeleton joints/adding osc nodes/etc.
+
+void ofApp::mouseMoved(int x, int y) {
+    
+    selectedVertexPosition = ofVec3f(0,0,0);
+    
+    float closestDistance = MAXFLOAT;
+    int closestIndex = -1;
+    
+    ofMesh mesh = newPuppet.puppet.getDeformedMesh();
+    
+    for(int i = 0; i < mesh.getVertices().size(); i++) {
+        ofVec3f v = mesh.getVertex(i);
+        float d = v.distance(ofVec3f(x,y,0));
+        if(d < closestDistance) {
+            closestDistance = d;
+            closestIndex = i;
+        }
+    }
+    
+    if(closestIndex != -1) {
+        selectedVertexPosition = mesh.getVertex(closestIndex);
+        selectedVertexIndex = closestIndex;
+    }
+    
+}
+
+void ofApp::mouseDragged(int x, int y, int button) {
+    
+    
+    
+}
+
+void ofApp::mousePressed(int x, int y, int button) {
+    
+    if(state == MESH_GENERATED) {
+        newPuppet.addExpressionZone(selectedVertexIndex);
+    }
+    
+}
+
+void ofApp::mouseReleased(int x, int y, int button) {
+    
+    
     
 }

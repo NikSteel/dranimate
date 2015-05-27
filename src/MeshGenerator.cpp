@@ -1,6 +1,71 @@
 #include "MeshGenerator.h"
 
-ofMesh MeshGenerator::generateMesh(ofxCv::ContourFinder contourFinder) {
+void MeshGenerator::setup() {
+    
+    gui.setup();
+    gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
+    gui.add(invert.setup("invert", true));
+    
+}
+
+void MeshGenerator::update() {
+    
+    findImageContours();
+    
+}
+
+void MeshGenerator::draw() {
+    
+    ofSetColor(255,255,255);
+    cvImage.draw(0, 0);
+    
+    // draw contours found from the thresholded image
+    
+    ofSetColor(255, 0, 0);
+    contourFinder.draw();
+    
+    gui.draw();
+    
+}
+
+void MeshGenerator::findImageContours() {
+    
+    // threshold image
+    
+    cvImage.setFromPixels(noAlphaImage.getPixelsRef().getChannel(1));
+    cvImage.threshold(imageThreshold);
+    if(invert) cvImage.invert();
+    
+    // find contours from thresholded image
+    
+    contourFinder.setMinArea(1000);
+    contourFinder.setMaxArea(640*480);
+    //contourFinder.setFindHoles(true);
+    contourFinder.setSortBySize(true);
+    
+    //contourFinder.setThreshold(100);
+    contourFinder.findContours(ofxCv::toCv(cvImage));
+    
+}
+
+void MeshGenerator::setImage(ofImage img) {
+    
+    noAlphaImage = img;
+    
+    // replace alpha channel with white
+    
+    for(int x = 0; x < noAlphaImage.width; x++) {
+        for(int y = 0; y < noAlphaImage.height; y++) {
+            ofColor c = noAlphaImage.getColor(x, y);
+            if(c.a == 0) {
+                noAlphaImage.setColor(x, y, ofColor(255,255,255));
+            }
+        }
+    }
+    
+}
+
+ofMesh MeshGenerator::generateMesh() {
     
     // create a polyline with all of the contour points
     

@@ -26,20 +26,14 @@ public:
     void keyReleased(int key);
     void dragEvent(ofDragInfo dragInfo);
     
-    void exportCurrentPuppet();
-    void loadPuppet(string fn);
+    void mouseMoved(int x, int y);
+    void mouseDragged(int x, int y, int button);
+    void mousePressed(int x, int y, int button);
+    void mouseReleased(int x, int y, int button);
     
     Puppet newPuppet;
     
-    // mesh generation
-    
-    void findImageContours();
-    void loadAndCleanupImage(string fn);
-    
-    int IMAGE_BASE_SIZE = 400;
-    
-    ofxCvGrayscaleImage cvImage;
-    ofxCv::ContourFinder contourFinder;
+    MeshGenerator mesher;
     
     // osc
     
@@ -55,15 +49,11 @@ public:
     };
     State state;
     
-    // gui
+    // ui
     
-    bool drawGui;
+    bool drawWireframe;
     
-    ofxPanel imageSettingsGui;
-    ofxSlider<int> imageThreshold;
-    ofxToggle invert;
-    
-    ofxPanel meshGeneratedGui;
-    ofxToggle drawWireframe;
+    ofVec3f selectedVertexPosition;
+    int selectedVertexIndex;
     
 };
