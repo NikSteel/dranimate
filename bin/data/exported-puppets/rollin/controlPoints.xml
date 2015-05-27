@@ -1,0 +1,39 @@
+<controlPoint>
+    <meshIndex>142</meshIndex>
+    <oscNamespace>
+        <message>/aOSC/gyro/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>/aOSC/gyro/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+</controlPoint>
+<controlPoint>
+    <meshIndex>22</meshIndex>
+    <oscNamespace>
+        <message>/aOSC/gyro/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>/aOSC/gyro/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+</controlPoint>
+<controlPoint>
+    <meshIndex>167</meshIndex>
+    <oscNamespace>
+        <message>/aOSC/gyro/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>/aOSC/gyro/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+</controlPoint>
+<controlPoint>
+    <meshIndex>183</meshIndex>
+</controlPoint>
+<controlPoint>
+    <meshIndex>184</meshIndex>
+</controlPoint>

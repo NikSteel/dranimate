@@ -1,3 +1,8 @@
+//NOTE:
+//this should be called something other than Puppet.
+//an ofxPuppet is already called a puppet.
+//it should probably be called something like ControllablePuppet or DranimateCharacter or Actor or something...
+
 #ifndef __dranimate__Puppet__
 #define __dranimate__Puppet__
 
@@ -9,27 +14,42 @@
 #include "ofxButterfly.h"
 #include "ofxCv.h"
 #include "ofxTriangleMesh.h"
+#include "ofxXmlSettings.h"
+
+#include "ExpressionZone.h"
+#include "OSCNamespace.h"
 
 class Puppet {
     
 public:
     
+    void load(string path);
+    void save(string path);
+    
+    void setImage(ofImage img);
+    void setMesh(ofMesh m);
+    
     void update();
     void draw(bool drawWireframe);
     
-    void updateSubdivisionMesh();
+    void regenerateSubdivisionMesh();
+    
+    void addExpressionZone(int index);
+    void removeExpressionZone(int index);
+    void addNamespaceToExpressionZone(int index, OSCNamespace namesp);
     
     // mesh & puppet
     
     ofMesh mesh, subdivided;
-   	ofxPuppetInteractive puppet;
+   	ofxPuppet puppet;
     ofxButterfly butterfly;
-    vector<int> puppetControlIndices;
+    vector<ExpressionZone> expressionZones;
     
     int subs = 2;
     
     // image
     
+    int IMAGE_BASE_SIZE = 400;
     ofImage image;
     
 };

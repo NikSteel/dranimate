@@ -1,10 +1,3 @@
-/*possible things to try:
-  - proper depth testing for when limbs move
-    on top of each other
-  - restrict control point movement to avoid jelly 
-  -
-*/
-
 #pragma once
 
 #include "ofMain.h"
@@ -16,8 +9,10 @@
 #include "ofxCv.h"
 #include "ofxGui.h"
 #include "ofxOscReceiver.h"
+#include "ofxXmlSettings.h"
 
 #include "Puppet.h"
+#include "MeshGenerator.h"
 
 class ofApp : public ofBaseApp
 {
@@ -30,23 +25,15 @@ public:
     void recieveOsc();
     void keyReleased(int key);
     void dragEvent(ofDragInfo dragInfo);
-    void saveCurrentPuppet();
+    
+    void mouseMoved(int x, int y);
+    void mouseDragged(int x, int y, int button);
+    void mousePressed(int x, int y, int button);
+    void mouseReleased(int x, int y, int button);
     
     Puppet newPuppet;
-    vector<Puppet> puppets;
     
-    // mesh generation
-    
-    void findImageContours();
-    void generateMeshFromImage();
-    void loadAndCleanupImage(string fn);
-    
-    int IMAGE_BASE_SIZE = 400;
-    
-    ofPolyline line;
-    ofxTriangleMesh triangleMesh;
-    ofxCvGrayscaleImage cvImage;
-    ofxCv::ContourFinder contourFinder;
+    MeshGenerator mesher;
     
     // osc
     
@@ -57,19 +44,16 @@ public:
     enum State {
         LOAD_IMAGE,
         IMAGE_SETTINGS,
-        MESH_GENERATED
+        MESH_GENERATED,
+        PUPPET_STAGE
     };
     State state;
     
-    // gui
+    // ui
     
-    bool drawGui;
+    bool drawWireframe;
     
-    ofxPanel imageSettingsGui;
-    ofxSlider<int> imageThreshold;
-    ofxToggle invert;
-    
-    ofxPanel meshGeneratedGui;
-    ofxToggle drawWireframe;
+    ofVec3f selectedVertexPosition;
+    int selectedVertexIndex;
     
 };
