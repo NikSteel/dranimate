@@ -6,13 +6,17 @@
 
 #include "ofMain.h"
 #include "OSCNamespace.h"
+#include "LeapFingerController.h"
 
 class ExpressionZone {
     
 public:
     
     int meshIndex;
+    
     vector<OSCNamespace> oscNamespaces;
+    vector<LeapFingerController> leapFingerControllers;
+    
     ofVec2f userControlledDisplacement;
     
 };

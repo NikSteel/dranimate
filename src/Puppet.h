@@ -36,7 +36,8 @@ public:
     
     void addExpressionZone(int index);
     void removeExpressionZone(int index);
-    void addNamespaceToExpressionZone(int index, OSCNamespace namesp);
+    void addNamespaceToExpressionZone(int meshIndex, OSCNamespace namesp);
+    void addFingerControllerToExpressionZone(int meshIndex, LeapFingerController fingerController);
     
     // mesh & puppet
     

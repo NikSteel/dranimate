@@ -3,9 +3,11 @@
 void ofApp::setup() {
     
     receiver.setup(8000);
+    leap.open();
+    
     mesher.setup();
     
-    state = LOAD_IMAGE;
+    state = PUPPET_STAGE;
     
 }
 
@@ -24,6 +26,7 @@ void ofApp::update() {
             
         case MESH_GENERATED:
             recieveOsc();
+            recieveLeap();
             newPuppet.update();
             break;
             
@@ -45,7 +48,7 @@ void ofApp::draw() {
         case LOAD_IMAGE:
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Drag file into window or press 'l' to load an image", 300, 30);
+            ofDrawBitmapString("Create a puppet:\nDrag file into window or press 'l' to load an image", 300, 30);
             
             break;
     
@@ -54,7 +57,7 @@ void ofApp::draw() {
             mesher.draw();
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Press 'm' to generate mesh when ready", 300, 30);
+            ofDrawBitmapString("Adjust image settings and press 'm' to generate mesh when ready", 300, 30);
             
             break;
         
@@ -62,20 +65,21 @@ void ofApp::draw() {
             
             newPuppet.draw(drawWireframe);
             
-            ofSetColor(255, 0, 0);
-            ofCircle(selectedVertexPosition.x-2,
-                     selectedVertexPosition.y-2,
-                     4);
+            ofPushStyle();
+            ofNoFill();
+            ofSetColor(ofColor(0,155,255));
+            ofCircle(selectedVertexPosition, 5);
+            ofPopStyle();
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Press 'e' to export puppet", 300, 30);
+            ofDrawBitmapString("Press 'e' to export current puppet", 300, 30);
             
             break;
             
         case PUPPET_STAGE:
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Press 'l' to load a puppet", 300, 30);
+            ofDrawBitmapString("Press 'l' to load a puppet\nOr, press 's' to create a new puppet", 300, 30);
             
             // todo: draw all of the currently loaded puppets.
             
@@ -100,12 +104,6 @@ void ofApp::keyReleased(int key) {
                     mesher.setImage(newPuppet.image);
                     state = IMAGE_SETTINGS;
                 }
-                
-            }
-            
-            if(key == 's') {
-             
-                state = PUPPET_STAGE;
                 
             }
             
@@ -155,12 +153,63 @@ void ofApp::keyReleased(int key) {
                 
             }
             
+            if(key == 's') {
+                
+                state = LOAD_IMAGE;
+                
+            }
+            
             break;
             
         default:
             break;
             
     }
+    
+}
+
+void ofApp::recieveLeap() {
+    
+    simpleHands = leap.getSimpleHands();
+    
+    if( leap.isFrameNew() && simpleHands.size() ){
+        
+        leap.setMappingX(-230, 230, -ofGetWidth()/2, ofGetWidth()/2);
+		leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
+        leap.setMappingZ(-150, 150, -200, 200);
+        
+        for(int i = 0; i < simpleHands.size(); i++){
+            
+            for(int j = 0; j < simpleHands[i].fingers.size(); j++){
+                int fingerID = simpleHands[i].fingers[j].id%5;
+            }
+        }
+        
+        for(int i = 0; i < newPuppet.expressionZones.size(); i++) {
+            
+            ExpressionZone expressionZone = newPuppet.expressionZones[i];
+            vector<LeapFingerController> fingerControllers = expressionZone.leapFingerControllers;
+            
+            ofVec3f expressionZonePosition = newPuppet.mesh.getVertex(expressionZone.meshIndex);
+            
+            for(int j = 0; j < fingerControllers.size(); j++) {
+                
+                LeapFingerController fingerController = fingerControllers[j];
+            
+                int fingerX = simpleHands[0].fingers[fingerController.fingerID].pos.x;
+                int fingerY = -simpleHands[0].fingers[fingerController.fingerID].pos.y;
+                
+                newPuppet.expressionZones[i].userControlledDisplacement.x = fingerX;
+                newPuppet.expressionZones[i].userControlledDisplacement.y = fingerY;
+            
+                
+            }
+            
+        }
+        
+    }
+    
+    leap.markFrameAsOld();
     
 }
 

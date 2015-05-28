@@ -10,6 +10,7 @@
 #include "ofxGui.h"
 #include "ofxOscReceiver.h"
 #include "ofxXmlSettings.h"
+#include "ofxLeapMotion.h"
 
 #include "Puppet.h"
 #include "MeshGenerator.h"
@@ -23,6 +24,8 @@ public:
     void draw();
     
     void recieveOsc();
+    void recieveLeap();
+    
     void keyReleased(int key);
     void dragEvent(ofDragInfo dragInfo);
     
@@ -38,6 +41,11 @@ public:
     // osc
     
     ofxOscReceiver receiver;
+    
+    // leap
+    
+    ofxLeapMotion leap;
+	vector <ofxLeapMotionSimpleHand> simpleHands;
     
     // state
     

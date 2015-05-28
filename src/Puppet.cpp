@@ -10,7 +10,7 @@ void Puppet::load(string path) {
     puppet.setup(mesh);
     regenerateSubdivisionMesh();
     
-    // load control points & osc settings
+    // load control points and their oscnamespaces and leapfingercontollers
     ofxXmlSettings expressionZones;
     if(expressionZones.loadFile(path + "/expressionZones.xml")) {
         
@@ -18,10 +18,10 @@ void Puppet::load(string path) {
         for(int i = 0; i < nexpressionZones; i++) {
             
             expressionZones.pushTag("expressionZone", i);
-            
             int expressionZoneIndex = expressionZones.getValue("meshIndex", 0);
-            
             addExpressionZone(expressionZoneIndex);
+            
+            // load this expressionzone's OSC namespaces
             
             int nNamespaces = expressionZones.getNumTags("oscNamespace");
             for(int j = 0; j < nNamespaces; j++) {
@@ -41,6 +41,24 @@ void Puppet::load(string path) {
                 
             }
             
+            // load this expressionzone's leapfingerconrollers
+            
+            int nFingerControllers = expressionZones.getNumTags("leapFingerController");
+            for(int j = 0; j < nFingerControllers; j++) {
+                
+                expressionZones.pushTag("leapFingerController", j);
+                
+                int fingerID = expressionZones.getValue("fingerID", -1);
+                
+                LeapFingerController fingerController;
+                fingerController.fingerID = fingerID;
+                
+                addFingerControllerToExpressionZone(expressionZoneIndex, fingerController);
+                
+                expressionZones.popTag();
+                
+            }
+            
             expressionZones.popTag();
             
         }
@@ -50,8 +68,6 @@ void Puppet::load(string path) {
 }
 
 void Puppet::save(string path) {
-    
-    ofLog() << "making new directory at: " << path;
     
     // the folder itself
     string mkdirCommandString = "mkdir " + path;
@@ -91,7 +107,12 @@ void Puppet::save(string path) {
     expressionZonesXML.saveFile(path + "/expressionZones.xml");
     
     
+    // todo: save leapControl mappings
+    
     // todo: save matrices that svd calculates to allow near-instant loading of puppets
+    
+    
+    ofLog() << "puppet saved to  " << path << "!";
     
 }
 
@@ -201,7 +222,27 @@ void Puppet::addNamespaceToExpressionZone(int meshIndex, OSCNamespace namesp) {
     // warn if an invalid index was given to us
     
     if(!foundexpressionZoneAtIndex) {
-        ofLog() << "ERROR: control point at index " << meshIndex << " doesn't exist!";
+        ofLog() << "ERROR: expression zone with meshIndex " << meshIndex << " doesn't exist!";
     }
     
 }
+
+void Puppet::addFingerControllerToExpressionZone(int meshIndex, LeapFingerController fingerController) {
+    
+    bool foundexpressionZoneAtIndex = false;
+    
+    for(int i = 0; i < expressionZones.size(); i++) {
+        if(expressionZones[i].meshIndex == meshIndex) {
+            expressionZones[i].leapFingerControllers.push_back(fingerController);
+            foundexpressionZoneAtIndex = true;
+            break;
+        }
+    }
+    
+    // warn if an invalid index was given to us
+    
+    if(!foundexpressionZoneAtIndex) {
+        ofLog() << "ERROR: expression zone with meshIndex " << meshIndex << " doesn't exist!";
+    }
+
+};
