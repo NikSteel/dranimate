@@ -1,10 +1,8 @@
 ofxGui
 ofxOpenCv
 ofxOsc
-ofxXmlSettings
 ofxButterfly
 ofxCv
 ofxLeapMotion
-ofxObjLoader
 ofxPuppet
 ofxTriangleMesh
