@@ -225,8 +225,6 @@ ExpressionZone* Puppet::getExpressionZone(int meshIndex) {
         }
     }
     
-    ofLog() << "WARNING: getExpressionZone(): expression zone with meshIndex " << meshIndex << " doesn't exist! things may crash!";
-    
     return NULL;
     
 }

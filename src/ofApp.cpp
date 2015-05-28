@@ -83,10 +83,13 @@ void ofApp::draw() {
                 ofCircle(newPuppet.puppet.getDeformedMesh().getVertex(selectedVertexIndex), 5);
                 
                 vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
+                vertInfo += "Press 'o' to add osc mapping\n";
+                vertInfo += "Press 'l' to add leap mapping\n\n";
                 
                 ExpressionZone* eZone = newPuppet.getExpressionZone(selectedVertexIndex);
                 
                 if(eZone != NULL) {
+                    
                     vertInfo += "OSC namespaces:\n";
                     for(int i = 0; i < eZone->oscNamespaces.size(); i++) {
                         vertInfo += "    message:     " + eZone->oscNamespaces[i].message     + ":\n";
@@ -97,7 +100,7 @@ void ofApp::draw() {
                         vertInfo += "    fingerID: " + ofToString(eZone->leapFingerControllers[i].fingerID) + ":\n";
                     }
                 } else {
-                    vertInfo += "Selected vertex has no control point.";
+                    vertInfo += "Selected vertex has no expression zone.";
                 }
                 
             } else {
@@ -110,7 +113,7 @@ void ofApp::draw() {
             // instructions
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Press 'e' to export current puppet", 300, 30);
+            ofDrawBitmapString("Press 'e' to export current puppet\nPress 'w' to toggle rendering wireframe", 300, 30);
             
             break;
             
@@ -163,6 +166,7 @@ void ofApp::keyReleased(int key) {
 
         case MESH_GENERATED:
             
+            // export current puppet
             if(key == 'e') {
                 
                 ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
@@ -174,8 +178,32 @@ void ofApp::keyReleased(int key) {
                 
             }
             
+            // toggle wireframe rendering
             if(key == 'w') {
                 drawWireframe = !drawWireframe;
+            }
+            
+            // add osc mapping
+            if(key == 'o') {
+                
+                if(newPuppet.getExpressionZone(selectedVertexIndex) != NULL) {
+                    OSCNamespace namesp;
+                    namesp.message = ofSystemTextBoxDialog("osc message?");
+                    namesp.controlType = ofSystemTextBoxDialog("control type?");
+                    newPuppet.addNamespaceToExpressionZone(selectedVertexIndex, namesp);
+                }
+                
+            }
+            
+            // add leap controller mapping
+            if(key == 'l') {
+                
+                if(newPuppet.getExpressionZone(selectedVertexIndex) != NULL) {
+                    LeapFingerController fingerController;
+                    fingerController.fingerID = ofToInt(ofSystemTextBoxDialog("finger ID?"));
+                    newPuppet.addFingerControllerToExpressionZone(selectedVertexIndex, fingerController);
+                }
+                
             }
         
             break;
@@ -367,9 +395,7 @@ void ofApp::selectClosestVertex() {
         }
     }
     
-    if(closestIndex != -1) {
-        selectedVertexIndex = closestIndex;
-    }
+    selectedVertexIndex = closestIndex;
     
 }
 
@@ -389,7 +415,13 @@ void ofApp::mouseDragged(int x, int y, int button) {
 void ofApp::mousePressed(int x, int y, int button) {
     
     if(state == MESH_GENERATED && selectedVertexIndex != -1) {
-        newPuppet.addExpressionZone(selectedVertexIndex);
+        
+        ExpressionZone* eZone = newPuppet.getExpressionZone(selectedVertexIndex);
+        
+        if(eZone == NULL) {
+            newPuppet.addExpressionZone(selectedVertexIndex);
+        }
+        
     }
     
 }

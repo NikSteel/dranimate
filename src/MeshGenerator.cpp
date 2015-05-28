@@ -95,7 +95,7 @@ ofMesh MeshGenerator::generateMesh() {
             
             // angle constraint = 28
             // size constraint = -1 (don't constraint triangles by size);
-            triangleMesh.triangulate(lineRespaced, 20, -1);
+            triangleMesh.triangulate(lineRespaced, 28, -1);
             
         }
     }
