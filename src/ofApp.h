@@ -34,6 +34,8 @@ public:
     void mousePressed(int x, int y, int button);
     void mouseReleased(int x, int y, int button);
     
+    void selectClosestVertex();
+    
     Puppet newPuppet;
     
     MeshGenerator mesher;
@@ -61,7 +63,10 @@ public:
     
     bool drawWireframe;
     
-    ofVec3f selectedVertexPosition;
-    int selectedVertexIndex;
+    int mouseX, mouseY;
+    
+    const float MIN_SELECT_VERT_DIST = 50.0f;
+    
+    int selectedVertexIndex = -1;
     
 };

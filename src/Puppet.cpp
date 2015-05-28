@@ -10,7 +10,8 @@ void Puppet::load(string path) {
     puppet.setup(mesh);
     regenerateSubdivisionMesh();
     
-    // load control points and their oscnamespaces and leapfingercontollers
+    // load control points and their osc and leap mappings
+    
     ofxXmlSettings expressionZones;
     if(expressionZones.loadFile(path + "/expressionZones.xml")) {
         
@@ -88,6 +89,8 @@ void Puppet::save(string path) {
         
         expressionZonesXML.addValue("meshIndex", expressionZones[i].meshIndex);
         
+        // save OSC namespaces
+        
         for(int j = 0; j < expressionZones[i].oscNamespaces.size(); j++) {
             
             expressionZonesXML.addTag("oscNamespace");
@@ -101,15 +104,27 @@ void Puppet::save(string path) {
             
         }
         
+        // save leap finger control mappings
+        
+        for(int j = 0; j < expressionZones[i].leapFingerControllers.size(); j++) {
+            
+            expressionZonesXML.addTag("leapFingerController");
+            expressionZonesXML.pushTag("leapFingerController",j);
+            
+            LeapFingerController fingerController = expressionZones[i].leapFingerControllers[j];
+            expressionZonesXML.addValue("fingerID", fingerController.fingerID);
+            
+            expressionZonesXML.popTag();
+            
+        }
+        
         expressionZonesXML.popTag();
         
     }
     expressionZonesXML.saveFile(path + "/expressionZones.xml");
     
     
-    // todo: save leapControl mappings
-    
-    // todo: save matrices that svd calculates to allow near-instant loading of puppets
+    // todo: save data that svd calculates to allow near-instant loading of puppets
     
     
     ofLog() << "puppet saved to  " << path << "!";
@@ -201,6 +216,21 @@ void Puppet::addExpressionZone(int meshIndex) {
     
 }
 
+ExpressionZone* Puppet::getExpressionZone(int meshIndex) {
+    
+    for(int i = 0; i < expressionZones.size(); i++) {
+        if(expressionZones[i].meshIndex == meshIndex) {
+            return &expressionZones[i];
+            break;
+        }
+    }
+    
+    ofLog() << "WARNING: getExpressionZone(): expression zone with meshIndex " << meshIndex << " doesn't exist! things may crash!";
+    
+    return NULL;
+    
+}
+
 void Puppet::removeExpressionZone(int meshIndex) {
     
     // todo
@@ -209,40 +239,12 @@ void Puppet::removeExpressionZone(int meshIndex) {
 
 void Puppet::addNamespaceToExpressionZone(int meshIndex, OSCNamespace namesp) {
     
-    bool foundexpressionZoneAtIndex = false;
-    
-    for(int i = 0; i < expressionZones.size(); i++) {
-        if(expressionZones[i].meshIndex == meshIndex) {
-            expressionZones[i].oscNamespaces.push_back(namesp);
-            foundexpressionZoneAtIndex = true;
-            break;
-        }
-    }
-    
-    // warn if an invalid index was given to us
-    
-    if(!foundexpressionZoneAtIndex) {
-        ofLog() << "ERROR: expression zone with meshIndex " << meshIndex << " doesn't exist!";
-    }
+    getExpressionZone(meshIndex)->oscNamespaces.push_back(namesp);
     
 }
 
 void Puppet::addFingerControllerToExpressionZone(int meshIndex, LeapFingerController fingerController) {
     
-    bool foundexpressionZoneAtIndex = false;
-    
-    for(int i = 0; i < expressionZones.size(); i++) {
-        if(expressionZones[i].meshIndex == meshIndex) {
-            expressionZones[i].leapFingerControllers.push_back(fingerController);
-            foundexpressionZoneAtIndex = true;
-            break;
-        }
-    }
-    
-    // warn if an invalid index was given to us
-    
-    if(!foundexpressionZoneAtIndex) {
-        ofLog() << "ERROR: expression zone with meshIndex " << meshIndex << " doesn't exist!";
-    }
+    getExpressionZone(meshIndex)->leapFingerControllers.push_back(fingerController);
 
 };

@@ -25,9 +25,14 @@ void ofApp::update() {
             break;
             
         case MESH_GENERATED:
+            
+            selectClosestVertex();
+            
             recieveOsc();
             recieveLeap();
+            
             newPuppet.update();
+            
             break;
             
         case PUPPET_STAGE:
@@ -48,7 +53,7 @@ void ofApp::draw() {
         case LOAD_IMAGE:
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Create a puppet:\nDrag file into window or press 'l' to load an image", 300, 30);
+            ofDrawBitmapString("Create a puppet:\nDrag image file into window or press 'l' to load an image", 300, 30);
             
             break;
     
@@ -61,25 +66,60 @@ void ofApp::draw() {
             
             break;
         
-        case MESH_GENERATED:
+        case MESH_GENERATED: {
+            
+            // draw puppets
             
             newPuppet.draw(drawWireframe);
             
-            ofPushStyle();
-            ofNoFill();
-            ofSetColor(ofColor(0,155,255));
-            ofCircle(selectedVertexPosition, 5);
-            ofPopStyle();
+            // draw currently selected vertex info
+            
+            string vertInfo = "";
+            vertInfo += "Selected vertex info:\n";
+            
+            if(selectedVertexIndex != -1) {
+                
+                ofSetColor(ofColor(0,155,255));
+                ofCircle(newPuppet.puppet.getDeformedMesh().getVertex(selectedVertexIndex), 5);
+                
+                vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
+                
+                ExpressionZone* eZone = newPuppet.getExpressionZone(selectedVertexIndex);
+                
+                if(eZone != NULL) {
+                    vertInfo += "OSC namespaces:\n";
+                    for(int i = 0; i < eZone->oscNamespaces.size(); i++) {
+                        vertInfo += "    message:     " + eZone->oscNamespaces[i].message     + ":\n";
+                        vertInfo += "    controlType: " + eZone->oscNamespaces[i].controlType + ":\n";
+                    }
+                    vertInfo += "\nLeap controller mappings:\n";
+                    for(int i = 0; i < eZone->leapFingerControllers.size(); i++) {
+                        vertInfo += "    fingerID: " + ofToString(eZone->leapFingerControllers[i].fingerID) + ":\n";
+                    }
+                } else {
+                    vertInfo += "Selected vertex has no control point.";
+                }
+                
+            } else {
+                vertInfo += "No selected vertex.";
+            }
+            
+            ofSetColor(ofColor(0,200,255));
+            ofDrawBitmapString(vertInfo, 500, 100);
+            
+            // instructions
             
             ofSetColor(255,255,255);
             ofDrawBitmapString("Press 'e' to export current puppet", 300, 30);
             
             break;
             
+        }
+            
         case PUPPET_STAGE:
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Press 'l' to load a puppet\nOr, press 's' to create a new puppet", 300, 30);
+            ofDrawBitmapString("Press 'l' to load a puppet or drag puppet folder into window\nOr, press 's' to create a new puppet", 300, 30);
             
             // todo: draw all of the currently loaded puppets.
             
@@ -178,13 +218,6 @@ void ofApp::recieveLeap() {
 		leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
         leap.setMappingZ(-150, 150, -200, 200);
         
-        for(int i = 0; i < simpleHands.size(); i++){
-            
-            for(int j = 0; j < simpleHands[i].fingers.size(); j++){
-                int fingerID = simpleHands[i].fingers[j].id%5;
-            }
-        }
-        
         for(int i = 0; i < newPuppet.expressionZones.size(); i++) {
             
             ExpressionZone expressionZone = newPuppet.expressionZones[i];
@@ -201,7 +234,6 @@ void ofApp::recieveLeap() {
                 
                 newPuppet.expressionZones[i].userControlledDisplacement.x = fingerX;
                 newPuppet.expressionZones[i].userControlledDisplacement.y = fingerY;
-            
                 
             }
             
@@ -317,11 +349,9 @@ void ofApp::dragEvent(ofDragInfo info) {
     
 }
 
-// mouse stuff for selecting vertices/adding skeleton joints/adding osc nodes/etc.
-
-void ofApp::mouseMoved(int x, int y) {
+void ofApp::selectClosestVertex() {
     
-    selectedVertexPosition = ofVec3f(0,0,0);
+    // find vertex closest to cursor
     
     float closestDistance = MAXFLOAT;
     int closestIndex = -1;
@@ -330,17 +360,23 @@ void ofApp::mouseMoved(int x, int y) {
     
     for(int i = 0; i < mesh.getVertices().size(); i++) {
         ofVec3f v = mesh.getVertex(i);
-        float d = v.distance(ofVec3f(x,y,0));
-        if(d < closestDistance) {
+        float d = v.distance(ofVec3f(mouseX,mouseY,0));
+        if(d < closestDistance && d < MIN_SELECT_VERT_DIST) {
             closestDistance = d;
             closestIndex = i;
         }
     }
     
     if(closestIndex != -1) {
-        selectedVertexPosition = mesh.getVertex(closestIndex);
         selectedVertexIndex = closestIndex;
     }
+    
+}
+
+void ofApp::mouseMoved(int x, int y) {
+    
+    mouseX = x;
+    mouseY = y;
     
 }
 
@@ -352,7 +388,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
 void ofApp::mousePressed(int x, int y, int button) {
     
-    if(state == MESH_GENERATED) {
+    if(state == MESH_GENERATED && selectedVertexIndex != -1) {
         newPuppet.addExpressionZone(selectedVertexIndex);
     }
     

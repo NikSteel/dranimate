@@ -35,7 +35,9 @@ public:
     void regenerateSubdivisionMesh();
     
     void addExpressionZone(int index);
+    ExpressionZone* getExpressionZone(int index);
     void removeExpressionZone(int index);
+    
     void addNamespaceToExpressionZone(int meshIndex, OSCNamespace namesp);
     void addFingerControllerToExpressionZone(int meshIndex, LeapFingerController fingerController);
     
@@ -50,7 +52,7 @@ public:
     
     // image
     
-    int IMAGE_BASE_SIZE = 400;
+    const int IMAGE_BASE_SIZE = 400;
     ofImage image;
     
 };
