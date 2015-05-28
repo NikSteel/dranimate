@@ -1,6 +1,6 @@
 # dranimate
 
-[Puppet example](design/puppet-example.gif)
+![Puppet example](design/puppet-example.gif)
 
 Instructions:
 
