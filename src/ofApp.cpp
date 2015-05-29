@@ -138,6 +138,7 @@ void ofApp::keyReleased(int key) {
             
         case LOAD_IMAGE:
             
+            // load image to use for new puppet.
             if(key == 'l') {
                 
                 ofFileDialogResult openFileResult = ofSystemLoadDialog("Select an image:",true);
@@ -154,12 +155,10 @@ void ofApp::keyReleased(int key) {
             
         case IMAGE_SETTINGS:
             
+            // generate mesh
             if(key == 'm') {
-                
                 newPuppet.setMesh(mesher.generateMesh());
-                
                 state = MESH_GENERATED;
-                
             }
             
             break;
@@ -210,6 +209,7 @@ void ofApp::keyReleased(int key) {
             
         case PUPPET_STAGE:
             
+            // load puppet
             if(key == 'l') {
                 
                 ofFileDialogResult openFileResult = ofSystemLoadDialog("Select a puppet directory:",true);
@@ -221,10 +221,9 @@ void ofApp::keyReleased(int key) {
                 
             }
             
+            // for debugging. replace with something else soon
             if(key == 's') {
-                
                 state = LOAD_IMAGE;
-                
             }
             
             break;
@@ -232,6 +231,12 @@ void ofApp::keyReleased(int key) {
         default:
             break;
             
+    }
+    
+    // temporary back-to-beginning key (reset everything)
+    // replace with something else soon
+    if(key == 'r') {
+        state = PUPPET_STAGE;
     }
     
 }

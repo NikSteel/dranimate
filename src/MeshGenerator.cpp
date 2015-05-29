@@ -4,7 +4,10 @@ void MeshGenerator::setup() {
     
     gui.setup();
     gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
-    gui.add(invert.setup("invert", true));
+    gui.add(invertImage.setup("invert image", true));
+    gui.add(contourResampleAmt.setup("contour resample amount", 15, 1, 30));
+    gui.add(triangleAngleConstraint.setup("triangle angle constraint", 28, 0, 28));
+    gui.add(triangleSizeConstraint.setup("triangle size constraint", -1, -1, 100));
     
 }
 
@@ -34,7 +37,7 @@ void MeshGenerator::findImageContours() {
     
     cvImage.setFromPixels(noAlphaImage.getPixelsRef().getChannel(1));
     cvImage.threshold(imageThreshold);
-    if(invert) cvImage.invert();
+    if(invertImage) cvImage.invert();
     
     // find contours from thresholded image
     
@@ -85,7 +88,7 @@ ofMesh MeshGenerator::generateMesh() {
         lineRespaced.addVertex(lineRespaced[0]);
         
         // resample
-        lineRespaced = lineRespaced.getResampledBySpacing(20);
+        lineRespaced = lineRespaced.getResampledBySpacing(contourResampleAmt);
         
         // I want to make sure the first point and the last point are not the same, since triangle is unhappy:
         lineRespaced.getVertices().erase(lineRespaced.getVertices().begin());
@@ -93,9 +96,8 @@ ofMesh MeshGenerator::generateMesh() {
         // if we have a proper set of points, mesh them:
         if (lineRespaced.size() > 5){
             
-            // angle constraint = 28
-            // size constraint = -1 (don't constraint triangles by size);
-            triangleMesh.triangulate(lineRespaced, 28, -1);
+            // note: size constraint = -1 means don't constrain by size
+            triangleMesh.triangulate(lineRespaced, triangleAngleConstraint, triangleSizeConstraint);
             
         }
     }

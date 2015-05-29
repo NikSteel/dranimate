@@ -24,7 +24,10 @@ private:
     
     ofxPanel gui;
     ofxSlider<int> imageThreshold;
-    ofxToggle invert;
+    ofxToggle invertImage;
+    ofxSlider<int> contourResampleAmt;
+    ofxSlider<int> triangleAngleConstraint;
+    ofxSlider<int> triangleSizeConstraint;
     
 public:
     
