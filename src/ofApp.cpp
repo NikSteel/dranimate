@@ -247,9 +247,9 @@ void ofApp::recieveLeap() {
     
     if( leap.isFrameNew() && simpleHands.size() ){
         
-        leap.setMappingX(-230, 230, -ofGetWidth()/2, ofGetWidth()/2);
+        leap.setMappingX(-460, 100, -ofGetWidth()/2, ofGetWidth()/2);
 		leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
-        leap.setMappingZ(-150, 150, -200, 200);
+        leap.setMappingZ(-300, 0, -200, 200);
         
         for(int i = 0; i < newPuppet.expressionZones.size(); i++) {
             
@@ -258,6 +258,12 @@ void ofApp::recieveLeap() {
             
             ofVec3f expressionZonePosition = newPuppet.mesh.getVertex(expressionZone.meshIndex);
             
+            int handX = simpleHands[0].handPos.x;
+            int handY = -simpleHands[0].handPos.y;
+            
+            newPuppet.expressionZones[i].userControlledDisplacement.x = handX;
+            newPuppet.expressionZones[i].userControlledDisplacement.y = handY;
+            
             for(int j = 0; j < fingerControllers.size(); j++) {
                 
                 LeapFingerController fingerController = fingerControllers[j];
@@ -265,8 +271,8 @@ void ofApp::recieveLeap() {
                 int fingerX = simpleHands[0].fingers[fingerController.fingerID].pos.x;
                 int fingerY = -simpleHands[0].fingers[fingerController.fingerID].pos.y;
                 
-                newPuppet.expressionZones[i].userControlledDisplacement.x = fingerX;
-                newPuppet.expressionZones[i].userControlledDisplacement.y = fingerY;
+                newPuppet.expressionZones[i].userControlledDisplacement.x += fingerX-handX;
+                newPuppet.expressionZones[i].userControlledDisplacement.y += fingerY-handY;
                 
             }
             

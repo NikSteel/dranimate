@@ -18,6 +18,7 @@
 
 #include "ExpressionZone.h"
 #include "OSCNamespace.h"
+#include "Skeleton.h"
 
 class Puppet {
     
@@ -47,6 +48,7 @@ public:
    	ofxPuppet puppet;
     ofxButterfly butterfly;
     vector<ExpressionZone> expressionZones;
+    Skeleton skeleton;
     
     int subs = 2;
     
