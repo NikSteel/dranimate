@@ -10,33 +10,33 @@
 	<string>dranimate</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>1D61DF4F-F431-4CCF-A18D-7ED83841A190</key>
+		<key>37526DA425E5430474A14FBFA1BC4525160B5FC1</key>
+		<string>https://github.com/kylemcdonald/ofxCv.git</string>
+		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
 		<string>https://github.com/cmuartfab/dranimate.git</string>
-		<key>5F640E65-89A2-4CE7-925F-841E6CF3B73C</key>
-		<string>https://github.com/golanlevin/ofxPuppet.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>dranimate.xcodeproj/project.xcworkspace</string>
+	<string>dranimate.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>1D61DF4F-F431-4CCF-A18D-7ED83841A190</key>
+		<key>37526DA425E5430474A14FBFA1BC4525160B5FC1</key>
+		<string>../../../../../addons/ofxCv</string>
+		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
 		<string>../..</string>
-		<key>5F640E65-89A2-4CE7-925F-841E6CF3B73C</key>
-		<string>../../../../../addons/ofxPuppet</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/cmuartfab/dranimate.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>1D61DF4F-F431-4CCF-A18D-7ED83841A190</string>
+	<string>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>1D61DF4F-F431-4CCF-A18D-7ED83841A190</string>
+			<string>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</string>
 			<key>IDESourceControlWCCName</key>
 			<string>dranimate</string>
 		</dict>
@@ -44,9 +44,9 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>5F640E65-89A2-4CE7-925F-841E6CF3B73C</string>
+			<string>37526DA425E5430474A14FBFA1BC4525160B5FC1</string>
 			<key>IDESourceControlWCCName</key>
-			<string>ofxPuppet</string>
+			<string>ofxCv</string>
 		</dict>
 	</array>
 </dict>

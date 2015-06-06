@@ -61,7 +61,7 @@ void ofApp::draw() {
         case LOAD_IMAGE:
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Create a puppet:\nDrag image file into window or press 'l' to load an image", 300, 30);
+            ofDrawBitmapString("l   -   load an existing puppet\ndrag   -   load an existing puppet", 300, 30);
             
             break;
     
@@ -70,7 +70,7 @@ void ofApp::draw() {
             mesher.draw();
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Adjust image settings and press 'm' to generate mesh when ready", 300, 30);
+            ofDrawBitmapString("m   -   to generate mesh when ready", 300, 30);
             
             break;
         
@@ -91,8 +91,8 @@ void ofApp::draw() {
                 ofCircle(newPuppet.puppet.getDeformedMesh().getVertex(selectedVertexIndex), 5);
                 
                 vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
-                vertInfo += "Press 'o' to add osc mapping\n";
-                vertInfo += "Press 'l' to add leap mapping\n\n";
+                vertInfo += "o  -   to add osc mapping\n";
+                vertInfo += "l  -   to add leap mapping\n\n";
                 
                 ExpressionZone* eZone = newPuppet.getExpressionZone(selectedVertexIndex);
                 
@@ -121,7 +121,7 @@ void ofApp::draw() {
             // instructions
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Press 'e' to export current puppet\nPress 'w' to toggle rendering wireframe", 300, 30);
+            ofDrawBitmapString("e   -   to export current puppet\nw -   to toggle rendering wireframe", 300, 30);
             
             break;
             
@@ -130,7 +130,7 @@ void ofApp::draw() {
         case PUPPET_STAGE:
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("Press 'l' to load a puppet or drag puppet folder into window\nOr, press 's' to create a new puppet", 300, 30);
+            ofDrawBitmapString("l   -   to load a puppet or drag puppet folder into window\ns   -   to create a new puppet", 300, 30);
             
             // todo: draw all of the currently loaded puppets.
             
