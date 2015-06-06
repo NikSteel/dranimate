@@ -22,7 +22,6 @@
 		2006E5771B16625F00F1CCA7 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5721B16625F00F1CCA7 /* tinyxml.cpp */; };
 		2006E5781B16625F00F1CCA7 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5741B16625F00F1CCA7 /* tinyxmlerror.cpp */; };
 		2006E5791B16625F00F1CCA7 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5751B16625F00F1CCA7 /* tinyxmlparser.cpp */; };
-		2006E5A71B167BEF00F1CCA7 /* libLeap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2006E5851B16665000F1CCA7 /* libLeap.dylib */; };
 		2006E5A91B167C0900F1CCA7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2006E5A81B167C0900F1CCA7 /* Carbon.framework */; };
 		2006E5AA1B167C6200F1CCA7 /* ofxLeapMotion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5921B16665000F1CCA7 /* ofxLeapMotion.cpp */; };
 		2006E5AD1B176CC800F1CCA7 /* LeapFingerController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5AB1B176CC800F1CCA7 /* LeapFingerController.cpp */; };
@@ -40,8 +39,11 @@
 		2006E5F11B1A3E7800F1CCA7 /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5E31B1A3E7800F1CCA7 /* OscReceivedElements.cpp */; };
 		2006E5F21B1A3E7800F1CCA7 /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5E51B1A3E7800F1CCA7 /* OscTypes.cpp */; };
 		200DCBC01B233A95002EA7A3 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200DCBBE1B233A95002EA7A3 /* Utils.cpp */; };
+		200DCBC51B235E80002EA7A3 /* PuppetRecording.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200DCBC31B235E80002EA7A3 /* PuppetRecording.cpp */; };
 		2023EF517ED2D8B397511D4B /* Helpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9076967F8C54A04362C04AA /* Helpers.cpp */; };
 		204C0FA1A182022F87FA91F6 /* ofxButterfly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C426D533404EE2BDAFFF79B /* ofxButterfly.cpp */; };
+		20A036F21B2376A600DB19AE /* libLeap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20A036F11B2376A600DB19AE /* libLeap.dylib */; };
+		20A036F41B2376CB00DB19AE /* libOsc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20A036F31B2376CB00DB19AE /* libOsc.a */; };
 		250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE9C7160245B19131DAE6128 /* ofxCvColorImage.cpp */; };
 		26E235A9AC932B60BDC13FE7 /* WmlVector3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6BBFD96FC1BB9DB0796A10 /* WmlVector3.cpp */; };
 		283FE90DAD5D815E794904ED /* WmlGMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B43AC2EF9F562E761C2113D9 /* WmlGMatrix.cpp */; };
@@ -233,6 +235,11 @@
 		2006E5E61B1A3E7800F1CCA7 /* OscTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscTypes.h; sourceTree = "<group>"; };
 		200DCBBE1B233A95002EA7A3 /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
 		200DCBBF1B233A95002EA7A3 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		200DCBC31B235E80002EA7A3 /* PuppetRecording.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PuppetRecording.cpp; sourceTree = "<group>"; };
+		200DCBC41B235E80002EA7A3 /* PuppetRecording.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PuppetRecording.h; sourceTree = "<group>"; };
+		2081F89A1B236AFA00428DAF /* libOsc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOsc.a; path = bin/lib/osx/libOsc.a; sourceTree = "<group>"; };
+		20A036F11B2376A600DB19AE /* libLeap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libLeap.dylib; path = ../../../addons/ofxLeapMotion/libs/lib/osx/libLeap.dylib; sourceTree = "<group>"; };
+		20A036F31B2376CB00DB19AE /* libOsc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOsc.a; path = ../../../addons/ofxOsc/libs/oscpack/lib/osx/libOsc.a; sourceTree = "<group>"; };
 		2834D88A62CD23F3DE2C47D1 /* ofxButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxButton.h; path = ../../../addons/ofxGui/src/ofxButton.h; sourceTree = SOURCE_ROOT; };
 		2C33E47CE48B6E6B2796707B /* WmlBandedMatrix.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = WmlBandedMatrix.h; path = ../../../addons/ofxPuppet/libs/wml/src/WmlBandedMatrix.h; sourceTree = SOURCE_ROOT; };
 		2E411F99E3AB7154484B4F96 /* kmeans_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = kmeans_index.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/kmeans_index.h; sourceTree = SOURCE_ROOT; };
@@ -434,6 +441,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20A036F41B2376CB00DB19AE /* libOsc.a in Frameworks */,
+				20A036F21B2376A600DB19AE /* libLeap.dylib in Frameworks */,
 				E7F985F815E0DEA3003869B5 /* Accelerate.framework in Frameworks */,
 				E7E077E815D3B6510020DFD4 /* QTKit.framework in Frameworks */,
 				E4EB6799138ADC1D00A09F29 /* GLUT.framework in Frameworks */,
@@ -451,7 +460,6 @@
 				E4C2424810CC5A17004149E2 /* Cocoa.framework in Frameworks */,
 				E4C2424910CC5A17004149E2 /* IOKit.framework in Frameworks */,
 				E7E077E515D3B63C0020DFD4 /* CoreVideo.framework in Frameworks */,
-				2006E5A71B167BEF00F1CCA7 /* libLeap.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1279,6 +1287,9 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				20A036F31B2376CB00DB19AE /* libOsc.a */,
+				20A036F11B2376A600DB19AE /* libLeap.dylib */,
+				2081F89A1B236AFA00428DAF /* libOsc.a */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
@@ -1309,6 +1320,8 @@
 				2006E5BA1B190AA100F1CCA7 /* Skeleton.h */,
 				200DCBBE1B233A95002EA7A3 /* Utils.cpp */,
 				200DCBBF1B233A95002EA7A3 /* Utils.h */,
+				200DCBC31B235E80002EA7A3 /* PuppetRecording.cpp */,
+				200DCBC41B235E80002EA7A3 /* PuppetRecording.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1439,7 +1452,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -f ../../../libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/libfmodex.dylib\"; install_name_tool -change ./libfmodex.dylib @executable_path/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\nmkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\ncp -f \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n\ncp -f ../../../addons/ofxLeapMotion/libs/lib/osx/libLeap.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/libLeap.dylib\"; install_name_tool -change ./libLeap.dylib @executable_path/libLeap.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";";
+			shellScript = "cp -f ../../../libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/libfmodex.dylib\"; install_name_tool -change ./libfmodex.dylib @executable_path/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\nmkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\ncp -f \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n\ncp -f ../../../addons/ofxLeapMotion/libs/lib/osx/libLeap.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/libLeap.dylib\"; install_name_tool -change ./libLeap.dylib @executable_path/libLeap.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1509,6 +1522,7 @@
 				1A2136307B1DA29F5C6F6DC8 /* WmlLinearSystemExt.cpp in Sources */,
 				5B6793A95FECAD218508F2C6 /* WmlBandedMatrix.cpp in Sources */,
 				74A484052018B70D494D4DCF /* WmlBox2.cpp in Sources */,
+				200DCBC51B235E80002EA7A3 /* PuppetRecording.cpp in Sources */,
 				283FE90DAD5D815E794904ED /* WmlGMatrix.cpp in Sources */,
 				2006E5EC1B1A3E7800F1CCA7 /* IpEndpointName.cpp in Sources */,
 				77E2938E4F511CDE3B1712A3 /* WmlGVector.cpp in Sources */,
@@ -1806,7 +1820,10 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_50)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_51)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_52)",
+					../../../addons/ofxLeapMotion/libs/lib/osx,
+					"$(BUILT_PRODUCTS_DIR)lib/osx",
 					/Users/zachrispoli/Desktop/of_v0.8.4_osx_release/addons/ofxLeapMotion/libs/lib/osx,
+					/Users/zachrispoli/Desktop/of_v0.8.4_osx_release/addons/ofxOsc/libs/oscpack/lib/osx,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)Debug";
 				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxOsc/libs/oscpack/src/ip/posix ../../../addons/ofxOsc/libs/oscpack/src/osc ../../../addons/ofxOsc/libs ../../../addons/ofxOsc/libs/oscpack ../../../addons/ofxOsc/libs/oscpack/src ../../../addons/ofxOsc/libs/oscpack/src/ip/win32 ../../../addons/ofxOsc/libs/oscpack/src/ip";
@@ -1894,7 +1911,10 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_49)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_50)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_51)",
+					../../../addons/ofxLeapMotion/libs/lib/osx,
+					"$(BUILT_PRODUCTS_DIR)lib/osx",
 					/Users/zachrispoli/Desktop/of_v0.8.4_osx_release/addons/ofxLeapMotion/libs/lib/osx,
+					/Users/zachrispoli/Desktop/of_v0.8.4_osx_release/addons/ofxOsc/libs/oscpack/lib/osx,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxOsc/libs/oscpack/src/ip/posix ../../../addons/ofxOsc/libs/oscpack/src/osc ../../../addons/ofxOsc/libs ../../../addons/ofxOsc/libs/oscpack ../../../addons/ofxOsc/libs/oscpack/src ../../../addons/ofxOsc/libs/oscpack/src/ip/win32 ../../../addons/ofxOsc/libs/oscpack/src/ip";
