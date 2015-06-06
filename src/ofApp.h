@@ -63,10 +63,16 @@ public:
     
     bool drawWireframe;
     
-    int mouseX, mouseY;
-    
     const float MIN_SELECT_VERT_DIST = 50.0f;
-    
     int selectedVertexIndex = -1;
+    
+    enum TransformState {
+        NONE,
+        SCALE,
+        ROTATE
+    };
+    TransformState transformState;
+    
+    ofVec2f scaleFromPoint;
     
 };

@@ -8,6 +8,7 @@ void ofApp::setup() {
     mesher.setup();
     
     state = PUPPET_STAGE;
+    transformState = NONE;
     
 }
 
@@ -16,7 +17,7 @@ void ofApp::update() {
     ofShowCursor();
     
     switch(state) {
-            
+        
         case LOAD_IMAGE:
             break;
             
@@ -25,6 +26,13 @@ void ofApp::update() {
             break;
             
         case MESH_GENERATED:
+            
+            if(transformState == SCALE) {
+                newPuppet.scaleMesh(scaleFromPoint, ofVec2f(mouseX,mouseY));
+            }
+            if(transformState == ROTATE) {
+                newPuppet.rotateMesh(scaleFromPoint, ofVec2f(mouseX,mouseY));
+            }
             
             selectClosestVertex();
             
@@ -204,6 +212,20 @@ void ofApp::keyReleased(int key) {
                 }
                 
             }
+            
+            // scale from a point
+            if(key == 's') {
+                scaleFromPoint = ofVec2f(mouseX,mouseY);
+                newPuppet.beginScale();
+                transformState = SCALE;
+            }
+            
+            // rotate around a point
+            if(key == 'r') {
+                scaleFromPoint = ofVec2f(mouseX,mouseY);
+                newPuppet.beginRotate();
+                transformState = ROTATE;
+            }
         
             break;
             
@@ -242,6 +264,9 @@ void ofApp::keyReleased(int key) {
 }
 
 void ofApp::recieveLeap() {
+    
+    // this is crazy
+    // please make a class for this
     
     simpleHands = leap.getSimpleHands();
     
@@ -412,27 +437,36 @@ void ofApp::selectClosestVertex() {
 
 void ofApp::mouseMoved(int x, int y) {
     
-    mouseX = x;
-    mouseY = y;
-    
 }
 
 void ofApp::mouseDragged(int x, int y, int button) {
-    
-    
     
 }
 
 void ofApp::mousePressed(int x, int y, int button) {
     
-    if(state == MESH_GENERATED && selectedVertexIndex != -1) {
-        
-        ExpressionZone* eZone = newPuppet.getExpressionZone(selectedVertexIndex);
-        
-        if(eZone == NULL) {
-            newPuppet.addExpressionZone(selectedVertexIndex);
-        }
-        
+    switch(state) {
+            
+        case MESH_GENERATED:
+            if(selectedVertexIndex != -1 && transformState == NONE) {
+                
+                ExpressionZone* eZone = newPuppet.getExpressionZone(selectedVertexIndex);
+                
+                if(eZone == NULL) {
+                    newPuppet.addExpressionZone(selectedVertexIndex);
+                }
+                
+            }
+            
+            if(transformState != NONE) {
+                transformState = NONE;
+            }
+            
+            break;
+            
+        default:
+            break;
+            
     }
     
 }

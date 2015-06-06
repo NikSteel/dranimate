@@ -180,17 +180,93 @@ void Puppet::draw(bool drawWireframe) {
     subdivided.drawFaces();
     image.unbind();
     
-    // draw the wireframe as well
+    // draw the wireframe & control points as well
     
     if(drawWireframe) {
         glLineWidth(1.0);
         ofSetColor(0,255,50);
         puppet.getDeformedMesh().drawWireframe();
+        puppet.drawControlPoints();
     }
-
-    // debug stuff
     
-    puppet.drawControlPoints();
+    ofSetColor(255,255,0);
+    ofCircle(untransformedMesh.getCentroid().x,
+             untransformedMesh.getCentroid().y, 5);
+    
+}
+
+void Puppet::beginScale() {
+    
+    // make a copy of the origial mesh so we can reference those
+    // original vertex positions when scaling
+    
+    untransformedMesh = mesh;
+    
+}
+
+void Puppet::beginRotate() {
+    
+    //todo
+    
+}
+
+void Puppet::scaleMesh(ofVec2f origin, ofVec2f mouse) {
+    
+    /*
+    // scale mesh
+    
+    ofVec3f centroid = untransformedMesh.getCentroid();
+    ofVec3f mouseFromCentroid = mouse - centroid;
+    ofVec3f originFromCentroid = origin - centroid;
+    float scaleRatio = (mouseFromCentroid/originFromCentroid).length();
+    
+    for(int i = 0; i < mesh.getVertices().size(); i++) {
+        ofVec3f v = untransformedMesh.getVertex(i);
+        v *= scaleRatio;
+        mesh.setVertex(i, v);
+    }
+    
+    ofLog() << origin.distance(mouse);
+    
+    // reset puppet
+    
+    puppet.setup(mesh);
+    update();
+    
+    */
+    
+    
+    
+    // scale mesh
+    
+    float scaleDistance = mouse.distance(origin);
+    ofVec3f centroid = untransformedMesh.getCentroid();
+    
+    ofVec3f mouseFromCentroid = mouse - centroid;
+    ofVec3f originFromCentroid = origin - centroid;
+    float scaleRatio = (mouseFromCentroid/originFromCentroid).length();
+    
+    
+    for(int i = 0; i < mesh.getVertices().size(); i++) {
+        ofVec3f v = untransformedMesh.getVertex(i);
+        ofVec3f distFromCentroid = v - origin;
+        float d = distFromCentroid.length();
+        ofVec3f newPos = distFromCentroid.normalize() * (d * scaleRatio);
+        mesh.setVertex(i, origin+newPos);
+    }
+    
+    ofLog() << origin.distance(mouse);
+    
+    // reset puppet
+    puppet.setup(mesh);
+    update();
+    
+    
+}
+
+void Puppet::rotateMesh(ofVec2f origin, ofVec2f mouse) {
+ 
+    // todo
     
 }
 
@@ -198,7 +274,7 @@ void Puppet::regenerateSubdivisionMesh() {
     
     butterfly.topology_start(mesh);
     
-    for(int i = 0; i < subs; i++) {
+    for(int i = 0; i < MESH_SMOOTH_SUBDIVISIONS; i++) {
         butterfly.topology_subdivide_boundary();
     }
     

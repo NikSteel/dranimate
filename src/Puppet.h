@@ -33,6 +33,11 @@ public:
     void update();
     void draw(bool drawWireframe);
     
+    void beginScale();
+    void beginRotate();
+    void scaleMesh(ofVec2f origin, ofVec2f mouse);
+    void rotateMesh(ofVec2f origin, ofVec2f mouse);
+    
     void regenerateSubdivisionMesh();
     
     void addExpressionZone(int index);
@@ -44,13 +49,19 @@ public:
     
     // mesh & puppet
     
-    ofMesh mesh, subdivided;
-   	ofxPuppet puppet;
+    ofMesh mesh;
+    ofMesh subdivided;
     ofxButterfly butterfly;
+    
+    ofMesh untransformedMesh;
+    
+    const int MESH_SMOOTH_SUBDIVISIONS = 2;
+    
+    // puppeteering
+    
+    ofxPuppet puppet;
     vector<ExpressionZone> expressionZones;
     Skeleton skeleton;
-    
-    int subs = 2;
     
     // image
     
