@@ -7,6 +7,10 @@ void ofApp::setup() {
     
     mesher.setup();
     
+    leapFingersPositions.resize(5);
+    leapFingersCalibration.resize(5);
+    leapCalibrated = false;
+    
     state = PUPPET_STAGE;
     transformState = NONE;
     
@@ -43,6 +47,10 @@ void ofApp::update() {
             
             break;
             
+        case LEAP_CALIBRATION:
+            recieveLeap();
+            break;
+            
         case PUPPET_STAGE:
             // todo: update all puppets and recieve osc
             break;
@@ -61,7 +69,7 @@ void ofApp::draw() {
         case LOAD_IMAGE:
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("l   -   load an existing puppet\ndrag   -   load an existing puppet", 300, 30);
+            ofDrawBitmapString("l   -   Load an image to make a puppet with", ofGetWidth()-400, 30);
             
             break;
     
@@ -70,7 +78,7 @@ void ofApp::draw() {
             mesher.draw();
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("m   -   to generate mesh when ready", 300, 30);
+            ofDrawBitmapString("m   -   Generate mesh when ready", ofGetWidth()-400, 30);
             
             break;
         
@@ -91,22 +99,24 @@ void ofApp::draw() {
                 ofCircle(newPuppet.puppet.getDeformedMesh().getVertex(selectedVertexIndex), 5);
                 
                 vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
-                vertInfo += "o  -   to add osc mapping\n";
-                vertInfo += "l  -   to add leap mapping\n\n";
+                vertInfo += "o  -   Add osc mapping\n";
+                vertInfo += "l  -   Add leap mapping\n\n";
                 
                 ExpressionZone* eZone = newPuppet.getExpressionZone(selectedVertexIndex);
                 
                 if(eZone != NULL) {
                     
-                    vertInfo += "OSC namespaces:\n";
+                    if(eZone->oscNamespaces.size() > 0) vertInfo += "OSC namespaces:\n";
                     for(int i = 0; i < eZone->oscNamespaces.size(); i++) {
                         vertInfo += "    message:     " + eZone->oscNamespaces[i].message     + ":\n";
                         vertInfo += "    controlType: " + eZone->oscNamespaces[i].controlType + ":\n";
                     }
-                    vertInfo += "\nLeap controller mappings:\n";
+                    
+                    if(eZone->leapFingerControllers.size() > 0) vertInfo += "\nLeap controller mappings:\n";
                     for(int i = 0; i < eZone->leapFingerControllers.size(); i++) {
                         vertInfo += "    fingerID: " + ofToString(eZone->leapFingerControllers[i].fingerID) + ":\n";
                     }
+                    
                 } else {
                     vertInfo += "Selected vertex has no expression zone.";
                 }
@@ -116,21 +126,63 @@ void ofApp::draw() {
             }
             
             ofSetColor(ofColor(0,200,255));
-            ofDrawBitmapString(vertInfo, 500, 100);
+            ofDrawBitmapString(vertInfo, ofGetWidth()-350, 100);
+            
+            if(!leapCalibrated) {
+                ofSetColor(255,0,0);
+                ofDrawBitmapString("No leap calibration!", ofGetWidth()-350, 30);
+            }
             
             // instructions
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("e   -   to export current puppet\nw -   to toggle rendering wireframe", 300, 30);
+            ofDrawBitmapString("e    -   Export current puppet\nw    -   Toggle rendering wireframe\nn    -    Calibrate leap contoller", ofGetWidth()-350, 60);
             
             break;
             
         }
             
+        case LEAP_CALIBRATION:
+            
+            for(int i = 0; i < 5; i++) {
+                ofSetColor(255,255,0);
+                int x = leapFingersPositions[i].x;
+                int y = -leapFingersPositions[i].y;
+                ofCircle(x, y, 5);
+                ofDrawBitmapString(ofToString(i), x+5, y+5);
+            }
+            ofCircle(palmPosition.x, -palmPosition.y, 5);
+            ofDrawBitmapString("Palm", palmPosition.x+5, -palmPosition.y+5);
+            
+            if(leapCalibrated) {
+                for(int i = 0; i < 5; i++) {
+                    ofSetColor(0,255,255);
+                    int x = leapFingersCalibration[i].x;
+                    int y = -leapFingersCalibration[i].y;
+                    ofCircle(x, y, 5);
+                    ofDrawBitmapString(ofToString(i), x+5, y+5);
+                }
+                ofCircle(calibratedPalmPosition.x, -calibratedPalmPosition.y, 5);
+                ofDrawBitmapString("Palm", calibratedPalmPosition.x+5, -calibratedPalmPosition.y+5);
+            }
+            
+            if(!leapCalibrated) {
+                ofSetColor(255,0,0);
+                ofDrawBitmapString("No leap calibration!", ofGetWidth()-400, 30);
+                
+                ofSetColor(255,255,255);
+                ofDrawBitmapString("Place hand above the leap controller and position fingers in a resting position.", ofGetWidth()/2-300, ofGetHeight()-100);
+            }
+            
+            ofSetColor(255,255,255);
+            ofDrawBitmapString("c   -   Set calibration\nl   -   Load existing calibration\ns   -   Save current calibration\n\nd    -    Go back", ofGetWidth()-400, 60);
+            
+            break;
+            
         case PUPPET_STAGE:
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("l   -   to load a puppet or drag puppet folder into window\ns   -   to create a new puppet", 300, 30);
+            ofDrawBitmapString("l   -   Load a puppet\ns   -   Create a new puppet", ofGetWidth()-400, 30);
             
             // todo: draw all of the currently loaded puppets.
             
@@ -206,9 +258,17 @@ void ofApp::keyReleased(int key) {
             if(key == 'l') {
                 
                 if(newPuppet.getExpressionZone(selectedVertexIndex) != NULL) {
-                    LeapFingerController fingerController;
-                    fingerController.fingerID = ofToInt(ofSystemTextBoxDialog("finger ID?"));
-                    newPuppet.addFingerControllerToExpressionZone(selectedVertexIndex, fingerController);
+                    if(newPuppet.getExpressionZone(selectedVertexIndex)->leapFingerControllers.size() == 0) {
+                        LeapFingerController fingerController;
+                        fingerController.fingerID = 0;
+                        newPuppet.addFingerControllerToExpressionZone(selectedVertexIndex, fingerController);
+                    } else {
+                        int i = newPuppet.getExpressionZone(selectedVertexIndex)->leapFingerControllers[0].fingerID;
+                        newPuppet.getExpressionZone(selectedVertexIndex)->leapFingerControllers.pop_back();
+                        LeapFingerController fingerController;
+                        fingerController.fingerID = i+1;
+                        newPuppet.addFingerControllerToExpressionZone(selectedVertexIndex, fingerController);
+                    }
                 }
                 
             }
@@ -226,7 +286,34 @@ void ofApp::keyReleased(int key) {
                 newPuppet.beginRotate();
                 transformState = ROTATE;
             }
+            
+            // switch to leap calibration mode
+            if(key == 'c') {
+                state = LEAP_CALIBRATION;
+            }
         
+            break;
+            
+        case LEAP_CALIBRATION:
+            
+            // load leap calibration
+            if(key == 'l') {
+                //todo:load calibration
+            }
+            
+            // set leap calibration
+            if(key == 'c') {
+                for(int i = 0; i < 5; i++) {
+                    leapFingersCalibration[i] = leapFingersPositions[i];
+                }
+                calibratedPalmPosition = palmPosition;
+                leapCalibrated = true;
+            }
+            
+            if(key == 'd') {
+                state = MESH_GENERATED;
+            }
+            
             break;
             
         case PUPPET_STAGE:
@@ -261,6 +348,10 @@ void ofApp::keyReleased(int key) {
         state = PUPPET_STAGE;
     }
     
+    if(key == 'f') {
+        ofToggleFullscreen();
+    }
+    
 }
 
 void ofApp::recieveLeap() {
@@ -286,8 +377,15 @@ void ofApp::recieveLeap() {
             int handX = simpleHands[0].handPos.x;
             int handY = -simpleHands[0].handPos.y;
             
-            newPuppet.expressionZones[i].userControlledDisplacement.x = handX;
-            newPuppet.expressionZones[i].userControlledDisplacement.y = handY;
+            //newPuppet.expressionZones[i].userControlledDisplacement.x = handX;
+            //newPuppet.expressionZones[i].userControlledDisplacement.y = handY;
+            
+            palmPosition = ofVec3f(handX,handY,0);
+            for(int h = 0; h < 5; h++) {
+                leapFingersPositions[h] = ofVec3f(simpleHands[0].fingers[h].pos.x,
+                                                  simpleHands[0].fingers[h].pos.y,
+                                                  simpleHands[0].fingers[h].pos.z);
+            }
             
             for(int j = 0; j < fingerControllers.size(); j++) {
                 
@@ -296,8 +394,8 @@ void ofApp::recieveLeap() {
                 int fingerX = simpleHands[0].fingers[fingerController.fingerID].pos.x;
                 int fingerY = -simpleHands[0].fingers[fingerController.fingerID].pos.y;
                 
-                newPuppet.expressionZones[i].userControlledDisplacement.x += fingerX-handX;
-                newPuppet.expressionZones[i].userControlledDisplacement.y += fingerY-handY;
+                newPuppet.expressionZones[i].userControlledDisplacement.x = ofGetWidth()/3+fingerX-leapFingersCalibration[fingerController.fingerID].x;
+                newPuppet.expressionZones[i].userControlledDisplacement.y = ofGetHeight()/3+fingerY+leapFingersCalibration[fingerController.fingerID].y;
                 
             }
             

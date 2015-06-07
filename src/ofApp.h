@@ -48,6 +48,11 @@ public:
     
     ofxLeapMotion leap;
 	vector <ofxLeapMotionSimpleHand> simpleHands;
+    ofVec3f palmPosition;
+    ofVec3f calibratedPalmPosition;
+    vector<ofVec3f> leapFingersPositions;
+    vector<ofVec3f> leapFingersCalibration;
+    bool leapCalibrated;
     
     // state
     
@@ -55,7 +60,8 @@ public:
         LOAD_IMAGE,
         IMAGE_SETTINGS,
         MESH_GENERATED,
-        PUPPET_STAGE
+        PUPPET_STAGE,
+        LEAP_CALIBRATION
     };
     State state;
     

@@ -19,6 +19,10 @@ void MeshGenerator::update() {
 
 void MeshGenerator::draw() {
     
+    ofPushMatrix();
+    ofTranslate(ofGetWidth()/2  - cvImage.width/2,
+                ofGetHeight()/2 - cvImage.height/2);
+    
     ofSetColor(255,255,255);
     cvImage.draw(0, 0);
     
@@ -26,6 +30,8 @@ void MeshGenerator::draw() {
     
     ofSetColor(255, 0, 0);
     contourFinder.draw();
+    
+    ofPopMatrix();
     
     gui.draw();
     
