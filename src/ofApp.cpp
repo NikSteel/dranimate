@@ -136,7 +136,7 @@ void ofApp::draw() {
             // instructions
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("e    -   Export current puppet\nw    -   Toggle rendering wireframe\nn    -    Calibrate leap contoller", ofGetWidth()-350, 60);
+            ofDrawBitmapString("e    -   Export current puppet\nw    -   Toggle rendering wireframe\nc    -    Calibrate leap contoller", ofGetWidth()-350, 60);
             
             break;
             
