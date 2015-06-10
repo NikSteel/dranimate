@@ -12,10 +12,12 @@ class ExpressionZone {
     
 public:
     
+    bool isRoot;
+    
     int meshIndex;
     
     vector<OSCNamespace> oscNamespaces;
-    vector<LeapFingerController> leapFingerControllers;
+    int leapFingerID;
     
     ofVec2f userControlledDisplacement;
     

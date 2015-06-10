@@ -36,29 +36,16 @@ void Puppet::load(string path) {
                 namesp.message = message;
                 namesp.controlType = controlType;
                 
-                addNamespaceToExpressionZone(expressionZoneIndex, namesp);
+                getExpressionZone(expressionZoneIndex)->oscNamespaces.push_back(namesp);
                 
                 expressionZones.popTag();
                 
             }
             
-            // load this expressionzone's leapfingerconrollers
+            // load this expressionzone's leap mapping
             
-            int nFingerControllers = expressionZones.getNumTags("leapFingerController");
-            for(int j = 0; j < nFingerControllers; j++) {
-                
-                expressionZones.pushTag("leapFingerController", j);
-                
-                int fingerID = expressionZones.getValue("fingerID", -1);
-                
-                LeapFingerController fingerController;
-                fingerController.fingerID = fingerID;
-                
-                addFingerControllerToExpressionZone(expressionZoneIndex, fingerController);
-                
-                expressionZones.popTag();
-                
-            }
+            int fingerID = expressionZones.getValue("fingerID", -1);
+            getExpressionZone(expressionZoneIndex)->leapFingerID = fingerID;
             
             expressionZones.popTag();
             
@@ -104,19 +91,11 @@ void Puppet::save(string path) {
             
         }
         
-        // save leap finger control mappings
+        // save leap finger control mapping
+    
+        expressionZonesXML.addValue("fingerID", expressionZones[i].leapFingerID);
         
-        for(int j = 0; j < expressionZones[i].leapFingerControllers.size(); j++) {
-            
-            expressionZonesXML.addTag("leapFingerController");
-            expressionZonesXML.pushTag("leapFingerController",j);
-            
-            LeapFingerController fingerController = expressionZones[i].leapFingerControllers[j];
-            expressionZonesXML.addValue("fingerID", fingerController.fingerID);
-            
-            expressionZonesXML.popTag();
-            
-        }
+        expressionZonesXML.popTag();
         
         expressionZonesXML.popTag();
         
@@ -156,6 +135,16 @@ void Puppet::setMesh(ofMesh m) {
     
 }
 
+void Puppet::reset() {
+    
+    for(int i = 0; i < expressionZones.size(); i++) {
+        puppet.removeControlPoint(expressionZones[i].meshIndex);
+    }
+    
+    expressionZones.clear();
+    
+}
+
 void Puppet::update() {
     
     // add displacements to puppet control points
@@ -172,26 +161,36 @@ void Puppet::update() {
     
 }
 
-void Puppet::draw(bool drawWireframe) {
+void Puppet::draw(bool drawWireframe, bool transformActive) {
     
     // draw the subdivided mesh textured with our image
     
     image.bind();
+    if(drawWireframe) ofSetColor(100,100,200);
     subdivided.drawFaces();
     image.unbind();
     
     // draw the wireframe & control points as well
     
     if(drawWireframe) {
+        
         glLineWidth(1.0);
         ofSetColor(0,255,50);
         puppet.getDeformedMesh().drawWireframe();
-        puppet.drawControlPoints();
+        
+        for(int i = 0; i < expressionZones.size(); i++) {
+            ofSetColor(255, 255, 0);
+            ofCircle(puppet.getDeformedMesh().getVertex(expressionZones[i].meshIndex), 5);
+        }
+        
     }
     
-    ofSetColor(255,255,0);
-    ofCircle(untransformedMesh.getCentroid().x,
-             untransformedMesh.getCentroid().y, 5);
+    if(transformActive) {
+        
+        ofSetColor(255,255,0);
+        ofCircle(untransformedMesh.getCentroid().x,
+                 untransformedMesh.getCentroid().y, 5);
+    }
     
 }
 
@@ -211,31 +210,6 @@ void Puppet::beginRotate() {
 }
 
 void Puppet::scaleMesh(ofVec2f origin, ofVec2f mouse) {
-    
-    /*
-    // scale mesh
-    
-    ofVec3f centroid = untransformedMesh.getCentroid();
-    ofVec3f mouseFromCentroid = mouse - centroid;
-    ofVec3f originFromCentroid = origin - centroid;
-    float scaleRatio = (mouseFromCentroid/originFromCentroid).length();
-    
-    for(int i = 0; i < mesh.getVertices().size(); i++) {
-        ofVec3f v = untransformedMesh.getVertex(i);
-        v *= scaleRatio;
-        mesh.setVertex(i, v);
-    }
-    
-    ofLog() << origin.distance(mouse);
-    
-    // reset puppet
-    
-    puppet.setup(mesh);
-    update();
-    
-    */
-    
-    
     
     // scale mesh
     
@@ -257,10 +231,9 @@ void Puppet::scaleMesh(ofVec2f origin, ofVec2f mouse) {
     
     ofLog() << origin.distance(mouse);
     
-    // reset puppet
+    // recalc puppet
     puppet.setup(mesh);
     update();
-    
     
 }
 
@@ -288,6 +261,7 @@ void Puppet::addExpressionZone(int meshIndex) {
     
     ExpressionZone newExpressionZone;
     newExpressionZone.meshIndex = meshIndex;
+    newExpressionZone.leapFingerID = -1;
     expressionZones.push_back(newExpressionZone);
     
 }
@@ -311,14 +285,80 @@ void Puppet::removeExpressionZone(int meshIndex) {
     
 }
 
-void Puppet::addNamespaceToExpressionZone(int meshIndex, OSCNamespace namesp) {
+void Puppet::makeExpressionZoneRoot(int meshIndex) {
     
-    getExpressionZone(meshIndex)->oscNamespaces.push_back(namesp);
+    // get rid of current root
+    for(int i = 0; i < expressionZones.size(); i++) {
+        expressionZones[i].isRoot = false;
+    }
+    
+    // set new root
+    getExpressionZone(meshIndex)->isRoot = true;
     
 }
 
-void Puppet::addFingerControllerToExpressionZone(int meshIndex, LeapFingerController fingerController) {
+void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
     
-    getExpressionZone(meshIndex)->leapFingerControllers.push_back(fingerController);
+    for(int i = 0; i < expressionZones.size(); i++) {
+        
+        ExpressionZone expressionZone = expressionZones[i];
+        vector<OSCNamespace> namespaces = expressionZone.oscNamespaces;
+        
+        ofVec3f expressionZonePosition = mesh.getVertex(expressionZone.meshIndex);
+        
+        for(int j = 0; j < namespaces.size(); j++) {
+            
+            OSCNamespace namesp = namespaces[j];
+            
+            if(namesp.message == message.getAddress()) {
+                
+                if(namesp.controlType == "x") {
+                    expressionZones[i].userControlledDisplacement.y = value;
+                } else if(namesp.controlType == "y") {
+                    expressionZones[i].userControlledDisplacement.x = value;
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+}
 
-};
+void Puppet::recieveLeapData(vector<ofVec3f> leapFingersPositions,
+                             vector<ofVec3f> leapFingersCalibration,
+                             ofVec3f palmPosition,
+                             ofVec3f palmCalibration) {
+    
+    for(int i = 0; i < expressionZones.size(); i++) {
+        
+        if(expressionZones[i].leapFingerID != -1) {
+        
+            expressionZones[i].userControlledDisplacement.x =
+                ofGetWidth()/3+
+                leapFingersPositions[expressionZones[i].leapFingerID].x
+                -leapFingersCalibration[expressionZones[i].leapFingerID].x;
+            
+            expressionZones[i].userControlledDisplacement.y =
+                -ofGetHeight()/3+
+                leapFingersPositions[expressionZones[i].leapFingerID].y;
+                -leapFingersCalibration[expressionZones[i].leapFingerID].y;
+            
+        } else {
+            
+            expressionZones[i].userControlledDisplacement.x =
+            ofGetWidth()/3+
+            palmPosition.x
+            -palmCalibration.x;
+            
+            expressionZones[i].userControlledDisplacement.y =
+            -ofGetHeight()/3+
+            palmPosition.y;
+            -palmCalibration.y;
+            
+        }
+        
+    }
+    
+}

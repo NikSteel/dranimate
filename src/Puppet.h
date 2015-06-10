@@ -15,6 +15,7 @@
 #include "ofxCv.h"
 #include "ofxTriangleMesh.h"
 #include "ofxXmlSettings.h"
+#include "ofxOscReceiver.h"
 
 #include "ExpressionZone.h"
 #include "OSCNamespace.h"
@@ -30,8 +31,9 @@ public:
     void setImage(ofImage img);
     void setMesh(ofMesh m);
     
+    void reset();
     void update();
-    void draw(bool drawWireframe);
+    void draw(bool drawWireframe, bool transformActive);
     
     void beginScale();
     void beginRotate();
@@ -44,8 +46,13 @@ public:
     ExpressionZone* getExpressionZone(int index);
     void removeExpressionZone(int index);
     
-    void addNamespaceToExpressionZone(int meshIndex, OSCNamespace namesp);
-    void addFingerControllerToExpressionZone(int meshIndex, LeapFingerController fingerController);
+    void makeExpressionZoneRoot(int meshIndex);
+    
+    void recieveOSCMessage(ofxOscMessage message, float value);
+    void recieveLeapData(vector<ofVec3f> leapFingersPositions,
+                         vector<ofVec3f> leapFingersCalibration,
+                         ofVec3f palmPosition,
+                         ofVec3f palmCalibration);
     
     // mesh & puppet
     

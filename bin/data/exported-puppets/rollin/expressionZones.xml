@@ -1,30 +1,16 @@
 <expressionZone>
-    <meshIndex>23</meshIndex>
-    <leapFingerController>
-    	<fingerID>0</fingerID>
-    </leapFingerController>
+    <meshIndex>244</meshIndex>
+    <fingerID>-1</fingerID>
 </expressionZone>
 <expressionZone>
-    <meshIndex>140</meshIndex>
-    <leapFingerController>
-    	<fingerID>1</fingerID>
-    </leapFingerController>
+    <meshIndex>33</meshIndex>
+    <fingerID>-1</fingerID>
 </expressionZone>
 <expressionZone>
-    <meshIndex>62</meshIndex>
-    <leapFingerController>
-    	<fingerID>2</fingerID>
-    </leapFingerController>
+    <meshIndex>84</meshIndex>
+    <fingerID>-1</fingerID>
 </expressionZone>
 <expressionZone>
-    <meshIndex>102</meshIndex>
-    <leapFingerController>
-    	<fingerID>3</fingerID>
-    </leapFingerController>
-</expressionZone>
-<expressionZone>
-    <meshIndex>166</meshIndex>
-    <leapFingerController>
-    	<fingerID>4</fingerID>
-    </leapFingerController>
+    <meshIndex>134</meshIndex>
+    <fingerID>-1</fingerID>
 </expressionZone>

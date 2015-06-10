@@ -14,6 +14,7 @@
 
 #include "Puppet.h"
 #include "MeshGenerator.h"
+#include "PuppetRecorder.h"
 
 class ofApp : public ofBaseApp
 {
@@ -27,18 +28,19 @@ public:
     void recieveLeap();
     
     void keyReleased(int key);
-    void dragEvent(ofDragInfo dragInfo);
-    
-    void mouseMoved(int x, int y);
-    void mouseDragged(int x, int y, int button);
     void mousePressed(int x, int y, int button);
-    void mouseReleased(int x, int y, int button);
+    
+    void dragEvent(ofDragInfo dragInfo);
     
     void selectClosestVertex();
     
-    Puppet newPuppet;
+    // puppet
     
+    Puppet newPuppet;
     MeshGenerator mesher;
+    
+    bool recordingPuppet;
+    PuppetRecorder puppetRecorder;
     
     // osc
     
@@ -46,6 +48,7 @@ public:
     
     // leap
     
+    bool recievingLeap;
     ofxLeapMotion leap;
 	vector <ofxLeapMotionSimpleHand> simpleHands;
     ofVec3f palmPosition;
@@ -70,6 +73,7 @@ public:
     bool drawWireframe;
     
     const float MIN_SELECT_VERT_DIST = 50.0f;
+    int hoveredVertexIndex = -1;
     int selectedVertexIndex = -1;
     
     enum TransformState {

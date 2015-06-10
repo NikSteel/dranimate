@@ -24,7 +24,6 @@
 		2006E5791B16625F00F1CCA7 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5751B16625F00F1CCA7 /* tinyxmlparser.cpp */; };
 		2006E5A91B167C0900F1CCA7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2006E5A81B167C0900F1CCA7 /* Carbon.framework */; };
 		2006E5AA1B167C6200F1CCA7 /* ofxLeapMotion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5921B16665000F1CCA7 /* ofxLeapMotion.cpp */; };
-		2006E5AD1B176CC800F1CCA7 /* LeapFingerController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5AB1B176CC800F1CCA7 /* LeapFingerController.cpp */; };
 		2006E5BB1B190AA100F1CCA7 /* Skeleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5B91B190AA100F1CCA7 /* Skeleton.cpp */; };
 		2006E5E71B1A3E7800F1CCA7 /* ofxOscBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5C01B1A3E7800F1CCA7 /* ofxOscBundle.cpp */; };
 		2006E5E81B1A3E7800F1CCA7 /* ofxOscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2006E5C21B1A3E7800F1CCA7 /* ofxOscMessage.cpp */; };
@@ -48,6 +47,7 @@
 		28C0B56B7639C171DC107F0A /* WmlVector2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34BDB747F94F8F2068A33C3F /* WmlVector2.cpp */; };
 		311DF864378748129984EA1D /* Kalman.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77A1A692522820F935B58762 /* Kalman.cpp */; };
 		3847599660811290257E6264 /* WmlMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5CA28E7F5D965AB2AB9E84B /* WmlMath.cpp */; };
+		41561F341B27A28A009E51BA /* PuppetRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41561F321B27A28A009E51BA /* PuppetRecorder.cpp */; };
 		42E666654C926D5DEE52BA88 /* WmlExtTriangleUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B72E1A9F00944D3039BD5F75 /* WmlExtTriangleUtils.cpp */; };
 		45CC483A999BF1065A6B926C /* Distance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9DBD717072C35D324E101669 /* Distance.cpp */; };
 		483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78D67A00EB899FAC09430597 /* ofxLabel.cpp */; };
@@ -195,8 +195,6 @@
 		2006E5921B16665000F1CCA7 /* ofxLeapMotion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxLeapMotion.cpp; sourceTree = "<group>"; };
 		2006E5931B16665000F1CCA7 /* ofxLeapMotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxLeapMotion.h; sourceTree = "<group>"; };
 		2006E5A81B167C0900F1CCA7 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
-		2006E5AB1B176CC800F1CCA7 /* LeapFingerController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LeapFingerController.cpp; sourceTree = "<group>"; };
-		2006E5AC1B176CC800F1CCA7 /* LeapFingerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeapFingerController.h; sourceTree = "<group>"; };
 		2006E5B91B190AA100F1CCA7 /* Skeleton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Skeleton.cpp; sourceTree = "<group>"; };
 		2006E5BA1B190AA100F1CCA7 /* Skeleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Skeleton.h; sourceTree = "<group>"; };
 		2006E5BE1B1A3E7800F1CCA7 /* ofxOsc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxOsc.h; sourceTree = "<group>"; };
@@ -248,6 +246,8 @@
 		3D684FA8C199BEB47ABD48F5 /* face.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = face.hpp; path = ../../../addons/ofxButterfly/libs/butterfly/face.hpp; sourceTree = SOURCE_ROOT; };
 		402C8F4015542356D362AC88 /* Calibration.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = Calibration.cpp; path = ../../../addons/ofxCv/libs/ofxCv/src/Calibration.cpp; sourceTree = SOURCE_ROOT; };
 		411B454210BFF4972B782F85 /* cube.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cube.hpp; path = ../../../addons/ofxButterfly/libs/butterfly/cube.hpp; sourceTree = SOURCE_ROOT; };
+		41561F321B27A28A009E51BA /* PuppetRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PuppetRecorder.cpp; sourceTree = "<group>"; };
+		41561F331B27A28A009E51BA /* PuppetRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PuppetRecorder.h; sourceTree = "<group>"; };
 		452417865E4BFB10C9CBF8A2 /* internal.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = internal.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/internal.hpp; sourceTree = SOURCE_ROOT; };
 		4524C0ED0C2DD3E085CE3350 /* ObjectFinder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ObjectFinder.h; path = ../../../addons/ofxCv/libs/ofxCv/include/ofxCv/ObjectFinder.h; sourceTree = SOURCE_ROOT; };
 		45410DD818BB205166E67E89 /* any.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = any.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/any.h; sourceTree = SOURCE_ROOT; };
@@ -1304,14 +1304,14 @@
 				2006E55D1B16625000F1CCA7 /* ExpressionZone.h */,
 				2006E5631B16625000F1CCA7 /* OSCNamespace.cpp */,
 				2006E5641B16625000F1CCA7 /* OSCNamespace.h */,
-				2006E5AB1B176CC800F1CCA7 /* LeapFingerController.cpp */,
-				2006E5AC1B176CC800F1CCA7 /* LeapFingerController.h */,
 				2006E5B91B190AA100F1CCA7 /* Skeleton.cpp */,
 				2006E5BA1B190AA100F1CCA7 /* Skeleton.h */,
 				200DCBBE1B233A95002EA7A3 /* Utils.cpp */,
 				200DCBBF1B233A95002EA7A3 /* Utils.h */,
 				200DCBC31B235E80002EA7A3 /* PuppetRecording.cpp */,
 				200DCBC41B235E80002EA7A3 /* PuppetRecording.h */,
+				41561F321B27A28A009E51BA /* PuppetRecorder.cpp */,
+				41561F331B27A28A009E51BA /* PuppetRecorder.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1474,7 +1474,6 @@
 				D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */,
 				2006E56B1B16625000F1CCA7 /* OSCNamespace.cpp in Sources */,
 				CA3F5EB8F0FD890B08F1FD67 /* cubic_spline.cpp in Sources */,
-				2006E5AD1B176CC800F1CCA7 /* LeapFingerController.cpp in Sources */,
 				204C0FA1A182022F87FA91F6 /* ofxButterfly.cpp in Sources */,
 				C120F6399E54AF8BD94A8FBB /* cube.cpp in Sources */,
 				2006E5EB1B1A3E7800F1CCA7 /* ofxOscSender.cpp in Sources */,
@@ -1525,6 +1524,7 @@
 				2006E5E81B1A3E7800F1CCA7 /* ofxOscMessage.cpp in Sources */,
 				2006E5EF1B1A3E7800F1CCA7 /* OscOutboundPacketStream.cpp in Sources */,
 				26E235A9AC932B60BDC13FE7 /* WmlVector3.cpp in Sources */,
+				41561F341B27A28A009E51BA /* PuppetRecorder.cpp in Sources */,
 				D6A4A8EAF84D136E7139B1F0 /* WmlVector4.cpp in Sources */,
 				2006E5ED1B1A3E7800F1CCA7 /* NetworkingUtils.cpp in Sources */,
 				C923580B2C35039D972BA5F5 /* ofxTriangleMesh.cpp in Sources */,
