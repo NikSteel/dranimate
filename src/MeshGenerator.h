@@ -15,7 +15,9 @@ private:
     
     void findImageContours();
     
-    ofPolyline line;
+    ofMesh mesh;
+    
+    ofPolyline contourLine;
     ofxTriangleMesh triangleMesh;
     
     ofImage noAlphaImage;
@@ -37,7 +39,10 @@ public:
     
     void setImage(ofImage img);
     
-    ofMesh generateMesh();
+    void generateMesh();
+    
+    ofMesh getMesh();
+    ofPolyline getContour();
     
 };
 

@@ -12,8 +12,6 @@ class ExpressionZone {
     
 public:
     
-    bool isRoot;
-    
     int meshIndex;
     
     vector<OSCNamespace> oscNamespaces;

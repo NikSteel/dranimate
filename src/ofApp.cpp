@@ -2,67 +2,92 @@
 
 void ofApp::setup() {
     
+    // setup osc stuff
+    
     receiver.setup(8000);
-    leap.open();
+    
+    // setup the mesh generator
     
     mesher.setup();
     
-    recievingLeap = true;
+    // setup leap stuff
+    
+    leap.open();
     leapFingersPositions.resize(5);
     leapFingersCalibration.resize(5);
     leapCalibrated = false;
     
-    state = PUPPET_STAGE;
-    transformState = NONE;
-    
     // load a demo puppet
-    newPuppet.load("exported-puppets/demo-killingashkeboos/");
-    state = MESH_GENERATED;
+    
+    Puppet demoPuppet;
+    demoPuppet.load("exported-puppets/demo-killingashkeboos/");
+    puppets.push_back(demoPuppet);
+    
+    // setup ui stuff
+    
+    state = PUPPET_STAGE;
+    
+    hoveredVertexIndex = -1;
+    selectedVertexIndex = -1;
+    selectedPuppetIndex = -1;
+    
+    // setup animation recorder/exporter fbo
+    
+    recorder.allocate(ofGetWidth(), ofGetHeight());
+    
+    // setup clickdown menu stuff
+    
+    clickDownMenu.OnlyRightClick = true;
+    clickDownMenu.menu_name = "menu";
+    ofAddListener(ofxCDMEvent::MenuPressed, this, &ofApp::cmdEvent);
+    //clickDownMenu.RegisterFader("dummyfader", &brightness);
     
 }
 
 void ofApp::update() {
     
+    // this is because of that strange hidden cursor bug... ugh (see the github issue)
     ofShowCursor();
+    
+    // update which things show up on the click down menu
+    updateClickDownMenu();
     
     switch(state) {
         
-        case LOAD_IMAGE:
-            break;
-            
-        case IMAGE_SETTINGS:
+        case NEW_PUPPET_CREATION:
             mesher.update();
             break;
             
-        case MESH_GENERATED:
+        case PUPPET_STAGE:
             
-            if(transformState == SCALE) {
-                newPuppet.scaleMesh(scaleFromPoint, ofVec2f(mouseX,mouseY));
-            }
-            if(transformState == ROTATE) {
-                newPuppet.rotateMesh(scaleFromPoint, ofVec2f(mouseX,mouseY));
+            // update where the mouse is pointing
+            if(currentPuppet() != NULL && clickDownMenu.phase == PHASE_WAIT) {
+                hoveredVertexIndex = Utils::getClosestIndex(currentPuppet()->meshDeformer.getDeformedMesh(), mouseX, mouseY);
             }
             
-            selectClosestVertex();
-            
+            // recieve data from the real world
             recieveOsc();
-            if(recievingLeap) recieveLeap();
+            recieveLeap();
             
-            newPuppet.update();
+            // update all puppets
+            for(int i = 0; i < puppets.size(); i++) {
+                puppets[i].update();
+            }
+            
+            // update puppet recorder
             puppetRecorder.update();
+            if(recordingPuppet && currentPuppet() != NULL) {
+                puppetRecorder.recordPuppetFrame(currentPuppet());
+            }
             
-            if(recordingPuppet) {
-                puppetRecorder.recordPuppetFrame(newPuppet);
+            for(int i = 0; i < recordedPuppets.size(); i++) {
+                recordedPuppets[i].update();
             }
             
             break;
             
         case LEAP_CALIBRATION:
             recieveLeap();
-            break;
-            
-        case PUPPET_STAGE:
-            // todo: update all puppets and recieve osc
             break;
             
     }
@@ -76,14 +101,7 @@ void ofApp::draw() {
     
     switch(state) {
             
-        case LOAD_IMAGE:
-            
-            ofSetColor(255,255,255);
-            ofDrawBitmapString("l   -   Load an image to make a puppet with", ofGetWidth()-400, 30);
-            
-            break;
-    
-        case IMAGE_SETTINGS:
+        case NEW_PUPPET_CREATION:
         
             mesher.draw();
             
@@ -92,66 +110,60 @@ void ofApp::draw() {
             
             break;
         
-        case MESH_GENERATED: {
-            
-            // draw puppets
-            
-            newPuppet.draw(drawWireframe, transformState != NONE);
+        case PUPPET_STAGE: {
             
             // draw puppet recordings
             
-            puppetRecorder.draw();
+            for(int i = 0; i < recordedPuppets.size(); i++) {
+                recordedPuppets[i].draw();
+            }
+            
+            // draw puppets
+            
+            for(int i = 0; i < puppets.size(); i++) {
+                bool isSelected = i == selectedPuppetIndex;
+                puppets[i].draw(isSelected);
+            }
+            
+            // exporting puppet recording as mov
+            // temp code - needs to be somewhere else
+            /*
+            if(recordingPuppet) {
+                
+                // draw puppet to fbo
+                recorder.begin();
+                    ofSetColor(0, 0, 0);
+                    ofRect(0,0,ofGetWidth(),ofGetHeight());
+                    ofSetColor(255, 255, 255);
+                    currentPuppet()->draw(drawWireframe, transformState != NONE);
+                recorder.end();
+                
+                // save what we drew in the fbo to an image
+                ofImage i;
+                ofPixels p;
+                recorder.readToPixels(p);
+                i.setFromPixels(p);
+                i.saveImage("temp/tempimg"+ofToString(puppetRecorder.currentFrame)+".png");
+                
+            }*/
             
             // draw currently selected vertex info
             
-            string vertInfo = "";
-            vertInfo += "Selected vertex info:\n";
-            
-            if(selectedVertexIndex != -1) {
-                
+            if(currentPuppet() != NULL && selectedVertexIndex != -1) {
                 ofSetColor(ofColor(255,0,255));
-                ofCircle(newPuppet.puppet.getDeformedMesh().getVertex(selectedVertexIndex), 10);
+                ofCircle(currentPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex), 10);
                 ofSetColor(ofColor(255,255,0));
-                ofCircle(newPuppet.puppet.getDeformedMesh().getVertex(selectedVertexIndex), 5);
-                
-                vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
-                vertInfo += "o  -   Add osc mapping\n";
-                vertInfo += "l  -   Add leap mapping\n\n";
-                
-                ExpressionZone* eZone = newPuppet.getExpressionZone(selectedVertexIndex);
-                
-                if(eZone != NULL) {
-                    
-                    if(eZone->oscNamespaces.size() > 0) vertInfo += "OSC namespaces:\n";
-                    for(int i = 0; i < eZone->oscNamespaces.size(); i++) {
-                        vertInfo += "    message:     " + eZone->oscNamespaces[i].message     + ":\n";
-                        vertInfo += "    controlType: " + eZone->oscNamespaces[i].controlType + ":\n";
-                    }
-                    
-                    if(eZone->leapFingerID != -1) {
-                        vertInfo += "    fingerID: " + ofToString(eZone->leapFingerID) + ":\n";
-                    }
-                    
-                    if(eZone->isRoot) {
-                         vertInfo += "    This control point is the root. ";
-                    }
-                    
-                } else {
-                    vertInfo += "Selected vertex has no expression zone.";
-                }
-                
-            } else {
-                vertInfo += "No selected vertex.";
+                ofCircle(currentPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex), 5);
             }
             
             ofSetColor(ofColor(0,200,255));
-            ofDrawBitmapString(vertInfo, ofGetWidth()-350, 100);
+            ofDrawBitmapString(getSelectedVertexInfo(), ofGetWidth()-350, 160);
             
             // highlight the vertex that the mouse is hovered over
             
             if(hoveredVertexIndex != -1) {
                 ofSetColor(ofColor(0,155,255));
-                ofCircle(newPuppet.puppet.getDeformedMesh().getVertex(hoveredVertexIndex), 5);
+                ofCircle(currentPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex), 5);
             }
             
             if(!leapCalibrated) {
@@ -162,7 +174,7 @@ void ofApp::draw() {
             // instructions
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("e    -   Export current puppet\nw    -   Toggle rendering wireframe\nn    -    Calibrate leap contoller", ofGetWidth()-350, 60);
+            ofDrawBitmapString("c    -    Calibrate leap contoller\nr    -    Start/stop recording", ofGetWidth()-350, 60);
             
             break;
             
@@ -201,20 +213,75 @@ void ofApp::draw() {
             }
             
             ofSetColor(255,255,255);
-            ofDrawBitmapString("c   -   Set calibration\nl   -   Load existing calibration\ns   -   Save current calibration\n\nd    -    Go back", ofGetWidth()-400, 60);
-            
-            break;
-            
-        case PUPPET_STAGE:
-            
-            ofSetColor(255,255,255);
-            ofDrawBitmapString("l   -   Load a puppet\ns   -   Create a new puppet", ofGetWidth()-400, 30);
-            
-            // todo: draw all of the currently loaded puppets.
+            ofDrawBitmapString("c   -   Set calibration`", ofGetWidth()-400, 60);
             
             break;
             
     }
+    
+    clickDownMenu.draw();
+    
+    ofSetColor(255, 255, 255);
+    ofCircle(mouseX, mouseY, 2);
+    
+}
+
+int ofApp::getClosestPuppetIndex() {
+    
+    int closestPuppetIndex = -1;
+    
+    for(int p = 0; p < puppets.size(); p++) {
+        if(Utils::isPointInsideMesh(puppets[p].meshDeformer.getDeformedMesh(), mouseX,mouseY)) {
+            closestPuppetIndex = p;
+            break;
+        }
+    }
+    
+    return closestPuppetIndex;
+    
+}
+
+Puppet* ofApp::currentPuppet() {
+    
+    if(selectedPuppetIndex == -1) {
+        return NULL;
+    } else {
+        return &puppets[selectedPuppetIndex];
+    }
+    
+}
+
+string ofApp::getSelectedVertexInfo() {
+    
+    string vertInfo = "";
+    
+    if(currentPuppet() != NULL && selectedVertexIndex != -1) {
+        
+        vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
+        vertInfo += "o  -   Add osc mapping\n";
+        vertInfo += "l  -   Add leap mapping\n\n";
+        
+        ExpressionZone* eZone = currentPuppet()->getExpressionZone(selectedVertexIndex);
+        
+        if(eZone != NULL) {
+            
+            if(eZone->oscNamespaces.size() > 0) vertInfo += "OSC namespaces:\n";
+            for(int i = 0; i < eZone->oscNamespaces.size(); i++) {
+                vertInfo += "    message:     " + eZone->oscNamespaces[i].message     + ":\n";
+                vertInfo += "    controlType: " + eZone->oscNamespaces[i].controlType + ":\n";
+            }
+            
+            if(eZone->leapFingerID != -1) {
+                vertInfo += "    fingerID: " + ofToString(eZone->leapFingerID) + ":\n";
+            }
+            
+        } else {
+            vertInfo += "Selected vertex has no expression zone.";
+        }
+        
+    }
+    
+    return vertInfo;
     
 }
 
@@ -222,127 +289,55 @@ void ofApp::keyReleased(int key) {
     
     switch (state) {
             
-        case LOAD_IMAGE:
-            
-            // load image to use for new puppet.
-            if(key == 'l') {
-                
-                ofFileDialogResult openFileResult = ofSystemLoadDialog("Select an image:",true);
-                
-                if (openFileResult.bSuccess){
-                    newPuppet.reset();
-                    newPuppet.setImage(openFileResult.getPath());
-                    mesher.setImage(newPuppet.image);
-                    state = IMAGE_SETTINGS;
-                }
-                
-            }
-            
-            break;
-            
-        case IMAGE_SETTINGS:
+        case NEW_PUPPET_CREATION:
             
             // generate mesh
             if(key == 'm') {
-                newPuppet.setMesh(mesher.generateMesh());
-                state = MESH_GENERATED;
+                mesher.generateMesh();
+                newPuppet.setMesh(mesher.getMesh());
+                newPuppet.setContour(mesher.getContour());
+                puppets.push_back(newPuppet);
+                state = PUPPET_STAGE;
             }
             
             break;
 
-        case MESH_GENERATED:
-            
-            // export current puppet
-            if(key == 'e') {
-                
-                ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
-                
-                if (saveFileResult.bSuccess){
-                    string path = saveFileResult.getPath();
-                    newPuppet.save(path);
-                }
-                
-            }
-            
-            // toggle wireframe rendering
-            if(key == 'w') {
-                drawWireframe = !drawWireframe;
-            }
-            
-            // add osc mapping
-            if(key == 'o') {
-                
-                if(newPuppet.getExpressionZone(selectedVertexIndex) != NULL) {
-                    OSCNamespace namesp;
-                    namesp.message = ofSystemTextBoxDialog("osc message?");
-                    namesp.controlType = ofSystemTextBoxDialog("control type?");
-                    newPuppet.getExpressionZone(selectedVertexIndex)->oscNamespaces.push_back(namesp);
-
-                }
-                
-            }
-            
-            // add leap controller mapping
-            if(key == 'l') {
-                if(newPuppet.getExpressionZone(selectedVertexIndex) != NULL) {
-                    ExpressionZone *eZone = newPuppet.getExpressionZone(selectedVertexIndex);
-                    if(eZone->leapFingerID == 4) {
-                        eZone->leapFingerID = -1;
-                    } else {
-                        eZone->leapFingerID++;
-                    }
-                }
-            }
-            
-            // set vertex to root
-            if(key == 'r') {
-                if(newPuppet.getExpressionZone(selectedVertexIndex) != NULL) {
-                    newPuppet.makeExpressionZoneRoot(selectedVertexIndex);
-                }
-            }
-            
-            // scale from a point
-            if(key == 's') {
-                scaleFromPoint = ofVec2f(mouseX,mouseY);
-                newPuppet.beginScale();
-                transformState = SCALE;
-            }
-            
-            // rotate around a point
-            if(key == 'r') {
-                // todo: rotate
-                newPuppet.beginRotate();
-                transformState = ROTATE;
-            }
+        case PUPPET_STAGE:
             
             // switch to leap calibration mode
             if(key == 'c') {
                 state = LEAP_CALIBRATION;
             }
             
-            // toggle puppet leap control
+            // toggle puppet pause
             if(key == ' ') {
-                recievingLeap = !recievingLeap;
+                wholeScenePaused = !wholeScenePaused;
+                for(int i = 0; i < puppets.size(); i++) {
+                    puppets[i].isPaused = wholeScenePaused;
+                }
+                for(int i = 0; i < recordedPuppets.size(); i++) {
+                    recordedPuppets[i].isPaused = wholeScenePaused;
+                }
             }
             
             // toggle puppet recording
-            if(key == 'p') {
+            if(key == 'r') {
                 if(!recordingPuppet) {
                     puppetRecorder.setup();
                     recordingPuppet = true;
                 } else {
+                    // convert images to movie
+                    //ofLog() << ofSystem("./../../../data/movies/ffmpeg -framerate 30 -i ../../../data/temp/tempimg%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+ofGetTimestampString()+".mp4");
+                    //ofSystem("rm ../../../data/temp/*");
+                    
+                    recordedPuppets.push_back(puppetRecorder);
                     recordingPuppet = false;
                 }
             }
-        
+            
             break;
             
         case LEAP_CALIBRATION:
-            
-            // load leap calibration
-            if(key == 'l') {
-                //todo:load calibration
-            }
             
             // set leap calibration
             if(key == 'c') {
@@ -351,31 +346,8 @@ void ofApp::keyReleased(int key) {
                 }
                 calibratedPalmPosition = palmPosition;
                 leapCalibrated = true;
-            }
-            
-            // done, go back
-            if(key == 'd') {
-                state = MESH_GENERATED;
-            }
-            
-            break;
-            
-        case PUPPET_STAGE:
-            
-            // load puppet
-            if(key == 'l') {
                 
-                ofFileDialogResult openFileResult = ofSystemLoadDialog("Select a puppet directory:",true);
-                
-                if (openFileResult.bSuccess){
-                    newPuppet.load(openFileResult.getPath());
-                    state = MESH_GENERATED;
-                }
-                
-            }
-            
-            if(key == 's') {
-                state = LOAD_IMAGE;
+                state = PUPPET_STAGE;
             }
             
             break;
@@ -383,11 +355,6 @@ void ofApp::keyReleased(int key) {
         default:
             break;
             
-    }
-    
-    // back to menu
-    if(key == 'b') {
-        state = PUPPET_STAGE;
     }
     
     // toggle fullscreen
@@ -407,20 +374,22 @@ void ofApp::recieveLeap() {
 		leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
         leap.setMappingZ(-300, 0, -200, 200);
         
-        palmPosition = ofVec3f(simpleHands[0].handPos.x,
-                               -simpleHands[0].handPos.y,
+        palmPosition = ofVec3f(simpleHands[0].handPos.x*LEAP_SENSITIVITY,
+                               -simpleHands[0].handPos.y*LEAP_SENSITIVITY,
                                0);
         
         for(int i = 0; i < 5; i++) {
-            leapFingersPositions[i] = ofVec3f(simpleHands[0].fingers[i].pos.x,
-                                              -simpleHands[0].fingers[i].pos.y,
-                                              simpleHands[0].fingers[i].pos.z);
+            leapFingersPositions[i] = ofVec3f(simpleHands[0].fingers[i].pos.x*LEAP_SENSITIVITY,
+                                              -simpleHands[0].fingers[i].pos.y*LEAP_SENSITIVITY,
+                                              simpleHands[0].fingers[i].pos.z*LEAP_SENSITIVITY);
         }
         
-        newPuppet.recieveLeapData(leapFingersPositions,
-                                  leapFingersCalibration,
-                                  palmPosition,
-                                  calibratedPalmPosition);
+        for(int i = 0; i < puppets.size(); i++) {
+            puppets[i].recieveLeapData(leapFingersPositions,
+                                       leapFingersCalibration,
+                                       palmPosition,
+                                       calibratedPalmPosition);
+        }
         
     }
     
@@ -445,7 +414,9 @@ void ofApp::recieveOsc() {
         
         float value = message.getArgAsFloat(0);
         
-        newPuppet.recieveOSCMessage(message, value);
+        for(int i = 0; i < puppets.size(); i++) {
+            puppets[i].recieveOSCMessage(message, value);
+        }
         
 	}
     
@@ -457,101 +428,269 @@ void ofApp::dragEvent(ofDragInfo info) {
     
     switch (state) {
             
-        case LOAD_IMAGE:
+        case NEW_PUPPET_CREATION:
             
-            if(info.files.size() > 0) {
-                newPuppet.reset();
-                newPuppet.setImage(info.files.at(0));
-                mesher.setImage(newPuppet.image);
-                state = IMAGE_SETTINGS;
-            }
-            
-            break;
-            
-        case IMAGE_SETTINGS:
-            break;
-            
-        case MESH_GENERATED:
             break;
             
         case PUPPET_STAGE:
             
             if(info.files.size() > 0) {
-                newPuppet.reset();
-                newPuppet.load(info.files.at(0));
-                state = MESH_GENERATED;
-            }
-            
-            break;
-            
-        default:
-            break;
-            
-    }
-    
-}
-
-void ofApp::selectClosestVertex() {
-    
-    // find vertex closest to cursor
-    
-    float closestDistance = MAXFLOAT;
-    int closestIndex = -1;
-    
-    ofMesh mesh = newPuppet.puppet.getDeformedMesh();
-    
-    for(int i = 0; i < mesh.getVertices().size(); i++) {
-        ofVec3f v = mesh.getVertex(i);
-        float d = v.distance(ofVec3f(mouseX,mouseY,0));
-        if(d < closestDistance && d < MIN_SELECT_VERT_DIST) {
-            closestDistance = d;
-            closestIndex = i;
-        }
-    }
-    
-    hoveredVertexIndex = closestIndex;
-    
-}
-
-void ofApp::mousePressed(int x, int y, int button) {
-    
-    switch(state) {
-            
-        case MESH_GENERATED:
-            if(transformState == NONE) {
-                
-                if(hoveredVertexIndex == -1) {
+               
+                if(Utils::hasEnding(info.files.at(0), ".png") ||
+                   Utils::hasEnding(info.files.at(0), ".psd")) {
                     
-                    //user clicked away from mesh, so deselect the current vertex.
-                    selectedVertexIndex = -1;
+                     // image file to be used for puppet generation dragged into window
+                    
+                    newPuppet.reset();
+                    newPuppet.setImage(info.files.at(0));
+                    mesher.setImage(newPuppet.image);
+                    state = NEW_PUPPET_CREATION;
                     
                 } else {
                     
-                    ExpressionZone* eZone = newPuppet.getExpressionZone(hoveredVertexIndex);
+                    // new puppet - a puppet directory was dragged into window
                     
-                    if(eZone == NULL) {
-                        // if there's no expression zone where we clicked, add one.
-                        newPuppet.addExpressionZone(hoveredVertexIndex);
-                        selectedVertexIndex = hoveredVertexIndex;
-                    } else {
-                        // if there IS an expression zone there, select it.
-                        selectedVertexIndex = hoveredVertexIndex;
-                    }
+                    Puppet loadedPuppet;
+                    loadedPuppet.load(info.files.at(0));
+                    puppets.push_back(loadedPuppet);
+                    state = PUPPET_STAGE;
                     
                 }
                 
             }
             
-            // user clicked to finish a scale/rotation.
-            if(transformState != NONE) {
-                transformState = NONE;
-            }
-            
             break;
             
         default:
             break;
             
+    }
+    
+}
+
+void ofApp::mousePressed(int x, int y, int button) {
+    
+    if(clickDownMenu.phase == PHASE_WAIT) {
+    
+    int clickedPuppetIndex = getClosestPuppetIndex();
+    if(clickedPuppetIndex != selectedPuppetIndex) {
+        
+        // select a puppet if we clicked on it (or deselect the currently selected puppet)
+        
+        if(clickedPuppetIndex == -1) {
+            
+            // we didn't click a puppet. so deselect everything.
+            hoveredVertexIndex = -1;
+            selectedPuppetIndex = -1;
+            selectedVertexIndex = -1;
+            
+        } else {
+            
+            // put the newly selected puppet at the back of the list
+            // (this makes it so it draws last, putting it in front of the others.)
+            Puppet movedPuppet = puppets[clickedPuppetIndex];
+            puppets.erase(puppets.begin() + clickedPuppetIndex);
+            puppets.push_back(movedPuppet);
+            
+            // update what's actually selected
+            hoveredVertexIndex = -1;
+            selectedPuppetIndex = puppets.size()-1;
+            selectedVertexIndex = -1;
+            
+        }
+        
+    } else {
+        
+        // selected puppet didn't change, so select/deselect an expression zone
+        
+        if(hoveredVertexIndex == -1) {
+            
+            //user clicked away from mesh, so deselect the current vertex.
+            selectedVertexIndex = -1;
+            
+        } else {
+            
+            ExpressionZone* eZone = currentPuppet()->getExpressionZone(hoveredVertexIndex);
+            
+            if(eZone != NULL) {
+                // if there's an expression zone there, select it.
+                selectedVertexIndex = hoveredVertexIndex;
+            }
+            
+        }
+        
+    }
+        
+    }
+    
+}
+
+void ofApp::updateClickDownMenu() {
+    
+    // reset everything
+    clickDownMenu.UnRegisterMenu("load puppet");
+    clickDownMenu.UnRegisterMenu("create puppet");
+    clickDownMenu.UnRegisterMenu(" ");
+    clickDownMenu.UnRegisterMenu("add ezone");
+    clickDownMenu.UnRegisterMenu("add leap mapping");
+    clickDownMenu.UnRegisterMenu("add osc mapping");
+    clickDownMenu.UnRegisterMenu(" ");
+    clickDownMenu.UnRegisterMenu("pause/unpause puppet");
+    clickDownMenu.UnRegisterMenu("export puppet");
+    clickDownMenu.UnRegisterMenu("remove puppet");
+    clickDownMenu.UnRegisterMenu("reset puppet");
+    clickDownMenu.UnRegisterMenu(" ");
+    clickDownMenu.UnRegisterMenu("clear all");
+    clickDownMenu.UnRegisterMenu(" ");
+    
+    if(currentPuppet() == NULL) {
+        
+        // no puppet is selected
+        clickDownMenu.RegisterMenu("load puppet");
+        clickDownMenu.RegisterMenu("create puppet");
+        clickDownMenu.RegisterMenu(" ");
+        
+    } else {
+        
+        if(hoveredVertexIndex != -1 && selectedVertexIndex != hoveredVertexIndex) {
+            // a vertex is hovered over
+            clickDownMenu.RegisterMenu("add ezone");
+            clickDownMenu.RegisterMenu(" ");
+        }
+        
+        if(selectedVertexIndex != -1 && selectedVertexIndex == hoveredVertexIndex) {
+            // a vertex is selected
+            vector<string> BranchMenu_Color;
+            BranchMenu_Color.push_back("none");
+            BranchMenu_Color.push_back("0");
+            BranchMenu_Color.push_back("1");
+            BranchMenu_Color.push_back("2");
+            BranchMenu_Color.push_back("3");
+            BranchMenu_Color.push_back("4");
+            clickDownMenu.RegisterBranch("add leap mapping", &BranchMenu_Color);
+            
+            clickDownMenu.RegisterMenu("add osc mapping");
+            
+            clickDownMenu.RegisterMenu(" ");
+        }
+        
+        // a puppet is selected
+        clickDownMenu.RegisterMenu("pause/unpause puppet");
+        clickDownMenu.RegisterMenu("export puppet");
+        clickDownMenu.RegisterMenu("remove puppet");
+        clickDownMenu.RegisterMenu("reset puppet");
+        clickDownMenu.RegisterMenu(" ");
+        
+    }
+    
+    clickDownMenu.RegisterMenu("clear all");
+    clickDownMenu.RegisterMenu(" ");
+    
+}
+
+void ofApp::cmdEvent(ofxCDMEvent &ev){
+    
+    if (ev.message == "menu::load puppet") {
+        
+        ofFileDialogResult openFileResult = ofSystemLoadDialog("Select a puppet directory:",true);
+        
+        if (openFileResult.bSuccess){
+            Puppet loadedPuppet;
+            loadedPuppet.load(openFileResult.getPath());
+            puppets.push_back(loadedPuppet);
+            state = PUPPET_STAGE;
+        }
+        
+    }
+    if (ev.message == "menu::create puppet") {
+        
+        ofFileDialogResult openFileResult = ofSystemLoadDialog("Select an image:",true);
+        
+        if (openFileResult.bSuccess){
+            newPuppet.reset();
+            newPuppet.setImage(openFileResult.getPath());
+            mesher.setImage(newPuppet.image);
+            state = NEW_PUPPET_CREATION;
+        }
+        
+    }
+    if (ev.message == "menu::add ezone") {
+        
+        ExpressionZone* eZone = currentPuppet()->getExpressionZone(hoveredVertexIndex);
+        
+        if(eZone == NULL) {
+            // if there's no expression zone where we clicked, add one.
+            currentPuppet()->addExpressionZone(hoveredVertexIndex);
+            selectedVertexIndex = hoveredVertexIndex;
+        }
+        
+    }
+    if (ev.message == "menu::add leap mapping::none") {
+        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = -1;
+    }
+    if (ev.message == "menu::add leap mapping::0") {
+        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 0;
+    }
+    if (ev.message == "menu::add leap mapping::1") {
+        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 1;
+    }
+    if (ev.message == "menu::add leap mapping::2") {
+        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 2;
+    }
+    if (ev.message == "menu::add leap mapping::3") {
+        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 3;
+    }
+    if (ev.message == "menu::add leap mapping::4") {
+        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 4;
+    }
+    if (ev.message == "menu::add osc mapping") {
+        
+        if(currentPuppet()->getExpressionZone(selectedVertexIndex) != NULL) {
+            OSCNamespace namesp;
+            namesp.message = ofSystemTextBoxDialog("osc message?");
+            namesp.controlType = ofSystemTextBoxDialog("control type?");
+            currentPuppet()->getExpressionZone(selectedVertexIndex)->oscNamespaces.push_back(namesp);
+            
+        }
+        
+    }
+    if (ev.message == "menu::pause/unpause puppet") {
+        
+        currentPuppet()->isPaused = !currentPuppet()->isPaused;
+        
+    }
+    if (ev.message == "menu::export puppet") {
+     
+        ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
+        
+        if (saveFileResult.bSuccess){
+            string path = saveFileResult.getPath();
+            currentPuppet()->save(path);
+        }
+        
+    }
+    if (ev.message == "menu::remove puppet") {
+        
+        puppets.erase(puppets.begin() + selectedPuppetIndex);
+        
+        selectedPuppetIndex = -1;
+        selectedVertexIndex = -1;
+        hoveredVertexIndex = -1;
+        
+    }
+    if (ev.message == "menu::reset puppet") {
+        
+        currentPuppet()->removeAllExpressionZones();
+        
+    }
+    if (ev.message == "menu::clear all") {
+        
+        puppets.clear();
+        
+        selectedPuppetIndex = -1;
+        selectedVertexIndex = -1;
+        hoveredVertexIndex = -1;
+        
     }
     
 }
