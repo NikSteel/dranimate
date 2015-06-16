@@ -40,7 +40,8 @@ void ofApp::setup() {
     clickDownMenu.OnlyRightClick = true;
     clickDownMenu.menu_name = "menu";
     ofAddListener(ofxCDMEvent::MenuPressed, this, &ofApp::cmdEvent);
-    //clickDownMenu.RegisterFader("dummyfader", &brightness);
+    
+    Utils::loadImages();
     
 }
 
@@ -97,7 +98,7 @@ void ofApp::update() {
 void ofApp::draw() {
     
     ofSetColor(255);
-    ofBackground(0);
+    ofBackground((int)(backgroundBrightness*255));
     
     switch(state) {
             
@@ -150,10 +151,9 @@ void ofApp::draw() {
             // draw currently selected vertex info
             
             if(currentPuppet() != NULL && selectedVertexIndex != -1) {
-                ofSetColor(ofColor(255,0,255));
-                ofCircle(currentPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex), 10);
-                ofSetColor(ofColor(255,255,0));
-                ofCircle(currentPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex), 5);
+                float blinkAlpha = 150+sin(ofGetElapsedTimef()*10)*100;
+                ofSetColor(ofColor(255,0,100,blinkAlpha));
+                ofCircle(currentPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex), 8);
             }
             
             ofSetColor(ofColor(0,200,255));
@@ -258,8 +258,6 @@ string ofApp::getSelectedVertexInfo() {
     if(currentPuppet() != NULL && selectedVertexIndex != -1) {
         
         vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
-        vertInfo += "o  -   Add osc mapping\n";
-        vertInfo += "l  -   Add leap mapping\n\n";
         
         ExpressionZone* eZone = currentPuppet()->getExpressionZone(selectedVertexIndex);
         
@@ -540,6 +538,7 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("remove puppet");
     clickDownMenu.UnRegisterMenu("reset puppet");
     clickDownMenu.UnRegisterMenu(" ");
+    clickDownMenu.UnRegisterMenu("bg brightness");
     clickDownMenu.UnRegisterMenu("clear all");
     clickDownMenu.UnRegisterMenu(" ");
     
@@ -548,6 +547,9 @@ void ofApp::updateClickDownMenu() {
         // no puppet is selected
         clickDownMenu.RegisterMenu("load puppet");
         clickDownMenu.RegisterMenu("create puppet");
+        clickDownMenu.RegisterMenu(" ");
+        clickDownMenu.RegisterFader("bg brightness", &backgroundBrightness);
+        clickDownMenu.RegisterMenu("clear all");
         clickDownMenu.RegisterMenu(" ");
         
     } else {
@@ -582,9 +584,6 @@ void ofApp::updateClickDownMenu() {
         clickDownMenu.RegisterMenu(" ");
         
     }
-    
-    clickDownMenu.RegisterMenu("clear all");
-    clickDownMenu.RegisterMenu(" ");
     
 }
 

@@ -192,12 +192,19 @@ void Puppet::draw(bool isSelected) {
         
         // draw control points
         for(int i = 0; i < expressionZones.size(); i++) {
+            ofVec3f v = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].meshIndex);
+            
             ofSetColor(255, 255, 0);
-            ofCircle(meshDeformer.getDeformedMesh().getVertex(expressionZones[i].meshIndex), 5);
+            ofCircle(v, 7);
+            
+            if(expressionZones[i].leapFingerID != -1) {
+                ofSetColor(255, 255, 255);
+                Utils::hand.draw(v.x-7, v.y-7, 14, 14);
+            }
         }
         
         // draw contour
-        contour.draw();
+        //contour.draw();
         
     }
     
@@ -318,8 +325,6 @@ void Puppet::recieveLeapData(vector<ofVec3f> leapFingersPositions,
                     ofGetHeight()/3+
                     leapFingersPositions[expressionZones[i].leapFingerID].y
                     -leapFingersCalibration[expressionZones[i].leapFingerID].y;
-                
-                ofLog()<<leapFingersCalibration[expressionZones[i].leapFingerID].y;
                 
             } else {
                 

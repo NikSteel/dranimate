@@ -18,6 +18,10 @@ public:
     static bool isPointInsideMesh(ofMesh mesh, int x, int y);
 
     static int getClosestIndex(ofMesh mesh, int x, int y);
+    
+    static void loadImages();
+    
+    static ofImage hand;
 };
 
 #endif

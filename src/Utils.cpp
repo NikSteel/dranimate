@@ -64,3 +64,11 @@ int Utils::getClosestIndex(ofMesh mesh, int x, int y) {
     return closestIndex;
     
 }
+
+ofImage Utils::hand;
+
+void Utils::loadImages() {
+    
+    Utils::hand.loadImage("ui/hand.png");
+    
+}

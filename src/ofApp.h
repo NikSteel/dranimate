@@ -79,6 +79,8 @@ public:
     
     bool wholeScenePaused = false;
     
+    float backgroundBrightness;
+    
     int hoveredVertexIndex;
     int selectedVertexIndex;
     int selectedPuppetIndex;
