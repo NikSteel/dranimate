@@ -30,6 +30,7 @@ public:
     void recieveLeap();
     
     int getClosestPuppetIndex();
+    int getClosestRecordingIndex();
     Puppet *selectedPuppet();
     
     string getSelectedVertexInfo();
@@ -87,6 +88,8 @@ public:
     int hoveredVertexIndex;
     int selectedVertexIndex;
     int selectedPuppetIndex;
+    
+    int selectedRecordingIndex;
     
     // clickdown menu
     

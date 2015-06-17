@@ -55,6 +55,8 @@ void PuppetRecorder::exportAsMovie() {
     
     currentFrame = 0;
     
+    ofSystem("rm ../../../data/temp/*");
+    
     for(int i = 0; i < animationFrames.size(); i++) {
         currentFrame = i;
         
@@ -66,7 +68,7 @@ void PuppetRecorder::exportAsMovie() {
         draw();
         recorder.end();
         
-        // save what we drew in the fbo to an image
+        // save what we drew in the fbo to an ofimage
         ofImage img;
         ofPixels p;
         recorder.readToPixels(p);
@@ -77,7 +79,8 @@ void PuppetRecorder::exportAsMovie() {
     }
     
     // convert images to movie
-    ofLog() << ofSystem("./../../../data/movies/ffmpeg -framerate 30 -i ../../../data/temp/tempimg%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+ofGetTimestampString()+".mp4");
+    ofLog() << "creating movie from frames...";
+    ofSystem("./../../../data/movies/ffmpeg -framerate 30 -i ../../../data/temp/tempimg%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+ofGetTimestampString()+".mp4");
     ofSystem("rm ../../../data/temp/*");
     
 }
@@ -91,6 +94,12 @@ void PuppetRecorder::load(string path) {
 bool PuppetRecorder::isEmpty() {
     
     return animationFrames.size() == 0;
+    
+}
+
+ofMesh PuppetRecorder::getCurrentMesh() {
+    
+    return animationFrames[currentFrame];
     
 }
 

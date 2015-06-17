@@ -24,6 +24,8 @@ public:
     void nextFrame();
     bool isEmpty();
     
+    ofMesh getCurrentMesh();
+    
     bool imageLoaded;
     ofImage image;
     

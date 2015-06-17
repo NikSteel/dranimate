@@ -227,6 +227,21 @@ int ofApp::getClosestPuppetIndex() {
     
 }
 
+int ofApp::getClosestRecordingIndex() {
+    
+    int closestRecordingIndex = -1;
+    
+    for(int p = 0; p < recordedPuppets.size(); p++) {
+        if(Utils::isPointInsideMesh(recordedPuppets[p].getCurrentMesh(), mouseX,mouseY)) {
+            closestRecordingIndex = p;
+            break;
+        }
+    }
+    
+    return closestRecordingIndex;
+    
+}
+
 Puppet* ofApp::selectedPuppet() {
     
     if(selectedPuppetIndex == -1) {
@@ -310,7 +325,6 @@ void ofApp::keyReleased(int key) {
                     puppetRecorder.setup();
                     recordingPuppet = true;
                 } else {
-                    puppetRecorder.exportAsMovie();
                     recordedPuppets.push_back(puppetRecorder);
                     recordingPuppet = false;
                 }
@@ -453,6 +467,10 @@ void ofApp::mousePressed(int x, int y, int button) {
     
     if(clickDownMenu.phase == PHASE_WAIT) {
     
+    if(button == 2) {
+        selectedRecordingIndex = getClosestRecordingIndex();
+    }
+        
     int clickedPuppetIndex = getClosestPuppetIndex();
     if(clickedPuppetIndex != selectedPuppetIndex) {
         
@@ -529,6 +547,8 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("remove puppet");
     clickDownMenu.UnRegisterMenu("reset puppet");
     clickDownMenu.UnRegisterMenu(" ");
+    clickDownMenu.UnRegisterMenu("export as mov");
+    clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("bg brightness");
     clickDownMenu.UnRegisterMenu("clear all");
     clickDownMenu.UnRegisterMenu(" ");
@@ -576,6 +596,11 @@ void ofApp::updateClickDownMenu() {
         clickDownMenu.RegisterMenu("reset puppet");
         clickDownMenu.RegisterMenu(" ");
         
+    }
+    
+    if(selectedRecordingIndex != -1) {
+        clickDownMenu.RegisterMenu("export as mov");
+        clickDownMenu.RegisterMenu(" ");
     }
     
 }
@@ -679,6 +704,11 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     if (ev.message == "menu::reset puppet") {
         
         selectedPuppet()->removeAllExpressionZones();
+        
+    }
+    if (ev.message == "menu::export as mov") {
+        
+        recordedPuppets[selectedRecordingIndex].exportAsMovie();
         
     }
     if (ev.message == "menu::clear all") {

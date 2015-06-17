@@ -412,11 +412,8 @@ void Puppet::recieveLeapData(vector<ofVec3f> leapFingersPositions,
                 float d = ezoneVertexPosition.distance(ezoneParentVertexPosition);
                 
                 ofVec3f diff = ezoneAbsoulteVertexPosition - ezoneParentAbsoluteVertexPosition;
-                
                 diff = diff.normalized() * d;
-                
                 diff = ezoneParentAbsoluteVertexPosition + diff;
-                
                 diff = diff - ezoneVertexPosition;
                 
                 ezone->userControlledDisplacement = diff;
