@@ -14,15 +14,19 @@
 		<string>https://github.com/kylemcdonald/ofxCv.git</string>
 		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
 		<string>https://github.com/cmuartfab/dranimate.git</string>
+		<key>E3CEEF7062ECD9A173891CC71888AC7F04311EF8</key>
+		<string>https://github.com/golanlevin/ofxPuppet.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>dranimate.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>37526DA425E5430474A14FBFA1BC4525160B5FC1</key>
-		<string>../../../../../addons/ofxCv</string>
+		<string>../../../addons/ofxCv</string>
 		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
 		<string>../..</string>
+		<key>E3CEEF7062ECD9A173891CC71888AC7F04311EF8</key>
+		<string>../../../../../addons/ofxPuppet</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/cmuartfab/dranimate.git</string>
@@ -47,6 +51,14 @@
 			<string>37526DA425E5430474A14FBFA1BC4525160B5FC1</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ofxCv</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>E3CEEF7062ECD9A173891CC71888AC7F04311EF8</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxPuppet</string>
 		</dict>
 	</array>
 </dict>
