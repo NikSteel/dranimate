@@ -19,6 +19,9 @@ public:
     
     ofVec2f userControlledDisplacement;
     
+    int parentEzone = -1;
+    vector<int> childrenEzones;
+    
 };
 
 #endif

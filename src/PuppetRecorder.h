@@ -18,6 +18,8 @@ public:
     void save(string path);
     void load(string path);
     
+    void exportAsMovie();
+    
     void recordPuppetFrame(Puppet *puppet);
     void nextFrame();
     bool isEmpty();
@@ -29,6 +31,8 @@ public:
     
     bool isPaused;
     int currentFrame;
+    
+    ofFbo recorder;
     
 };
 

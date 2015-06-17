@@ -30,7 +30,7 @@ public:
     void recieveLeap();
     
     int getClosestPuppetIndex();
-    Puppet *currentPuppet();
+    Puppet *selectedPuppet();
     
     string getSelectedVertexInfo();
     
@@ -56,7 +56,7 @@ public:
     
     // leap
     
-    const float LEAP_SENSITIVITY = 1.5;
+    const float LEAP_SENSITIVITY = 3.5;
     
     ofxLeapMotion leap;
 	vector <ofxLeapMotionSimpleHand> simpleHands;
@@ -79,15 +79,14 @@ public:
     
     bool wholeScenePaused = false;
     
+    bool addingBone = false;
+    int boneRootVertexIndex;
+    
     float backgroundBrightness;
     
     int hoveredVertexIndex;
     int selectedVertexIndex;
     int selectedPuppetIndex;
-    
-    // puppet animation recording & exporting
-    
-    ofFbo recorder;
     
     // clickdown menu
     

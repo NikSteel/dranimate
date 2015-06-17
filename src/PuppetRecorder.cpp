@@ -7,6 +7,8 @@ void PuppetRecorder::setup() {
     animationFrames.clear();
     currentFrame = 0;
     
+    recorder.allocate(ofGetWidth(), ofGetHeight());
+    
 }
 
 
@@ -46,6 +48,37 @@ void PuppetRecorder::save(string path) {
     image.saveImage(path + "/image.png");
     
     ofLog() << "recording saved to " << path;
+    
+}
+
+void PuppetRecorder::exportAsMovie() {
+    
+    currentFrame = 0;
+    
+    for(int i = 0; i < animationFrames.size(); i++) {
+        currentFrame = i;
+        
+        // draw puppet to fbo
+        recorder.begin();
+        ofSetColor(0, 0, 0);
+        ofRect(0,0,ofGetWidth(),ofGetHeight());
+        ofSetColor(255, 255, 255);
+        draw();
+        recorder.end();
+        
+        // save what we drew in the fbo to an image
+        ofImage img;
+        ofPixels p;
+        recorder.readToPixels(p);
+        img.setFromPixels(p);
+        img.saveImage("temp/tempimg"+ofToString(currentFrame)+".png");
+        
+        ofLog() << "saved frame " << ofToString(i) << " of " << ofToString(animationFrames.size());
+    }
+    
+    // convert images to movie
+    ofLog() << ofSystem("./../../../data/movies/ffmpeg -framerate 30 -i ../../../data/temp/tempimg%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+ofGetTimestampString()+".mp4");
+    ofSystem("rm ../../../data/temp/*");
     
 }
 

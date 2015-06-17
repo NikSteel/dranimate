@@ -47,6 +47,25 @@ void Puppet::load(string path) {
             int fingerID = expressionZones.getValue("fingerID", -1);
             getExpressionZone(expressionZoneIndex)->leapFingerID = fingerID;
             
+            // load this expressionzone's bone data
+            
+            int parentEzone = expressionZones.getValue("parentEzone", -1);
+            getExpressionZone(expressionZoneIndex)->parentEzone = parentEzone;
+            
+            int nChildren = expressionZones.getNumTags("childrenEzones");
+            for(int j = 0; j < nChildren; j++) {
+                
+                // something is broken here.
+                
+                expressionZones.pushTag("child", j);
+                
+                int childEzone = expressionZones.getValue("meshIndex", -1);
+                getExpressionZone(expressionZoneIndex)->childrenEzones.push_back(childEzone);
+                
+                expressionZones.popTag();
+                
+            }
+            
             expressionZones.popTag();
             
         }
@@ -94,6 +113,21 @@ void Puppet::save(string path) {
         // save leap finger control mapping
     
         expressionZonesXML.addValue("fingerID", expressionZones[i].leapFingerID);
+        
+        // save bones
+        
+        expressionZonesXML.addValue("parentEzone", expressionZones[i].parentEzone);
+        
+        for(int j = 0; j < expressionZones[i].childrenEzones.size(); j++) {
+            
+            expressionZonesXML.addTag("childrenEzones");
+            expressionZonesXML.pushTag("childrenEzones",j);
+            
+            expressionZonesXML.addValue("child", expressionZones[i].childrenEzones[j]);
+            
+            expressionZonesXML.popTag();
+            
+        }
         
         expressionZonesXML.popTag();
         
@@ -200,6 +234,17 @@ void Puppet::draw(bool isSelected) {
             if(expressionZones[i].leapFingerID != -1) {
                 ofSetColor(255, 255, 255);
                 Utils::hand.draw(v.x-7, v.y-7, 14, 14);
+            }
+            
+            // draw bones
+            if(expressionZones[i].parentEzone != -1) {
+                ofVec3f fromVertex = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].meshIndex);
+                ofVec3f toVertex = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].parentEzone);
+                
+                ofSetColor(255, 255, 0);
+                ofSetLineWidth(3);
+                ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
+                ofSetLineWidth(1);
             }
         }
         
@@ -314,29 +359,67 @@ void Puppet::recieveLeapData(vector<ofVec3f> leapFingersPositions,
     
         for(int i = 0; i < expressionZones.size(); i++) {
             
-            if(expressionZones[i].leapFingerID != -1) {
+            ExpressionZone *ezone = &expressionZones[i];
             
-                expressionZones[i].userControlledDisplacement.x =
+            if(ezone->leapFingerID != -1) {
+            
+                // this ezone has a finger mapping!
+                // so set this ezone's displacement to that leap finger
+                
+                ezone->userControlledDisplacement.x =
                     ofGetWidth()/3+
                     leapFingersPositions[expressionZones[i].leapFingerID].x
                     -leapFingersCalibration[expressionZones[i].leapFingerID].x;
                 
-                expressionZones[i].userControlledDisplacement.y =
+                ezone->userControlledDisplacement.y =
                     ofGetHeight()/3+
                     leapFingersPositions[expressionZones[i].leapFingerID].y
                     -leapFingersCalibration[expressionZones[i].leapFingerID].y;
                 
             } else {
                 
-                expressionZones[i].userControlledDisplacement.x =
+                // this ezone has no finger mapping.
+                // so just set the displacement to the palm position
+                
+                ezone->userControlledDisplacement.x =
                 ofGetWidth()/3+
                 palmPosition.x
                 -palmCalibration.x;
                 
-                expressionZones[i].userControlledDisplacement.y =
+                ezone->userControlledDisplacement.y =
                 ofGetHeight()/3+
                 palmPosition.y
                 -palmCalibration.y;
+                
+            }
+            
+        }
+        
+        for(int i = 0; i < expressionZones.size(); i++) {
+            
+            ExpressionZone *ezone = &expressionZones[i];
+            
+            // restrict points to parent (rigidity) (if they have a parent bone)
+            
+            if(ezone->parentEzone != -1) {
+                
+                ofVec3f ezoneVertexPosition = meshDeformer.getDeformedMesh().getVertex(ezone->meshIndex);
+                ofVec3f ezoneAbsoulteVertexPosition = ezoneVertexPosition + ezone->userControlledDisplacement;
+                
+                ofVec3f ezoneParentVertexPosition = meshDeformer.getDeformedMesh().getVertex(ezone->parentEzone);
+                ofVec3f ezoneParentAbsoluteVertexPosition = ezoneParentVertexPosition + getExpressionZone(ezone->parentEzone)->userControlledDisplacement;
+                
+                float d = ezoneVertexPosition.distance(ezoneParentVertexPosition);
+                
+                ofVec3f diff = ezoneAbsoulteVertexPosition - ezoneParentAbsoluteVertexPosition;
+                
+                diff = diff.normalized() * d;
+                
+                diff = ezoneParentAbsoluteVertexPosition + diff;
+                
+                diff = diff - ezoneVertexPosition;
+                
+                ezone->userControlledDisplacement = diff;
                 
             }
             

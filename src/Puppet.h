@@ -14,7 +14,6 @@
 
 #include "ExpressionZone.h"
 #include "OSCNamespace.h"
-#include "Skeleton.h"
 #include "Utils.h"
 
 class Puppet {
@@ -59,7 +58,6 @@ public:
     
     ofxPuppet meshDeformer;
     vector<ExpressionZone> expressionZones;
-    Skeleton skeleton;
     
     bool isPaused;
     

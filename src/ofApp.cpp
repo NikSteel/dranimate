@@ -30,11 +30,7 @@ void ofApp::setup() {
     hoveredVertexIndex = -1;
     selectedVertexIndex = -1;
     selectedPuppetIndex = -1;
-    
-    // setup animation recorder/exporter fbo
-    
-    recorder.allocate(ofGetWidth(), ofGetHeight());
-    
+
     // setup clickdown menu stuff
     
     clickDownMenu.OnlyRightClick = true;
@@ -62,8 +58,8 @@ void ofApp::update() {
         case PUPPET_STAGE:
             
             // update where the mouse is pointing
-            if(currentPuppet() != NULL && clickDownMenu.phase == PHASE_WAIT) {
-                hoveredVertexIndex = Utils::getClosestIndex(currentPuppet()->meshDeformer.getDeformedMesh(), mouseX, mouseY);
+            if(selectedPuppet() != NULL && clickDownMenu.phase == PHASE_WAIT) {
+                hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(), mouseX, mouseY);
             }
             
             // recieve data from the real world
@@ -77,8 +73,8 @@ void ofApp::update() {
             
             // update puppet recorder
             puppetRecorder.update();
-            if(recordingPuppet && currentPuppet() != NULL) {
-                puppetRecorder.recordPuppetFrame(currentPuppet());
+            if(recordingPuppet && selectedPuppet() != NULL) {
+                puppetRecorder.recordPuppetFrame(selectedPuppet());
             }
             
             for(int i = 0; i < recordedPuppets.size(); i++) {
@@ -126,34 +122,12 @@ void ofApp::draw() {
                 puppets[i].draw(isSelected);
             }
             
-            // exporting puppet recording as mov
-            // temp code - needs to be somewhere else
-            /*
-            if(recordingPuppet) {
-                
-                // draw puppet to fbo
-                recorder.begin();
-                    ofSetColor(0, 0, 0);
-                    ofRect(0,0,ofGetWidth(),ofGetHeight());
-                    ofSetColor(255, 255, 255);
-                    currentPuppet()->draw(drawWireframe, transformState != NONE);
-                recorder.end();
-                
-                // save what we drew in the fbo to an image
-                ofImage i;
-                ofPixels p;
-                recorder.readToPixels(p);
-                i.setFromPixels(p);
-                i.saveImage("temp/tempimg"+ofToString(puppetRecorder.currentFrame)+".png");
-                
-            }*/
-            
             // draw currently selected vertex info
             
-            if(currentPuppet() != NULL && selectedVertexIndex != -1) {
+            if(selectedPuppet() != NULL && selectedVertexIndex != -1) {
                 float blinkAlpha = 150+sin(ofGetElapsedTimef()*10)*100;
                 ofSetColor(ofColor(255,0,100,blinkAlpha));
-                ofCircle(currentPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex), 8);
+                ofCircle(selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex), 8);
             }
             
             ofSetColor(ofColor(0,200,255));
@@ -163,12 +137,24 @@ void ofApp::draw() {
             
             if(hoveredVertexIndex != -1) {
                 ofSetColor(ofColor(0,155,255));
-                ofCircle(currentPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex), 5);
+                ofCircle(selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex), 5);
             }
             
             if(!leapCalibrated) {
                 ofSetColor(255,0,0);
                 ofDrawBitmapString("No leap calibration!", ofGetWidth()-350, 30);
+            }
+            
+            // draw bones
+            
+            if(addingBone && hoveredVertexIndex != -1) {
+                ofVec3f fromVertex = selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(boneRootVertexIndex);
+                ofVec3f toVertex = selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex);
+                
+                ofSetColor(255, 255, 0);
+                ofSetLineWidth(3);
+                ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
+                ofSetLineWidth(1);
             }
             
             // instructions
@@ -241,7 +227,7 @@ int ofApp::getClosestPuppetIndex() {
     
 }
 
-Puppet* ofApp::currentPuppet() {
+Puppet* ofApp::selectedPuppet() {
     
     if(selectedPuppetIndex == -1) {
         return NULL;
@@ -255,11 +241,11 @@ string ofApp::getSelectedVertexInfo() {
     
     string vertInfo = "";
     
-    if(currentPuppet() != NULL && selectedVertexIndex != -1) {
+    if(selectedPuppet() != NULL && selectedVertexIndex != -1) {
         
         vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
         
-        ExpressionZone* eZone = currentPuppet()->getExpressionZone(selectedVertexIndex);
+        ExpressionZone* eZone = selectedPuppet()->getExpressionZone(selectedVertexIndex);
         
         if(eZone != NULL) {
             
@@ -324,10 +310,7 @@ void ofApp::keyReleased(int key) {
                     puppetRecorder.setup();
                     recordingPuppet = true;
                 } else {
-                    // convert images to movie
-                    //ofLog() << ofSystem("./../../../data/movies/ffmpeg -framerate 30 -i ../../../data/temp/tempimg%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+ofGetTimestampString()+".mp4");
-                    //ofSystem("rm ../../../data/temp/*");
-                    
+                    puppetRecorder.exportAsMovie();
                     recordedPuppets.push_back(puppetRecorder);
                     recordingPuppet = false;
                 }
@@ -501,14 +484,21 @@ void ofApp::mousePressed(int x, int y, int button) {
         
         // selected puppet didn't change, so select/deselect an expression zone
         
-        if(hoveredVertexIndex == -1) {
+        if(addingBone) {
+            
+            // add bone
+            ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
+            eZone->parentEzone = boneRootVertexIndex;
+            addingBone = false;
+            
+        } else if(hoveredVertexIndex == -1) {
             
             //user clicked away from mesh, so deselect the current vertex.
             selectedVertexIndex = -1;
             
         } else {
             
-            ExpressionZone* eZone = currentPuppet()->getExpressionZone(hoveredVertexIndex);
+            ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
             
             if(eZone != NULL) {
                 // if there's an expression zone there, select it.
@@ -532,6 +522,7 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("add ezone");
     clickDownMenu.UnRegisterMenu("add leap mapping");
     clickDownMenu.UnRegisterMenu("add osc mapping");
+    clickDownMenu.UnRegisterMenu("add bone");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("pause/unpause puppet");
     clickDownMenu.UnRegisterMenu("export puppet");
@@ -542,7 +533,7 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("clear all");
     clickDownMenu.UnRegisterMenu(" ");
     
-    if(currentPuppet() == NULL) {
+    if(selectedPuppet() == NULL) {
         
         // no puppet is selected
         clickDownMenu.RegisterMenu("load puppet");
@@ -562,16 +553,18 @@ void ofApp::updateClickDownMenu() {
         
         if(selectedVertexIndex != -1 && selectedVertexIndex == hoveredVertexIndex) {
             // a vertex is selected
-            vector<string> BranchMenu_Color;
-            BranchMenu_Color.push_back("none");
-            BranchMenu_Color.push_back("0");
-            BranchMenu_Color.push_back("1");
-            BranchMenu_Color.push_back("2");
-            BranchMenu_Color.push_back("3");
-            BranchMenu_Color.push_back("4");
-            clickDownMenu.RegisterBranch("add leap mapping", &BranchMenu_Color);
             
+            vector<string> leapFingersBranch;
+            leapFingersBranch.push_back("none");
+            leapFingersBranch.push_back("0");
+            leapFingersBranch.push_back("1");
+            leapFingersBranch.push_back("2");
+            leapFingersBranch.push_back("3");
+            leapFingersBranch.push_back("4");
+            
+            clickDownMenu.RegisterBranch("add leap mapping", &leapFingersBranch);
             clickDownMenu.RegisterMenu("add osc mapping");
+            clickDownMenu.RegisterMenu("add bone");
             
             clickDownMenu.RegisterMenu(" ");
         }
@@ -615,47 +608,53 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     }
     if (ev.message == "menu::add ezone") {
         
-        ExpressionZone* eZone = currentPuppet()->getExpressionZone(hoveredVertexIndex);
+        ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
         
         if(eZone == NULL) {
             // if there's no expression zone where we clicked, add one.
-            currentPuppet()->addExpressionZone(hoveredVertexIndex);
+            selectedPuppet()->addExpressionZone(hoveredVertexIndex);
             selectedVertexIndex = hoveredVertexIndex;
         }
         
     }
     if (ev.message == "menu::add leap mapping::none") {
-        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = -1;
+        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = -1;
     }
     if (ev.message == "menu::add leap mapping::0") {
-        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 0;
+        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 0;
     }
     if (ev.message == "menu::add leap mapping::1") {
-        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 1;
+        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 1;
     }
     if (ev.message == "menu::add leap mapping::2") {
-        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 2;
+        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 2;
     }
     if (ev.message == "menu::add leap mapping::3") {
-        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 3;
+        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 3;
     }
     if (ev.message == "menu::add leap mapping::4") {
-        currentPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 4;
+        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 4;
     }
     if (ev.message == "menu::add osc mapping") {
         
-        if(currentPuppet()->getExpressionZone(selectedVertexIndex) != NULL) {
+        if(selectedPuppet()->getExpressionZone(selectedVertexIndex) != NULL) {
             OSCNamespace namesp;
             namesp.message = ofSystemTextBoxDialog("osc message?");
             namesp.controlType = ofSystemTextBoxDialog("control type?");
-            currentPuppet()->getExpressionZone(selectedVertexIndex)->oscNamespaces.push_back(namesp);
+            selectedPuppet()->getExpressionZone(selectedVertexIndex)->oscNamespaces.push_back(namesp);
             
         }
         
     }
+    if (ev.message == "menu::add bone") {
+        
+        addingBone = true;
+        boneRootVertexIndex = selectedVertexIndex;
+        
+    }
     if (ev.message == "menu::pause/unpause puppet") {
         
-        currentPuppet()->isPaused = !currentPuppet()->isPaused;
+        selectedPuppet()->isPaused = !selectedPuppet()->isPaused;
         
     }
     if (ev.message == "menu::export puppet") {
@@ -664,7 +663,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         
         if (saveFileResult.bSuccess){
             string path = saveFileResult.getPath();
-            currentPuppet()->save(path);
+            selectedPuppet()->save(path);
         }
         
     }
@@ -679,7 +678,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     }
     if (ev.message == "menu::reset puppet") {
         
-        currentPuppet()->removeAllExpressionZones();
+        selectedPuppet()->removeAllExpressionZones();
         
     }
     if (ev.message == "menu::clear all") {
