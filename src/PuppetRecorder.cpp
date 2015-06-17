@@ -7,21 +7,18 @@ void PuppetRecorder::setup() {
     animationFrames.clear();
     currentFrame = 0;
     
-    // todo: add toggle
-    isPlaying = true;
-    
 }
 
 
-void PuppetRecorder::recordPuppetFrame(Puppet puppet) {
+void PuppetRecorder::recordPuppetFrame(Puppet *puppet) {
     
     // if we haven't copied the puppet base image over, get it now
     if(!imageLoaded) {
-        image = puppet.image;
+        image = puppet->image;
     }
     
     // add a 'frame' (which is really just the mesh of a puppet at a point in time)
-    animationFrames.push_back(puppet.subdivided);
+    animationFrames.push_back(puppet->subdivided);
     
 }
 
@@ -66,17 +63,20 @@ bool PuppetRecorder::isEmpty() {
 
 void PuppetRecorder::update() {
     
-    if(isPlaying) nextFrame();
+    if(!isPaused) nextFrame();
     
 }
 
 void PuppetRecorder::draw() {
     
     if(!isEmpty()) {
+        
+        ofSetColor(255,255,255,255);
+        
         image.bind();
         animationFrames[currentFrame].drawFaces();
         image.unbind();
+        
     }
-    
     
 }

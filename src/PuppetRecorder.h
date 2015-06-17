@@ -18,7 +18,7 @@ public:
     void save(string path);
     void load(string path);
     
-    void recordPuppetFrame(Puppet puppet);
+    void recordPuppetFrame(Puppet *puppet);
     void nextFrame();
     bool isEmpty();
     
@@ -27,7 +27,7 @@ public:
     
     std::vector<ofMesh> animationFrames;
     
-    bool isPlaying;
+    bool isPaused;
     int currentFrame;
     
 };

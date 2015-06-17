@@ -74,21 +74,21 @@ void MeshGenerator::setImage(ofImage img) {
     
 }
 
-ofMesh MeshGenerator::generateMesh() {
+void MeshGenerator::generateMesh() {
     
     // create a polyline with all of the contour points
     
     vector<cv::Point> contour = contourFinder.getContour(0);
     for(int i = 0; i < contour.size(); i++) {
-        line.addVertex(contour[i].x,contour[i].y);
+        contourLine.addVertex(contour[i].x,contour[i].y);
     }
     
     // use that polyline to generate a mesh with ofxTriangleMesh !!
     // (code from ofxTriangleMesh example)
     
-    if (line.size() > 2){
+    if (contourLine.size() > 2){
         
-        ofPolyline lineRespaced = line;
+        ofPolyline lineRespaced = contourLine;
         
         // add the last point (so when we resample, it's a closed polygon)
         lineRespaced.addVertex(lineRespaced[0]);
@@ -108,7 +108,7 @@ ofMesh MeshGenerator::generateMesh() {
         }
     }
     
-    ofMesh mesh = triangleMesh.triangulatedMesh;
+    mesh = triangleMesh.triangulatedMesh;
     
     // reset mesh texture coords to match with an image
     
@@ -118,6 +118,16 @@ ofMesh MeshGenerator::generateMesh() {
         mesh.addTexCoord(vec);
     }
     
+}
+
+ofMesh MeshGenerator::getMesh() {
+    
     return mesh;
+    
+}
+
+ofPolyline MeshGenerator::getContour() {
+    
+    return contourLine;
     
 }

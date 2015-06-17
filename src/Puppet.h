@@ -1,8 +1,3 @@
-//NOTE:
-//this should be called something other than Puppet.
-//an ofxPuppet is already called a puppet.
-//it should probably be called something like ControllablePuppet or DranimateCharacter or Actor or something...
-
 #ifndef __dranimate__Puppet__
 #define __dranimate__Puppet__
 
@@ -20,6 +15,7 @@
 #include "ExpressionZone.h"
 #include "OSCNamespace.h"
 #include "Skeleton.h"
+#include "Utils.h"
 
 class Puppet {
     
@@ -30,23 +26,18 @@ public:
     
     void setImage(ofImage img);
     void setMesh(ofMesh m);
+    void setContour(ofPolyline line);
     
     void reset();
     void update();
-    void draw(bool drawWireframe, bool transformActive);
-    
-    void beginScale();
-    void beginRotate();
-    void scaleMesh(ofVec2f origin, ofVec2f mouse);
-    void rotateMesh(ofVec2f origin, ofVec2f mouse);
+    void draw(bool isSelected);
     
     void regenerateSubdivisionMesh();
     
     void addExpressionZone(int index);
-    ExpressionZone* getExpressionZone(int index);
     void removeExpressionZone(int index);
-    
-    void makeExpressionZoneRoot(int meshIndex);
+    void removeAllExpressionZones();
+    ExpressionZone* getExpressionZone(int index);
     
     void recieveOSCMessage(ofxOscMessage message, float value);
     void recieveLeapData(vector<ofVec3f> leapFingersPositions,
@@ -54,26 +45,28 @@ public:
                          ofVec3f palmPosition,
                          ofVec3f palmCalibration);
     
+    const static int MIN_SELECT_VERT_DIST = 20;
+    const static int MESH_SMOOTH_SUBDIVISIONS = 2;
+    const static int IMAGE_BASE_SIZE = 400;
+    
     // mesh & puppet
     
     ofMesh mesh;
     ofMesh subdivided;
     ofxButterfly butterfly;
     
-    ofMesh untransformedMesh;
-    
-    const int MESH_SMOOTH_SUBDIVISIONS = 2;
-    
     // puppeteering
     
-    ofxPuppet puppet;
+    ofxPuppet meshDeformer;
     vector<ExpressionZone> expressionZones;
     Skeleton skeleton;
     
+    bool isPaused;
+    
     // image
     
-    const int IMAGE_BASE_SIZE = 400;
     ofImage image;
+    ofPolyline contour;
     
 };
 

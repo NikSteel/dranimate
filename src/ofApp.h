@@ -11,10 +11,12 @@
 #include "ofxOscReceiver.h"
 #include "ofxXmlSettings.h"
 #include "ofxLeapMotion.h"
+#include "ofxClickDownMenu.h"
 
 #include "Puppet.h"
 #include "MeshGenerator.h"
 #include "PuppetRecorder.h"
+#include "Utils.h"
 
 class ofApp : public ofBaseApp
 {
@@ -27,20 +29,26 @@ public:
     void recieveOsc();
     void recieveLeap();
     
+    int getClosestPuppetIndex();
+    Puppet *currentPuppet();
+    
+    string getSelectedVertexInfo();
+    
     void keyReleased(int key);
     void mousePressed(int x, int y, int button);
-    
     void dragEvent(ofDragInfo dragInfo);
     
-    void selectClosestVertex();
+    // puppets
     
-    // puppet
+    vector<Puppet> puppets;
     
+    // puppet generation
     Puppet newPuppet;
     MeshGenerator mesher;
     
     bool recordingPuppet;
     PuppetRecorder puppetRecorder;
+    vector<PuppetRecorder> recordedPuppets;
     
     // osc
     
@@ -48,7 +56,8 @@ public:
     
     // leap
     
-    bool recievingLeap;
+    const float LEAP_SENSITIVITY = 1.5;
+    
     ofxLeapMotion leap;
 	vector <ofxLeapMotionSimpleHand> simpleHands;
     ofVec3f palmPosition;
@@ -60,9 +69,7 @@ public:
     // state
     
     enum State {
-        LOAD_IMAGE,
-        IMAGE_SETTINGS,
-        MESH_GENERATED,
+        NEW_PUPPET_CREATION,
         PUPPET_STAGE,
         LEAP_CALIBRATION
     };
@@ -70,19 +77,22 @@ public:
     
     // ui
     
-    bool drawWireframe;
+    bool wholeScenePaused = false;
     
-    const float MIN_SELECT_VERT_DIST = 50.0f;
-    int hoveredVertexIndex = -1;
-    int selectedVertexIndex = -1;
+    float backgroundBrightness;
     
-    enum TransformState {
-        NONE,
-        SCALE,
-        ROTATE
-    };
-    TransformState transformState;
+    int hoveredVertexIndex;
+    int selectedVertexIndex;
+    int selectedPuppetIndex;
     
-    ofVec2f scaleFromPoint;
+    // puppet animation recording & exporting
+    
+    ofFbo recorder;
+    
+    // clickdown menu
+    
+    void cmdEvent(ofxCDMEvent &ev);
+    void updateClickDownMenu();
+    ofxClickDownMenu clickDownMenu;
     
 };
