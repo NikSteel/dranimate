@@ -369,14 +369,16 @@ void ofApp::recieveLeap() {
 		leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
         leap.setMappingZ(-300, 0, -200, 200);
         
-        palmPosition = ofVec3f(simpleHands[0].handPos.x*LEAP_SENSITIVITY,
-                               -simpleHands[0].handPos.y*LEAP_SENSITIVITY,
-                               0);
+        palmPosition = ofVec3f(
+             simpleHands[0].handPos.x*leapSensitivity*LEAP_MAX_SENSITIVITY,
+            -simpleHands[0].handPos.y*leapSensitivity*LEAP_MAX_SENSITIVITY,
+             0);
         
         for(int i = 0; i < 5; i++) {
-            leapFingersPositions[i] = ofVec3f(simpleHands[0].fingers[i].pos.x*LEAP_SENSITIVITY,
-                                              -simpleHands[0].fingers[i].pos.y*LEAP_SENSITIVITY,
-                                              simpleHands[0].fingers[i].pos.z*LEAP_SENSITIVITY);
+            leapFingersPositions[i] = ofVec3f(
+                 simpleHands[0].fingers[i].pos.x*leapSensitivity*LEAP_MAX_SENSITIVITY,
+                -simpleHands[0].fingers[i].pos.y*leapSensitivity*LEAP_MAX_SENSITIVITY,
+                 simpleHands[0].fingers[i].pos.z*leapSensitivity*LEAP_MAX_SENSITIVITY);
         }
         
         for(int i = 0; i < puppets.size(); i++) {
@@ -472,7 +474,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     }
         
     int clickedPuppetIndex = getClosestPuppetIndex();
-    if(clickedPuppetIndex != selectedPuppetIndex) {
+    if(clickedPuppetIndex != selectedPuppetIndex && hoveredVertexIndex == -1) {
         
         // select a puppet if we clicked on it (or deselect the currently selected puppet)
         
@@ -505,9 +507,14 @@ void ofApp::mousePressed(int x, int y, int button) {
         if(addingBone) {
             
             // add bone
-            ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
-            eZone->parentEzone = boneRootVertexIndex;
-            addingBone = false;
+            
+            if(hoveredVertexIndex != -1) {
+                ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
+                if(eZone != NULL) {
+                    eZone->parentEzone = boneRootVertexIndex;
+                    addingBone = false;
+                }
+            }
             
         } else if(hoveredVertexIndex == -1) {
             
@@ -550,6 +557,7 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("export as mov");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("bg brightness");
+    clickDownMenu.UnRegisterMenu("leap sensitivity");
     clickDownMenu.UnRegisterMenu("clear all");
     clickDownMenu.UnRegisterMenu(" ");
     
@@ -560,6 +568,7 @@ void ofApp::updateClickDownMenu() {
         clickDownMenu.RegisterMenu("create puppet");
         clickDownMenu.RegisterMenu(" ");
         clickDownMenu.RegisterFader("bg brightness", &backgroundBrightness);
+        clickDownMenu.RegisterFader("leap sensitivity", &leapSensitivity);
         clickDownMenu.RegisterMenu("clear all");
         clickDownMenu.RegisterMenu(" ");
         
@@ -704,6 +713,10 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     if (ev.message == "menu::reset puppet") {
         
         selectedPuppet()->removeAllExpressionZones();
+        
+        selectedPuppetIndex = -1;
+        selectedVertexIndex = -1;
+        hoveredVertexIndex = -1;
         
     }
     if (ev.message == "menu::export as mov") {

@@ -57,7 +57,8 @@ public:
     
     // leap
     
-    const float LEAP_SENSITIVITY = 3.5;
+    const float LEAP_MAX_SENSITIVITY = 3.5;
+    float leapSensitivity = 0.5;
     
     ofxLeapMotion leap;
 	vector <ofxLeapMotionSimpleHand> simpleHands;

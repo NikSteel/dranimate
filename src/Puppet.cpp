@@ -189,9 +189,20 @@ void Puppet::update() {
     
     // add displacements to puppet control points
     for(int i = 0; i < expressionZones.size(); i++) {
-        meshDeformer.setControlPoint(expressionZones[i].meshIndex,
-                               mesh.getVertex(expressionZones[i].meshIndex)+
-                               expressionZones[i].userControlledDisplacement);
+        
+        if(expressionZones[i].parentEzone == -1) {
+            // no parent, this ezone moves independently
+            meshDeformer.setControlPoint(expressionZones[i].meshIndex,
+                                   mesh.getVertex(expressionZones[i].meshIndex)+
+                                   expressionZones[i].userControlledDisplacement);
+        } else {
+            meshDeformer.setControlPoint(expressionZones[i].meshIndex,
+                                         mesh.getVertex(expressionZones[i].parentEzone)+
+                                         getExpressionZone(expressionZones[i].parentEzone)->userControlledDisplacement+
+                                         expressionZones[i].userControlledDisplacement);
+            ofLog() << expressionZones[i].userControlledDisplacement;
+        }
+        
     }
     
     meshDeformer.update();
@@ -403,18 +414,30 @@ void Puppet::recieveLeapData(vector<ofVec3f> leapFingersPositions,
             
             if(ezone->parentEzone != -1) {
                 
-                ofVec3f ezoneVertexPosition = meshDeformer.getDeformedMesh().getVertex(ezone->meshIndex);
+                ofVec3f ezoneVertexPosition = mesh.getVertex(ezone->meshIndex);
                 ofVec3f ezoneAbsoulteVertexPosition = ezoneVertexPosition + ezone->userControlledDisplacement;
                 
-                ofVec3f ezoneParentVertexPosition = meshDeformer.getDeformedMesh().getVertex(ezone->parentEzone);
+                ofVec3f ezoneParentVertexPosition = mesh.getVertex(ezone->parentEzone);
                 ofVec3f ezoneParentAbsoluteVertexPosition = ezoneParentVertexPosition + getExpressionZone(ezone->parentEzone)->userControlledDisplacement;
+                
+                ofLog() << ezoneParentVertexPosition;
+                ofLog() << ezoneVertexPosition;
                 
                 float d = ezoneVertexPosition.distance(ezoneParentVertexPosition);
                 
+                /*
                 ofVec3f diff = ezoneAbsoulteVertexPosition - ezoneParentAbsoluteVertexPosition;
                 diff = diff.normalized() * d;
                 diff = ezoneParentAbsoluteVertexPosition + diff;
                 diff = diff - ezoneVertexPosition;
+                 */
+                
+                ofVec3f diff;
+                //diff = ezoneAbsoulteVertexPosition - ezoneParentAbsoluteVertexPosition;
+                float angle = ezone->userControlledDisplacement.y*0.005;
+                diff = ofVec3f(cos(angle), sin(angle), 0);
+                diff.normalize();
+                diff = diff * d;
                 
                 ezone->userControlledDisplacement = diff;
                 
