@@ -32,6 +32,7 @@ public:
     void draw(bool isSelected);
     
     void regenerateSubdivisionMesh();
+    void updateMeshVertexDepths();
     
     void addExpressionZone(int index);
     void removeExpressionZone(int index);
@@ -51,6 +52,7 @@ public:
     // mesh & puppet
     
     ofMesh mesh;
+    ofMesh undeformedSubdivided;
     ofMesh subdivided;
     ofxButterfly butterfly;
     

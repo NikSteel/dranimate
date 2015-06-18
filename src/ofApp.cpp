@@ -118,6 +118,8 @@ void ofApp::draw() {
             // draw puppets
             
             for(int i = 0; i < puppets.size(); i++) {
+                glEnable(GL_BLEND);
+                glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 bool isSelected = i == selectedPuppetIndex;
                 puppets[i].draw(isSelected);
             }
@@ -371,13 +373,13 @@ void ofApp::recieveLeap() {
         
         palmPosition = ofVec3f(
              simpleHands[0].handPos.x*leapSensitivity*LEAP_MAX_SENSITIVITY,
-            -simpleHands[0].handPos.y*leapSensitivity*LEAP_MAX_SENSITIVITY,
+             simpleHands[0].handPos.y*leapSensitivity*LEAP_MAX_SENSITIVITY,
              0);
         
         for(int i = 0; i < 5; i++) {
             leapFingersPositions[i] = ofVec3f(
                  simpleHands[0].fingers[i].pos.x*leapSensitivity*LEAP_MAX_SENSITIVITY,
-                -simpleHands[0].fingers[i].pos.y*leapSensitivity*LEAP_MAX_SENSITIVITY,
+                 simpleHands[0].fingers[i].pos.y*leapSensitivity*LEAP_MAX_SENSITIVITY,
                  simpleHands[0].fingers[i].pos.z*leapSensitivity*LEAP_MAX_SENSITIVITY);
         }
         
