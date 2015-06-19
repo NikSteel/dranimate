@@ -73,7 +73,9 @@ void ofApp::update() {
             
             leapHandler.recieveNewData();
             for(int i = 0; i < puppets.size(); i++) {
-                puppets[i].recieveLeapData(&leapHandler);
+                if(i != selectedPuppetIndex) {
+                    puppets[i].recieveLeapData(&leapHandler);
+                }
             }
             
             // update all puppets
@@ -462,11 +464,25 @@ void ofApp::mousePressed(int x, int y, int button) {
             if(eZone != NULL) {
                 // if there's an expression zone there, select it.
                 selectedVertexIndex = hoveredVertexIndex;
+            } else {
+                selectedVertexIndex = -1;
             }
             
         }
         
     }
+        
+    }
+    
+}
+
+void ofApp::mouseDragged(int x, int y, int button) {
+    
+    if(selectedVertexIndex != -1) {
+        
+        //selectedPuppet()->meshDeformer.setControlPoint(selectedVertexIndex, ofVec2f(x,y));
+        selectedPuppet()->mesh.setVertex(selectedVertexIndex, ofVec2f(x,y)-selectedPuppet()->getExpressionZone(selectedVertexIndex)->userControlledDisplacement);
+        selectedPuppet()->update();
         
     }
     
@@ -483,7 +499,10 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("add leap mapping");
     clickDownMenu.UnRegisterMenu("add osc mapping");
     clickDownMenu.UnRegisterMenu("add bone");
+    clickDownMenu.UnRegisterMenu("remove ezone");
     clickDownMenu.UnRegisterMenu(" ");
+    clickDownMenu.UnRegisterMenu("reset pose");
+    clickDownMenu.UnRegisterMenu("scale puppet");
     clickDownMenu.UnRegisterMenu("pause/unpause puppet");
     clickDownMenu.UnRegisterMenu("export puppet");
     clickDownMenu.UnRegisterMenu("remove puppet");
@@ -521,20 +540,23 @@ void ofApp::updateClickDownMenu() {
             
             vector<string> leapFingersBranch;
             leapFingersBranch.push_back("none");
-            leapFingersBranch.push_back("0");
-            leapFingersBranch.push_back("1");
-            leapFingersBranch.push_back("2");
-            leapFingersBranch.push_back("3");
-            leapFingersBranch.push_back("4");
+            leapFingersBranch.push_back("thumb");
+            leapFingersBranch.push_back("index");
+            leapFingersBranch.push_back("middle");
+            leapFingersBranch.push_back("ring");
+            leapFingersBranch.push_back("pinky");
             
             clickDownMenu.RegisterBranch("add leap mapping", &leapFingersBranch);
             clickDownMenu.RegisterMenu("add osc mapping");
             clickDownMenu.RegisterMenu("add bone");
+            clickDownMenu.RegisterMenu("remove ezone");
             
             clickDownMenu.RegisterMenu(" ");
         }
         
         // a puppet is selected
+        clickDownMenu.RegisterMenu("reset pose");
+        clickDownMenu.RegisterFader("scale puppet", &selectedPuppet()->scale);
         clickDownMenu.RegisterMenu("pause/unpause puppet");
         clickDownMenu.RegisterMenu("export puppet");
         clickDownMenu.RegisterMenu("remove puppet");
@@ -599,19 +621,19 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     if (ev.message == "menu::add leap mapping::none") {
         selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = -1;
     }
-    if (ev.message == "menu::add leap mapping::0") {
+    if (ev.message == "menu::add leap mapping::thumb") {
         selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 0;
     }
-    if (ev.message == "menu::add leap mapping::1") {
+    if (ev.message == "menu::add leap mapping::index") {
         selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 1;
     }
-    if (ev.message == "menu::add leap mapping::2") {
+    if (ev.message == "menu::add leap mapping::middle") {
         selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 2;
     }
-    if (ev.message == "menu::add leap mapping::3") {
+    if (ev.message == "menu::add leap mapping::ring") {
         selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 3;
     }
-    if (ev.message == "menu::add leap mapping::4") {
+    if (ev.message == "menu::add leap mapping::pinky") {
         selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 4;
     }
     if (ev.message == "menu::add osc mapping") {
@@ -629,6 +651,20 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         
         addingBone = true;
         boneRootVertexIndex = selectedVertexIndex;
+        
+    }
+    if (ev.message == "menu::remove ezone") {
+        
+        selectedPuppet()->removeExpressionZone(selectedVertexIndex);
+        selectedVertexIndex = -1;
+        
+    }
+    if (ev.message == "menu::reset pose") {
+        
+        selectedPuppet()->resetPose();
+        
+        selectedVertexIndex = -1;
+        hoveredVertexIndex = -1;
         
     }
     if (ev.message == "menu::pause/unpause puppet") {
@@ -657,9 +693,8 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     }
     if (ev.message == "menu::reset puppet") {
         
-        selectedPuppet()->removeAllExpressionZones();
+        selectedPuppet()->reset();
         
-        selectedPuppetIndex = -1;
         selectedVertexIndex = -1;
         hoveredVertexIndex = -1;
         

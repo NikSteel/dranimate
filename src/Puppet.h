@@ -32,6 +32,8 @@ public:
     void update();
     void draw(bool isSelected);
     
+    void resetPose();
+    
     void regenerateSubdivisionMesh();
     void updateMeshVertexDepths();
     
@@ -49,10 +51,14 @@ public:
     
     // mesh & puppet
     
+    ofMesh originalMesh;
     ofMesh mesh;
     ofMesh undeformedSubdivided;
     ofMesh subdivided;
     ofxButterfly butterfly;
+    
+    float scale = 1;//todo fix this...
+    float oldScale;
     
     // puppeteering
     

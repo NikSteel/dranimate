@@ -7,6 +7,7 @@ void Puppet::load(string path) {
     
     // load mesh
     mesh.load(path + "/mesh.ply");
+    originalMesh.load(path + "/mesh.ply");
     meshDeformer.setup(mesh);
     regenerateSubdivisionMesh();
     
@@ -81,7 +82,7 @@ void Puppet::save(string path) {
     system(mkdirCommandString.c_str());
     
     // mesh
-    mesh.save(path + "/mesh.ply");
+    originalMesh.save(path + "/mesh.ply");
     
     // image
     image.saveImage(path + "/image.png");
@@ -151,12 +152,7 @@ void Puppet::setImage(ofImage img) {
     // scale down image to a good size for the mesh generator
     
     float whRatio = (float)image.width/(float)image.height;
-    if(image.width > image.height) {
-        image.resize(IMAGE_BASE_SIZE*whRatio, IMAGE_BASE_SIZE);
-    } else {
-        whRatio = (float)image.height/(float)image.width;
-        image.resize(IMAGE_BASE_SIZE, IMAGE_BASE_SIZE*whRatio);
-    }
+    image.resize(IMAGE_BASE_SIZE*whRatio, IMAGE_BASE_SIZE);
     
 }
 
@@ -169,7 +165,7 @@ void Puppet::setMesh(ofMesh m) {
     
 }
 
-void Puppet::setContour(ofPolyline line){
+void Puppet::setContour(ofPolyline line) {
     
     contour = line;
 
@@ -177,15 +173,23 @@ void Puppet::setContour(ofPolyline line){
 
 void Puppet::reset() {
     
-    for(int i = 0; i < expressionZones.size(); i++) {
-        meshDeformer.removeControlPoint(expressionZones[i].meshIndex);
-    }
-    
-    expressionZones.clear();
+    removeAllExpressionZones();
+    setMesh(originalMesh);
     
 }
 
 void Puppet::update() {
+    
+    //scale mesh
+    if(scale != oldScale) {
+        
+        for(int i = 0; i < mesh.getVertices().size(); i++) {
+            mesh.setVertex(i, mesh.getVertex(i)*scale);
+        }
+        setMesh(mesh);
+        
+    }
+    oldScale = scale;
     
     // do ofxPuppet puppeteering stuff (if there is more than one point;
     // as rigid as possible freaks out with onely one control point.)
@@ -272,6 +276,15 @@ void Puppet::draw(bool isSelected) {
         //contour.draw();
         
     }
+    
+}
+
+void Puppet::resetPose() {
+    
+    for(int i = 0; i < expressionZones.size(); i++) {
+        expressionZones[i].userControlledDisplacement = ofVec2f(0,0);
+    }
+    setMesh(originalMesh);
     
 }
 

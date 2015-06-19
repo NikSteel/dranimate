@@ -1,6 +1,6 @@
 <expressionZone>
     <meshIndex>280</meshIndex>
-    <fingerID>1</fingerID>
+    <fingerID>2</fingerID>
     <parentEzone>-1</parentEzone>
 </expressionZone>
 <expressionZone>
@@ -8,12 +8,11 @@
     <fingerID>-1</fingerID>
     <parentEzone>-1</parentEzone>
     <childrenEzones>
-        <child>230</child>
-        <child>280</child>
+        <child>321</child>
     </childrenEzones>
 </expressionZone>
 <expressionZone>
     <meshIndex>230</meshIndex>
-    <fingerID>0</fingerID>
+    <fingerID>1</fingerID>
     <parentEzone>-1</parentEzone>
 </expressionZone>

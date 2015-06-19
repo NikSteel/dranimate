@@ -37,6 +37,7 @@ public:
     
     void keyReleased(int key);
     void mousePressed(int x, int y, int button);
+    void mouseDragged(int x, int y, int button);
     void dragEvent(ofDragInfo dragInfo);
     
 // puppets
