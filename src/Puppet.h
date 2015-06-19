@@ -15,6 +15,7 @@
 #include "ExpressionZone.h"
 #include "OSCNamespace.h"
 #include "Utils.h"
+#include "LeapDataHandler.h"
 
 class Puppet {
     
@@ -40,10 +41,7 @@ public:
     ExpressionZone* getExpressionZone(int index);
     
     void recieveOSCMessage(ofxOscMessage message, float value);
-    void recieveLeapData(vector<ofVec3f> leapFingersPositions,
-                         vector<ofVec3f> leapFingersCalibration,
-                         ofVec3f palmPosition,
-                         ofVec3f palmCalibration);
+    void recieveLeapData(LeapDataHandler *leap);
     
     const static int MIN_SELECT_VERT_DIST = 20;
     const static int MESH_SMOOTH_SUBDIVISIONS = 2;

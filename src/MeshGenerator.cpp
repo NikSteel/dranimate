@@ -23,8 +23,9 @@ void MeshGenerator::draw() {
     ofTranslate(ofGetWidth()/2  - cvImage.width/2,
                 ofGetHeight()/2 - cvImage.height/2);
     
-    ofSetColor(255,255,255);
-    cvImage.draw(0, 0);
+    ofSetColor(255,255,255,255);
+    //cvImage.draw(0, 0);
+    noAlphaImage.draw(0,0);
     
     // draw contours found from the thresholded image
     
@@ -77,6 +78,8 @@ void MeshGenerator::setImage(ofImage img) {
 void MeshGenerator::generateMesh() {
     
     // create a polyline with all of the contour points
+    
+    contourLine.clear();
     
     vector<cv::Point> contour = contourFinder.getContour(0);
     for(int i = 0; i < contour.size(); i++) {

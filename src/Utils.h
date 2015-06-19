@@ -10,6 +10,7 @@ class Utils {
     
 public:
     static bool hasEnding (std::string const &fullString, std::string const &ending);
+    static bool filenameIsImage(std::string);
     
     static float sign(ofVec3f p1, ofVec3f p2, ofVec3f p3);
     
@@ -18,6 +19,9 @@ public:
     static bool isPointInsideMesh(ofMesh mesh, int x, int y);
 
     static int getClosestIndex(ofMesh mesh, int x, int y);
+    
+    static void drawControls(string s);
+    static void drawWarning(string s);
     
     static void loadImages();
     

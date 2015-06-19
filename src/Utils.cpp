@@ -10,6 +10,17 @@ bool Utils::hasEnding (std::string const &fullString, std::string const &ending)
     }
 }
 
+bool Utils::filenameIsImage(std::string fn) {
+    
+    return  Utils::hasEnding(fn, ".png") ||
+            Utils::hasEnding(fn, ".psd") ||
+            Utils::hasEnding(fn, ".gif") ||
+            Utils::hasEnding(fn, ".bmp") ||
+            Utils::hasEnding(fn, ".jpg") ||
+            Utils::hasEnding(fn, ".jpeg");
+    
+}
+
 //http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
 
 float Utils::sign(ofVec3f p1, ofVec3f p2, ofVec3f p3)
@@ -62,6 +73,21 @@ int Utils::getClosestIndex(ofMesh mesh, int x, int y) {
     }
     
     return closestIndex;
+    
+}
+
+void Utils::drawControls(string s) {
+    
+    ofSetColor(255,255,255);
+    ofDrawBitmapString(s, ofGetWidth()-350, 60);
+    
+}
+
+void Utils::drawWarning(string s) {
+    
+    float flash = abs(sin(ofGetElapsedTimef()*10)*100);
+    ofSetColor(255,flash,flash);
+    ofDrawBitmapString(s, ofGetWidth()-350, 30);
     
 }
 

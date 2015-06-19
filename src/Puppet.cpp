@@ -187,25 +187,29 @@ void Puppet::reset() {
 
 void Puppet::update() {
     
-    // add displacements to puppet control points
-    for(int i = 0; i < expressionZones.size(); i++) {
-        
-        if(expressionZones[i].parentEzone == -1) {
-            // no parent, this ezone moves independently
-            meshDeformer.setControlPoint(expressionZones[i].meshIndex,
-                                   mesh.getVertex(expressionZones[i].meshIndex)+
-                                   expressionZones[i].userControlledDisplacement);
-        } else {
-            meshDeformer.setControlPoint(expressionZones[i].meshIndex,
-                                         mesh.getVertex(expressionZones[i].parentEzone)+
-                                         getExpressionZone(expressionZones[i].parentEzone)->userControlledDisplacement+
-                                         expressionZones[i].userControlledDisplacement);
-        }
-        
-    }
+    // do ofxPuppet puppeteering stuff (if there is more than one point;
+    // as rigid as possible freaks out with onely one control point.)
     
-    // do ofxPuppet puppeteering
-    meshDeformer.update();
+    if(expressionZones.size() > 1) {
+        // add displacements to puppet control points
+        for(int i = 0; i < expressionZones.size(); i++) {
+            
+            if(expressionZones[i].parentEzone == -1) {
+                // no parent, this ezone moves independently
+                meshDeformer.setControlPoint(expressionZones[i].meshIndex,
+                                       mesh.getVertex(expressionZones[i].meshIndex)+
+                                       expressionZones[i].userControlledDisplacement);
+            } else {
+                meshDeformer.setControlPoint(expressionZones[i].meshIndex,
+                                             mesh.getVertex(expressionZones[i].parentEzone)+
+                                             getExpressionZone(expressionZones[i].parentEzone)->userControlledDisplacement+
+                                             expressionZones[i].userControlledDisplacement);
+            }
+            
+        }
+    
+        meshDeformer.update();
+    }
     
     // attach the subdivided mesh to the mesh deformed by the puppet
     butterfly.fixMesh(meshDeformer.getDeformedMesh(), subdivided);
@@ -226,7 +230,9 @@ void Puppet::draw(bool isSelected) {
     }
     
     image.bind();
+        glEnable(GL_DEPTH_TEST);
         subdivided.drawFaces();
+        glDisable(GL_DEPTH_TEST);
     image.unbind();
     
     // draw the wireframe & control points as well
@@ -289,7 +295,7 @@ void Puppet::updateMeshVertexDepths() {
         
         ofVec3f v = subdivided.getVertex(i);
         ofVec3f udsv = undeformedSubdivided.getVertex(i);
-        v.z = -(udsv.x*0.1);
+        v.z = -(udsv.x*0.01);
         subdivided.setVertex(i, v);
         
     }
@@ -379,10 +385,7 @@ void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
 
 }
 
-void Puppet::recieveLeapData(vector<ofVec3f> leapFingersPositions,
-                             vector<ofVec3f> leapFingersCalibration,
-                             ofVec3f palmPosition,
-                             ofVec3f palmCalibration) {
+void Puppet::recieveLeapData(LeapDataHandler *leap) {
     
     // this is a bit messy, should fix it
     
@@ -402,13 +405,13 @@ void Puppet::recieveLeapData(vector<ofVec3f> leapFingersPositions,
                 
                 ezone->userControlledDisplacement.x =
                     wOffset+
-                    leapFingersPositions[expressionZones[i].leapFingerID].x
-                    -leapFingersCalibration[expressionZones[i].leapFingerID].x;
+                    leap->fingersPositions[expressionZones[i].leapFingerID].x
+                    -leap->fingersCalibration[expressionZones[i].leapFingerID].x;
                 
                 ezone->userControlledDisplacement.y =
                     hOffset+
-                    (-leapFingersPositions[expressionZones[i].leapFingerID].y)
-                    -(-leapFingersCalibration[expressionZones[i].leapFingerID].y);
+                    (-leap->fingersPositions[expressionZones[i].leapFingerID].y)
+                    -(-leap->fingersCalibration[expressionZones[i].leapFingerID].y);
                 
             } else {
                 
@@ -417,13 +420,13 @@ void Puppet::recieveLeapData(vector<ofVec3f> leapFingersPositions,
                 
                 ezone->userControlledDisplacement.x =
                 wOffset+
-                palmPosition.x
-                -palmCalibration.x;
+                leap->palmPosition.x
+                -leap->calibratedPalmPosition.x;
                 
                 ezone->userControlledDisplacement.y =
                 hOffset+
-                (-palmPosition.y)
-                -(-palmCalibration.y);
+                (-leap->palmPosition.y)
+                -(-leap->calibratedPalmPosition.y);
                 
             }
             
@@ -461,7 +464,7 @@ void Puppet::recieveLeapData(vector<ofVec3f> leapFingersPositions,
                 float angle = atan2(ezoneParentVertexPosition.y-ezoneVertexPosition.y, ezoneParentVertexPosition.x-ezoneVertexPosition.x);
                 angle += PI/2;
                 
-                float dis = (palmPosition.y - leapFingersPositions[expressionZones[i].leapFingerID].y)*0.010;
+                float dis = (leap->calibratedPalmPosition.y - leap->fingersPositions[expressionZones[i].leapFingerID].y)*0.010;
                 if(angle > -PI/2) {
                     //angle += -ezone->userControlledDisplacement.y*0.005;
                     angle += dis;

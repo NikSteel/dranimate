@@ -16,21 +16,21 @@
 #include "Puppet.h"
 #include "MeshGenerator.h"
 #include "PuppetRecorder.h"
+#include "LeapDataHandler.h"
 #include "Utils.h"
+#include "ImageFromCamera.h"
 
-class ofApp : public ofBaseApp
-{
+class ofApp : public ofBaseApp {
     
 public:
+    
     void setup();
     void update();
     void draw();
     
-    void recieveOsc();
-    void recieveLeap();
-    
     int getClosestPuppetIndex();
     int getClosestRecordingIndex();
+    
     Puppet *selectedPuppet();
     
     string getSelectedVertexInfo();
@@ -39,11 +39,10 @@ public:
     void mousePressed(int x, int y, int button);
     void dragEvent(ofDragInfo dragInfo);
     
-    // puppets
+// puppets
     
     vector<Puppet> puppets;
     
-    // puppet generation
     Puppet newPuppet;
     MeshGenerator mesher;
     
@@ -51,24 +50,11 @@ public:
     PuppetRecorder puppetRecorder;
     vector<PuppetRecorder> recordedPuppets;
     
-    // osc
+// leap
     
-    ofxOscReceiver receiver;
+    LeapDataHandler leapHandler;
     
-    // leap
-    
-    const float LEAP_MAX_SENSITIVITY = 3.5;
-    float leapSensitivity = 0.5;
-    
-    ofxLeapMotion leap;
-	vector <ofxLeapMotionSimpleHand> simpleHands;
-    ofVec3f palmPosition;
-    ofVec3f calibratedPalmPosition;
-    vector<ofVec3f> leapFingersPositions;
-    vector<ofVec3f> leapFingersCalibration;
-    bool leapCalibrated;
-    
-    // state
+// state
     
     enum State {
         NEW_PUPPET_CREATION,
@@ -77,7 +63,9 @@ public:
     };
     State state;
     
-    // ui
+// ui
+    
+    bool createPuppetLiveMode = false;
     
     bool wholeScenePaused = false;
     
@@ -92,10 +80,14 @@ public:
     
     int selectedRecordingIndex;
     
-    // clickdown menu
+// clickdown menu
     
     void cmdEvent(ofxCDMEvent &ev);
     void updateClickDownMenu();
     ofxClickDownMenu clickDownMenu;
+    
+// camera
+    
+    ImageFromCamera cam;
     
 };

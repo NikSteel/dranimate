@@ -2,20 +2,14 @@
 
 void ofApp::setup() {
     
-    // setup osc stuff
-    
-    receiver.setup(8000);
-    
     // setup the mesh generator
     
+    cam.setup();
     mesher.setup();
     
     // setup leap stuff
     
-    leap.open();
-    leapFingersPositions.resize(5);
-    leapFingersCalibration.resize(5);
-    leapCalibrated = false;
+    leapHandler.setup();
     
     // load a demo puppet
     
@@ -24,6 +18,8 @@ void ofApp::setup() {
     puppets.push_back(demoPuppet);
     
     // setup ui stuff
+    
+    backgroundBrightness = 0.25;
     
     state = PUPPET_STAGE;
     
@@ -52,7 +48,18 @@ void ofApp::update() {
     switch(state) {
         
         case NEW_PUPPET_CREATION:
+            
+            // if we're using a live fed image, get it from
+            // the camera and give it to the meshe generator
+            if(createPuppetLiveMode) {
+                cam.update();
+                newPuppet.setImage(cam.image);
+                mesher.setImage(newPuppet.image);
+            }
+            
+            // if not, the mesher already has the user-loaded image
             mesher.update();
+            
             break;
             
         case PUPPET_STAGE:
@@ -62,13 +69,18 @@ void ofApp::update() {
                 hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(), mouseX, mouseY);
             }
             
-            // recieve data from the real world
-            recieveOsc();
-            recieveLeap();
+            // send new leap data to puppets
+            
+            leapHandler.recieveNewData();
+            for(int i = 0; i < puppets.size(); i++) {
+                puppets[i].recieveLeapData(&leapHandler);
+            }
             
             // update all puppets
             for(int i = 0; i < puppets.size(); i++) {
-                puppets[i].update();
+                if(i != selectedPuppetIndex) {
+                    puppets[i].update();
+                }
             }
             
             // update puppet recorder
@@ -84,7 +96,7 @@ void ofApp::update() {
             break;
             
         case LEAP_CALIBRATION:
-            recieveLeap();
+            leapHandler.recieveNewData();
             break;
             
     }
@@ -98,16 +110,15 @@ void ofApp::draw() {
     
     switch(state) {
             
-        case NEW_PUPPET_CREATION:
+        case NEW_PUPPET_CREATION: {
         
             mesher.draw();
             
-            ofSetColor(255,255,255);
-            ofDrawBitmapString("m   -   Generate mesh when ready", ofGetWidth()-400, 30);
+            Utils::drawControls("m   -   Generate mesh when ready");
             
             break;
         
-        case PUPPET_STAGE: {
+        } case PUPPET_STAGE: {
             
             // draw puppet recordings
             
@@ -142,11 +153,6 @@ void ofApp::draw() {
                 ofCircle(selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex), 5);
             }
             
-            if(!leapCalibrated) {
-                ofSetColor(255,0,0);
-                ofDrawBitmapString("No leap calibration!", ofGetWidth()-350, 30);
-            }
-            
             // draw bones
             
             if(addingBone && hoveredVertexIndex != -1) {
@@ -161,8 +167,13 @@ void ofApp::draw() {
             
             // instructions
             
-            ofSetColor(255,255,255);
-            ofDrawBitmapString("c    -    Calibrate leap contoller\nr    -    Start/stop recording", ofGetWidth()-350, 60);
+            Utils::drawControls("c     -    Calibrate leap contoller\nr     -    Start/stop recording\nspace -    Pause all animation");
+            
+            if(!leapHandler.calibrated) {
+                Utils::drawWarning("Leap not calibrated!");
+            } else if (wholeScenePaused) {
+                Utils::drawWarning("Animation paused!");
+            }
             
             break;
             
@@ -170,38 +181,13 @@ void ofApp::draw() {
             
         case LEAP_CALIBRATION:
             
-            for(int i = 0; i < 5; i++) {
-                ofSetColor(255,255,0);
-                int x = leapFingersPositions[i].x;
-                int y = leapFingersPositions[i].y;
-                ofCircle(x, y, 5);
-                ofDrawBitmapString(ofToString(i), x+5, y+5);
-            }
-            ofCircle(palmPosition.x, palmPosition.y, 5);
-            ofDrawBitmapString("Palm", palmPosition.x+5, palmPosition.y+5);
+            leapHandler.drawLeapCalibrationMenu();
             
-            if(leapCalibrated) {
-                for(int i = 0; i < 5; i++) {
-                    ofSetColor(0,255,255);
-                    int x = leapFingersCalibration[i].x;
-                    int y = leapFingersCalibration[i].y;
-                    ofCircle(x, y, 5);
-                    ofDrawBitmapString(ofToString(i), x+5, y+5);
-                }
-                ofCircle(calibratedPalmPosition.x, calibratedPalmPosition.y, 5);
-                ofDrawBitmapString("Palm", calibratedPalmPosition.x+5, calibratedPalmPosition.y+5);
+            if(leapHandler.calibrated) {
+                Utils::drawWarning("No leap calibration!");
             }
             
-            if(!leapCalibrated) {
-                ofSetColor(255,0,0);
-                ofDrawBitmapString("No leap calibration!", ofGetWidth()-400, 30);
-                
-                ofSetColor(255,255,255);
-                ofDrawBitmapString("Place hand above the leap controller and position fingers in a resting position.", ofGetWidth()/2-300, ofGetHeight()-100);
-            }
-            
-            ofSetColor(255,255,255);
-            ofDrawBitmapString("c   -   Set calibration`", ofGetWidth()-400, 60);
+            Utils::drawControls("c   -   Set calibration");
             
             break;
             
@@ -295,8 +281,10 @@ void ofApp::keyReleased(int key) {
             // generate mesh
             if(key == 'm') {
                 mesher.generateMesh();
+                
                 newPuppet.setMesh(mesher.getMesh());
                 newPuppet.setContour(mesher.getContour());
+                
                 puppets.push_back(newPuppet);
                 state = PUPPET_STAGE;
             }
@@ -308,6 +296,16 @@ void ofApp::keyReleased(int key) {
             // switch to leap calibration mode
             if(key == 'c') {
                 state = LEAP_CALIBRATION;
+            }
+            
+            // delete selected puppet
+            if(key == OF_KEY_BACKSPACE) {
+                if(selectedPuppet() != NULL) {
+                    puppets.erase(puppets.begin() + selectedPuppetIndex);
+                    selectedPuppetIndex = -1;
+                    selectedVertexIndex = -1;
+                    hoveredVertexIndex = -1;
+                }
             }
             
             // toggle puppet pause
@@ -338,12 +336,7 @@ void ofApp::keyReleased(int key) {
             
             // set leap calibration
             if(key == 'c') {
-                for(int i = 0; i < 5; i++) {
-                    leapFingersCalibration[i] = leapFingersPositions[i];
-                }
-                calibratedPalmPosition = palmPosition;
-                leapCalibrated = true;
-                
+                leapHandler.calibrate();
                 state = PUPPET_STAGE;
             }
             
@@ -361,66 +354,6 @@ void ofApp::keyReleased(int key) {
     
 }
 
-void ofApp::recieveLeap() {
-    
-    simpleHands = leap.getSimpleHands();
-    
-    if( leap.isFrameNew() && simpleHands.size() ){
-        
-        leap.setMappingX(-460, 100, -ofGetWidth()/2, ofGetWidth()/2);
-		leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
-        leap.setMappingZ(-300, 0, -200, 200);
-        
-        palmPosition = ofVec3f(
-             simpleHands[0].handPos.x*leapSensitivity*LEAP_MAX_SENSITIVITY,
-             simpleHands[0].handPos.y*leapSensitivity*LEAP_MAX_SENSITIVITY,
-             0);
-        
-        for(int i = 0; i < 5; i++) {
-            leapFingersPositions[i] = ofVec3f(
-                 simpleHands[0].fingers[i].pos.x*leapSensitivity*LEAP_MAX_SENSITIVITY,
-                 simpleHands[0].fingers[i].pos.y*leapSensitivity*LEAP_MAX_SENSITIVITY,
-                 simpleHands[0].fingers[i].pos.z*leapSensitivity*LEAP_MAX_SENSITIVITY);
-        }
-        
-        for(int i = 0; i < puppets.size(); i++) {
-            puppets[i].recieveLeapData(leapFingersPositions,
-                                       leapFingersCalibration,
-                                       palmPosition,
-                                       calibratedPalmPosition);
-        }
-        
-    }
-    
-    leap.markFrameAsOld();
-    
-}
-
-void ofApp::recieveOsc() {
-    
-    float gyroX = 0;
-    float gyroY = 0;
-    
-    bool gotX = false;
-    bool gotY = false;
-    
-    // check for waiting messages
-	while(receiver.hasWaitingMessages()) {
-        
-		// get the next message
-		ofxOscMessage message;
-		receiver.getNextMessage(&message);
-        
-        float value = message.getArgAsFloat(0);
-        
-        for(int i = 0; i < puppets.size(); i++) {
-            puppets[i].recieveOSCMessage(message, value);
-        }
-        
-	}
-    
-}
-
 // lets us drag an image/puppet directory into the window to load it - very convenient
 
 void ofApp::dragEvent(ofDragInfo info) {
@@ -435,8 +368,7 @@ void ofApp::dragEvent(ofDragInfo info) {
             
             if(info.files.size() > 0) {
                
-                if(Utils::hasEnding(info.files.at(0), ".png") ||
-                   Utils::hasEnding(info.files.at(0), ".psd")) {
+                if(Utils::filenameIsImage(info.files.at(0))) {
                     
                      // image file to be used for puppet generation dragged into window
                     
@@ -545,6 +477,7 @@ void ofApp::updateClickDownMenu() {
     // reset everything
     clickDownMenu.UnRegisterMenu("load puppet");
     clickDownMenu.UnRegisterMenu("create puppet");
+    clickDownMenu.UnRegisterMenu("create puppet (live)");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("add ezone");
     clickDownMenu.UnRegisterMenu("add leap mapping");
@@ -568,9 +501,10 @@ void ofApp::updateClickDownMenu() {
         // no puppet is selected
         clickDownMenu.RegisterMenu("load puppet");
         clickDownMenu.RegisterMenu("create puppet");
+        clickDownMenu.RegisterMenu("create puppet (live)");
         clickDownMenu.RegisterMenu(" ");
         clickDownMenu.RegisterFader("bg brightness", &backgroundBrightness);
-        clickDownMenu.RegisterFader("leap sensitivity", &leapSensitivity);
+        clickDownMenu.RegisterFader("leap sensitivity", &leapHandler.sensitivity);
         clickDownMenu.RegisterMenu("clear all");
         clickDownMenu.RegisterMenu(" ");
         
@@ -638,8 +572,17 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
             newPuppet.reset();
             newPuppet.setImage(openFileResult.getPath());
             mesher.setImage(newPuppet.image);
+            
+            createPuppetLiveMode = false;
             state = NEW_PUPPET_CREATION;
         }
+        
+    }
+    if (ev.message == "menu::create puppet (live)") {
+        
+        createPuppetLiveMode = true;
+        newPuppet.reset();
+        state = NEW_PUPPET_CREATION;
         
     }
     if (ev.message == "menu::add ezone") {
