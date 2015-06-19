@@ -1,28 +1,25 @@
 <expressionZone>
-    <meshIndex>280</meshIndex>
-    <fingerID>3</fingerID>
-    <parentEzone>-1</parentEzone>
-</expressionZone>
-<expressionZone>
-    <meshIndex>321</meshIndex>
-    <fingerID>-1</fingerID>
-    <parentEzone>-1</parentEzone>
-    <childrenEzones>
-        <child>321</child>
-    </childrenEzones>
-</expressionZone>
-<expressionZone>
-    <meshIndex>230</meshIndex>
+    <meshIndex>246</meshIndex>
     <fingerID>1</fingerID>
     <parentEzone>-1</parentEzone>
 </expressionZone>
 <expressionZone>
-    <meshIndex>244</meshIndex>
+    <meshIndex>262</meshIndex>
+    <fingerID>2</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>249</meshIndex>
+    <fingerID>3</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>267</meshIndex>
     <fingerID>4</fingerID>
     <parentEzone>-1</parentEzone>
 </expressionZone>
 <expressionZone>
-    <meshIndex>237</meshIndex>
+    <meshIndex>256</meshIndex>
     <fingerID>0</fingerID>
     <parentEzone>-1</parentEzone>
 </expressionZone>

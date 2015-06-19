@@ -47,7 +47,7 @@ public:
     
     const static int MIN_SELECT_VERT_DIST = 20;
     const static int MESH_SMOOTH_SUBDIVISIONS = 2;
-    const static int IMAGE_BASE_SIZE = 400;
+    const static int IMAGE_BASE_SIZE = 800;
     
     // mesh & puppet
     

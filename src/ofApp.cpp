@@ -116,7 +116,7 @@ void ofApp::draw() {
         
             mesher.draw();
             
-            Utils::drawControls("m   -   Generate mesh when ready");
+            Utils::drawControls("p   -   Preview mesh\nm   -   Generate mesh and create puppet");
             
             break;
         
@@ -280,7 +280,12 @@ void ofApp::keyReleased(int key) {
             
         case NEW_PUPPET_CREATION:
             
-            // generate mesh
+            // preview mesh
+            if(key == 'p') {
+                mesher.generateMesh();
+            }
+            
+            // finalize mesh and create a new puppet from that mesh
             if(key == 'm') {
                 mesher.generateMesh();
                 
@@ -402,6 +407,10 @@ void ofApp::dragEvent(ofDragInfo info) {
 }
 
 void ofApp::mousePressed(int x, int y, int button) {
+    
+    if(state == NEW_PUPPET_CREATION) {
+        mesher.addExtraVertex(x,y);
+    }
     
     if(clickDownMenu.phase == PHASE_WAIT) {
     
@@ -593,6 +602,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         if (openFileResult.bSuccess){
             newPuppet.reset();
             newPuppet.setImage(openFileResult.getPath());
+            mesher.reset();
             mesher.setImage(newPuppet.image);
             
             createPuppetLiveMode = false;

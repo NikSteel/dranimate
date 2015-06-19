@@ -2,6 +2,7 @@
 #define __dranimate__MeshGenerator__
 
 #include <iostream>
+#include <vector>
 
 #include "ofMain.h"
 #include "ofxOpenCv.h"
@@ -24,6 +25,8 @@ private:
     ofxCvGrayscaleImage cvImage;
     ofxCv::ContourFinder contourFinder;
     
+    std::vector<ofPoint> extraVerts;
+    
     ofxPanel gui;
     ofxSlider<int> imageThreshold;
     ofxToggle invertImage;
@@ -31,13 +34,17 @@ private:
     ofxSlider<int> triangleAngleConstraint;
     ofxSlider<int> triangleSizeConstraint;
     
+    bool meshGenerated;
+    
 public:
     
     void setup();
-    void draw();
     void update();
+    void draw();
+    void reset();
     
     void setImage(ofImage img);
+    void addExtraVertex(int x, int y);
     
     void generateMesh();
     

@@ -9,6 +9,8 @@ void MeshGenerator::setup() {
     gui.add(triangleAngleConstraint.setup("triangle angle constraint", 28, 0, 28));
     gui.add(triangleSizeConstraint.setup("triangle size constraint", -1, -1, 100));
     
+    meshGenerated = false;
+    
 }
 
 void MeshGenerator::update() {
@@ -19,22 +21,52 @@ void MeshGenerator::update() {
 
 void MeshGenerator::draw() {
     
+    // draw image
+    
     ofPushMatrix();
     ofTranslate(ofGetWidth()/2  - cvImage.width/2,
                 ofGetHeight()/2 - cvImage.height/2);
     
-    ofSetColor(255,255,255,255);
-    //cvImage.draw(0, 0);
+    if(!meshGenerated) {
+        ofSetColor(255,255,255,255);
+    } else {
+        ofSetColor(100,100,100,255);
+    }
     noAlphaImage.draw(0,0);
+    
+    // draw mesh
+    
+    if(meshGenerated) {
+        ofSetColor(0, 255, 0);
+        mesh.drawWireframe();
+    }
+    
+    // draw user-added extra verts
+    
+    for(int i = 0; i < extraVerts.size(); i++) {
+        int blinkColor = round(sin(ofGetElapsedTimef())+1)*255/2;
+        ofSetColor(blinkColor, 0, 0);
+        ofCircle(extraVerts[i].x, extraVerts[i].y, 2);
+    }
     
     // draw contours found from the thresholded image
     
-    ofSetColor(255, 0, 0);
-    contourFinder.draw();
+    if(!meshGenerated) {
+        ofSetColor(255, 0, 0);
+        contourFinder.draw();
+    }
     
     ofPopMatrix();
     
     gui.draw();
+    
+}
+
+void MeshGenerator::reset() {
+    
+    meshGenerated = false;
+    contourLine.clear();
+    extraVerts.clear();
     
 }
 
@@ -75,6 +107,16 @@ void MeshGenerator::setImage(ofImage img) {
     
 }
 
+void MeshGenerator::addExtraVertex(int x, int y) {
+    
+    int nx = x - (ofGetWidth()/2  - cvImage.width/2);
+    int ny = y - (ofGetHeight()/2 - cvImage.height/2);
+    
+    //temporarily disabled
+    //extraVerts.push_back(ofPoint(nx,ny));
+    
+}
+
 void MeshGenerator::generateMesh() {
     
     // create a polyline with all of the contour points
@@ -102,6 +144,10 @@ void MeshGenerator::generateMesh() {
         // I want to make sure the first point and the last point are not the same, since triangle is unhappy:
         lineRespaced.getVertices().erase(lineRespaced.getVertices().begin());
         
+        for(int i = 0; i < extraVerts.size(); i++) {
+            lineRespaced.addVertex(extraVerts[i]);
+        }
+        
         // if we have a proper set of points, mesh them:
         if (lineRespaced.size() > 5){
             
@@ -113,6 +159,12 @@ void MeshGenerator::generateMesh() {
     
     mesh = triangleMesh.triangulatedMesh;
     
+    // fix loosely connected faces
+    // i.e., if two triangles are connected by one point.
+    // (this causes ofxPuppet to freak out.)
+    
+    //todo
+    
     // reset mesh texture coords to match with an image
     
     int len = mesh.getNumVertices();
@@ -120,6 +172,8 @@ void MeshGenerator::generateMesh() {
         ofVec2f vec = mesh.getVertex(i);
         mesh.addTexCoord(vec);
     }
+    
+    meshGenerated = true;
     
 }
 

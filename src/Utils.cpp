@@ -98,3 +98,4 @@ void Utils::loadImages() {
     Utils::hand.loadImage("ui/hand.png");
     
 }
+
