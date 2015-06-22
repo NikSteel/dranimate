@@ -119,9 +119,21 @@ void ofApp::draw() {
             
             Utils::drawControls("p   -   Preview mesh\nm   -   Generate mesh and create puppet");
             
+            Utils::drawState("Mesh creator");
+            
             break;
         
         } case PUPPET_STAGE: {
+            
+            // state stuff
+            
+            Utils::drawState("Puppet stage");
+            
+            // big red recording button
+            if(recordingScene) {
+                ofSetColor(255/2+sin(ofGetElapsedTimef()*10)*255/5, 0, 0);
+                ofCircle(50, ofGetHeight()-50, 30);
+            }
             
             // draw puppet recordings
             
@@ -132,10 +144,14 @@ void ofApp::draw() {
             // draw puppets
             
             for(int i = 0; i < puppets.size(); i++) {
+                
                 glEnable(GL_BLEND);
                 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                
                 bool isSelected = i == selectedPuppetIndex;
-                puppets[i].draw(isSelected);
+                bool isBeingRecorded = isSelected && recordingPuppet;
+                puppets[i].draw(isSelected, isBeingRecorded);
+                
             }
             
             // draw currently selected vertex info
@@ -529,7 +545,8 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("remove puppet");
     clickDownMenu.UnRegisterMenu("reset puppet");
     clickDownMenu.UnRegisterMenu(" ");
-    clickDownMenu.UnRegisterMenu("export as mov");
+    clickDownMenu.UnRegisterMenu("export recording as mov");
+    clickDownMenu.UnRegisterMenu("remove recording");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("bg brightness");
     clickDownMenu.UnRegisterMenu("leap sensitivity");
@@ -587,7 +604,8 @@ void ofApp::updateClickDownMenu() {
     }
     
     if(selectedRecordingIndex != -1) {
-        clickDownMenu.RegisterMenu("export as mov");
+        clickDownMenu.RegisterMenu("export recording as mov");
+        clickDownMenu.RegisterMenu("remove recording");
         clickDownMenu.RegisterMenu(" ");
     }
     
@@ -721,9 +739,14 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         hoveredVertexIndex = -1;
         
     }
-    if (ev.message == "menu::export as mov") {
+    if (ev.message == "menu::export recording as mov") {
         
         recordedPuppets[selectedRecordingIndex].exportAsMovie();
+        
+    }
+    if (ev.message == "menu::remove recording") {
+        
+        recordedPuppets.erase(recordedPuppets.begin() + selectedRecordingIndex);
         
     }
     if (ev.message == "menu::clear all") {

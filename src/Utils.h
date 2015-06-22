@@ -22,6 +22,7 @@ public:
     
     static void drawControls(string s);
     static void drawWarning(string s);
+    static void drawState(string s);
     
     static void loadImages();
     

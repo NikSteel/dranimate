@@ -79,7 +79,7 @@ int Utils::getClosestIndex(ofMesh mesh, int x, int y) {
 void Utils::drawControls(string s) {
     
     ofSetColor(255,255,255);
-    ofDrawBitmapString(s, ofGetWidth()-350, 60);
+    ofDrawBitmapString(s, ofGetWidth()-350, 90);
     
 }
 
@@ -87,6 +87,14 @@ void Utils::drawWarning(string s) {
     
     float flash = abs(sin(ofGetElapsedTimef()*10)*100);
     ofSetColor(255,flash,flash);
+    ofDrawBitmapString(s, ofGetWidth()-350, 60);
+    
+}
+
+void Utils::drawState(string s) {
+    
+    float flash = abs(sin(ofGetElapsedTimef()*3)*100)+100;
+    ofSetColor(flash,flash,255);
     ofDrawBitmapString(s, ofGetWidth()-350, 30);
     
 }

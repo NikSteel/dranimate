@@ -30,7 +30,7 @@ public:
     
     void reset();
     void update();
-    void draw(bool isSelected);
+    void draw(bool isSelected, bool isBeingRecorded);
     
     void resetPose();
     

@@ -228,11 +228,13 @@ void Puppet::update() {
     
 }
 
-void Puppet::draw(bool isSelected) {
+void Puppet::draw(bool isSelected, bool isBeingRecorded) {
     
     // draw the subdivided mesh textured with our image
     
-    if(isSelected) {
+    if(isBeingRecorded) {
+        ofSetColor(255,155,155);
+    } else if(isSelected) {
         ofSetColor(100,100,200);
     } else {
         ofSetColor(255,255,255);
@@ -246,7 +248,7 @@ void Puppet::draw(bool isSelected) {
     
     // draw the wireframe & control points as well
     
-    if(isSelected) {
+    if(isSelected && !isBeingRecorded) {
         
         // draw wireframe
         glLineWidth(1.0);
