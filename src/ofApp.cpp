@@ -69,18 +69,11 @@ void ofApp::update() {
                 hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(), mouseX, mouseY);
             }
             
-            // send new leap data to puppets
-            
+            // update & send new leap data to puppets
             leapHandler.recieveNewData();
             for(int i = 0; i < puppets.size(); i++) {
-                if(i != selectedPuppetIndex) {
+                if(i != selectedPuppetIndex || recordingPuppet) {
                     puppets[i].recieveLeapData(&leapHandler);
-                }
-            }
-            
-            // update all puppets
-            for(int i = 0; i < puppets.size(); i++) {
-                if(i != selectedPuppetIndex) {
                     puppets[i].update();
                 }
             }
