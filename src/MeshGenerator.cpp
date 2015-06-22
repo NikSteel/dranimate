@@ -165,6 +165,13 @@ void MeshGenerator::generateMesh() {
     
     //todo
     
+    // somehow fix broken meshes
+    // i.e., there exist whole pieces of the mesh that are
+    // completely disconnected from the rest of the mesh (islands)
+    // (this causes ofxPuppet to disappear or even crash)
+    
+    //todo
+    
     // reset mesh texture coords to match with an image
     
     int len = mesh.getNumVertices();

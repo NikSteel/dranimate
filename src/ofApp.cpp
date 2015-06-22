@@ -91,6 +91,14 @@ void ofApp::update() {
                 puppetRecorder.recordPuppetFrame(selectedPuppet());
             }
             
+            // update scene recorder
+            sceneRecorder.update();
+            if(recordingScene) {
+                for(int i = 0; i < recordedPuppets.size(); i++) {
+                    sceneRecorder.addPuppetToFrame(recordedPuppets[i]);
+                }
+            }
+            
             for(int i = 0; i < recordedPuppets.size(); i++) {
                 recordedPuppets[i].update();
             }
@@ -169,7 +177,7 @@ void ofApp::draw() {
             
             // instructions
             
-            Utils::drawControls("c     -    Calibrate leap contoller\nr     -    Start/stop recording\nspace -    Pause all animation");
+            Utils::drawControls("c     -    Calibrate leap contoller\nr     -    Start/stop puppet recording\ns     -    Start/stop whole scene recording\nspace -    Pause all animation");
             
             if(!leapHandler.calibrated) {
                 Utils::drawWarning("Leap not calibrated!");
@@ -334,6 +342,17 @@ void ofApp::keyReleased(int key) {
                 } else {
                     recordedPuppets.push_back(puppetRecorder);
                     recordingPuppet = false;
+                }
+            }
+            
+            // toggle scene recording
+            if(key == 's') {
+                if(!recordingScene) {
+                    sceneRecorder.setup();
+                    recordingScene = true;
+                } else {
+                    sceneRecorder.exportAsMovie();
+                    recordingScene = false;
                 }
             }
             

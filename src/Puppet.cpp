@@ -163,6 +163,7 @@ void Puppet::setImage(ofImage img) {
 void Puppet::setMesh(ofMesh m) {
     
     mesh = m;
+    originalMesh = m;
     
     meshDeformer.setup(mesh);
     regenerateSubdivisionMesh();

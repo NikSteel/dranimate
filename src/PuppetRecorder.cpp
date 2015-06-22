@@ -80,7 +80,7 @@ void PuppetRecorder::exportAsMovie() {
     
     // convert images to movie
     ofLog() << "creating movie from frames...";
-    ofSystem("./../../../data/movies/ffmpeg -framerate 30 -i ../../../data/temp/tempimg%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+ofGetTimestampString()+".mp4");
+    ofSystem("./../../../data/movies/ffmpeg -framerate 60 -i ../../../data/temp/tempimg%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+ofGetTimestampString()+".mp4");
     ofSystem("rm ../../../data/temp/*");
     
 }

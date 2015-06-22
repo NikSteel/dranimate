@@ -16,6 +16,7 @@
 #include "Puppet.h"
 #include "MeshGenerator.h"
 #include "PuppetRecorder.h"
+#include "SceneRecorder.h"
 #include "LeapDataHandler.h"
 #include "Utils.h"
 #include "ImageFromCamera.h"
@@ -90,5 +91,10 @@ public:
 // camera
     
     ImageFromCamera cam;
+    
+// scene recorder
+    
+    bool recordingScene;
+    SceneRecorder sceneRecorder;
     
 };
