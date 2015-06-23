@@ -11,6 +11,14 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "PuppetRecorder::getCurrentMesh():PuppetRecorder.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentFrame">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ofxLeapMotion::getSimpleHands():ofxLeapMotion.cpp">
          <PersistentStrings>
             <PersistentString

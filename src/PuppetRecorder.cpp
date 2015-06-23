@@ -53,9 +53,9 @@ void PuppetRecorder::save(string path) {
 
 void PuppetRecorder::exportAsMovie() {
     
-    currentFrame = 0;
+    string movieName = ofGetTimestampString();
     
-    ofSystem("rm ../../../data/temp/*");
+    currentFrame = 0;
     
     for(int i = 0; i < animationFrames.size(); i++) {
         currentFrame = i;
@@ -73,15 +73,14 @@ void PuppetRecorder::exportAsMovie() {
         ofPixels p;
         recorder.readToPixels(p);
         img.setFromPixels(p);
-        img.saveImage("temp/tempimg"+ofToString(currentFrame)+".png");
+        img.saveImage("movies/"+movieName+"/frames/frame"+ofToString(currentFrame)+".png");
         
         ofLog() << "saved frame " << ofToString(i) << " of " << ofToString(animationFrames.size());
     }
     
     // convert images to movie
     ofLog() << "creating movie from frames...";
-    ofSystem("./../../../data/movies/ffmpeg -framerate 60 -i ../../../data/temp/tempimg%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+ofGetTimestampString()+".mp4");
-    ofSystem("rm ../../../data/temp/*");
+    ofSystem("./../../../data/program/ffmpeg -framerate 60 -i ../../../data/movies/"+movieName+"/frames/frame%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+movieName+"/movie.mov");
     
 }
 

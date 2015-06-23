@@ -5,7 +5,7 @@ void MeshGenerator::setup() {
     gui.setup();
     gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
     gui.add(invertImage.setup("invert image", true));
-    gui.add(contourResampleAmt.setup("contour resample amount", 15, 1, 30));
+    gui.add(contourResampleAmt.setup("contour resample amount", 15, 15, 60));
     gui.add(triangleAngleConstraint.setup("triangle angle constraint", 28, 0, 28));
     gui.add(triangleSizeConstraint.setup("triangle size constraint", -1, -1, 100));
     
@@ -117,6 +117,43 @@ void MeshGenerator::addExtraVertex(int x, int y) {
     
 }
 
+bool MeshGenerator::isMeshBroken() {
+    
+    bool isBroken = false;
+    
+    // find loosely connected faces
+    // i.e., if two triangles are connected by one point.
+    // (this causes ofxPuppet to freak out.)
+    
+    for(int i = 0; i < mesh.getVertices().size(); i++) {
+        
+        vector<int> connectedFaces = Utils::getFacesConnectedToVertex(mesh,i);
+        
+        /*
+         ofLog() << i;
+         for(int f = 0; f < connectedFaces.size(); f++) {
+         ofLog() << "     " << connectedFaces[f];
+         }
+         */
+        
+        if(connectedFaces.size() == 2) {
+            
+            ofMeshFace face1 = mesh.getUniqueFaces()[connectedFaces[0]];
+            ofMeshFace face2 = mesh.getUniqueFaces()[connectedFaces[1]];
+            
+            if(Utils::facesOnlyShareOneVertex(face1,face2)) {
+                isBroken = true;
+                ofLog() << "loose vertex at " << i;
+            }
+            
+        }
+        
+    }
+    
+    return isBroken;
+    
+}
+
 void MeshGenerator::generateMesh() {
     
     // create a polyline with all of the contour points
@@ -159,11 +196,24 @@ void MeshGenerator::generateMesh() {
     
     mesh = triangleMesh.triangulatedMesh;
     
-    // fix loosely connected faces
-    // i.e., if two triangles are connected by one point.
-    // (this causes ofxPuppet to freak out.)
-    
-    //todo
+    if(isMeshBroken()) {
+        
+        ofLog() << "could not generate mesh. try changing the contour resample amount.";
+        
+        meshGenerated = false;
+        
+    } else {
+        
+        meshGenerated = true;
+        
+        // reset mesh texture coords to match with image
+        int len = mesh.getNumVertices();
+        for(int i = 0; i < len; i++) {
+            ofVec2f vec = mesh.getVertex(i);
+            mesh.addTexCoord(vec);
+        }
+        
+    }
     
     // somehow fix broken meshes
     // i.e., there exist whole pieces of the mesh that are
@@ -171,16 +221,6 @@ void MeshGenerator::generateMesh() {
     // (this causes ofxPuppet to disappear or even crash)
     
     //todo
-    
-    // reset mesh texture coords to match with an image
-    
-    int len = mesh.getNumVertices();
-    for(int i = 0; i < len; i++) {
-        ofVec2f vec = mesh.getVertex(i);
-        mesh.addTexCoord(vec);
-    }
-    
-    meshGenerated = true;
     
 }
 

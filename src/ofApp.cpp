@@ -14,7 +14,7 @@ void ofApp::setup() {
     // load a demo puppet
     
     Puppet demoPuppet;
-    demoPuppet.load("exported-puppets/demo-killingashkeboos/");
+    demoPuppet.load("puppets/demo-killingashkeboos/");
     puppets.push_back(demoPuppet);
     
     // setup ui stuff

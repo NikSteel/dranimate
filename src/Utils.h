@@ -24,6 +24,11 @@ public:
     static void drawWarning(string s);
     static void drawState(string s);
     
+    static void convertImagesToMovie(string fn);
+    
+    static std::vector<int> getFacesConnectedToVertex(ofMesh mesh, int i);
+    static bool facesOnlyShareOneVertex(ofMeshFace face1, ofMeshFace face2);
+    
     static void loadImages();
     
     static ofImage hand;

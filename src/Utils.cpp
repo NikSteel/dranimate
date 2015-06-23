@@ -99,11 +99,59 @@ void Utils::drawState(string s) {
     
 }
 
+void Utils::convertImagesToMovie(string fn) {
+    
+    ofLog() << "creating movie from frames in "+fn+"...";
+    ofSystem("./../../../data/movies/ffmpeg -vcodec png -framerate 60 -i ../../../data/temp/frame%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ../../../data/movies/"+fn+"/movie.mov");
+    
+}
+
+std::vector<int> Utils::getFacesConnectedToVertex(ofMesh mesh, int i) {
+    
+    vector<int> results;
+    
+    ofVec3f targetVertex = mesh.getVertex(i);
+    
+    for(int i = 0; i < mesh.getUniqueFaces().size(); i++) {
+        
+        for(int f = 0; f < 3; f++) {
+            
+            ofVec3f faceVertex = mesh.getUniqueFaces()[i].getVertex(f);
+            if(faceVertex == targetVertex) {
+                results.push_back(i);
+            }
+            
+        }
+        
+    }
+    
+    return results;
+    
+}
+
+bool Utils::facesOnlyShareOneVertex(ofMeshFace faceA, ofMeshFace faceB) {
+    
+    int vertexShareCount = 0;
+    
+    for(int a = 0; a < 3; a++) {
+        for(int b = 0; b < 3; b++) {
+            
+            if(faceA.getVertex(a) == faceB.getVertex(b)) {
+                vertexShareCount++;
+            }
+            
+        }
+    }
+    
+    return vertexShareCount == 1;
+    
+}
+
 ofImage Utils::hand;
 
 void Utils::loadImages() {
     
-    Utils::hand.loadImage("ui/hand.png");
+    Utils::hand.loadImage("program/hand.png");
     
 }
 

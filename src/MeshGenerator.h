@@ -9,6 +9,7 @@
 #include "ofxCv.h"
 #include "ofxTriangleMesh.h"
 #include "ofxGui.h"
+#include "Utils.h"
 
 class MeshGenerator {
     
@@ -33,6 +34,8 @@ private:
     ofxSlider<int> contourResampleAmt;
     ofxSlider<int> triangleAngleConstraint;
     ofxSlider<int> triangleSizeConstraint;
+    
+    bool isMeshBroken();
     
     bool meshGenerated;
     
