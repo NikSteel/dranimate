@@ -11,6 +11,7 @@ class LeapDataHandler {
 public:
     
     void setup();
+    void update();
     void calibrate();
     void recieveNewData();
     
@@ -26,6 +27,8 @@ public:
     ofVec3f calibratedPalmPosition;
     vector<ofVec3f> fingersPositions;
     vector<ofVec3f> fingersCalibration;
+    
+    int calibrationTimer;
     
     bool calibrated;
     

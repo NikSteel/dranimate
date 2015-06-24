@@ -3,19 +3,37 @@
 void LeapDataHandler::setup() {
     
     leap.open();
-    fingersPositions.resize(5);
-    fingersCalibration.resize(5);
+    fingersPositions.resize(10);
+    fingersCalibration.resize(10);
     calibrated = false;
+    
+    calibrationTimer = 0;
     
 }
 
 void LeapDataHandler::calibrate() {
     
-    for(int i = 0; i < 5; i++) {
+    for(int i = 0; i < 10; i++) {
         fingersCalibration[i] = fingersPositions[i];
     }
     calibratedPalmPosition = palmPosition;
     calibrated = true;
+    
+}
+
+void LeapDataHandler::update() {
+    
+    recieveNewData();
+    
+    if(calibrationTimer > 0) {
+        
+        calibrationTimer--;
+        
+        if(calibrationTimer == 0) {
+            calibrate();
+        }
+        
+    }
     
 }
 
@@ -40,6 +58,14 @@ void LeapDataHandler::recieveNewData() {
                 simpleHands[0].fingers[i].pos.y*sensitivity*MAX_SENSITIVITY,
                 simpleHands[0].fingers[i].pos.z*sensitivity*MAX_SENSITIVITY);
         }
+        if(simpleHands.size() > 1) {
+            for(int i = 0; i < 5; i++) {
+                fingersPositions[i+5] = ofVec3f(
+                    simpleHands[1].fingers[i].pos.x*sensitivity*MAX_SENSITIVITY,
+                    simpleHands[1].fingers[i].pos.y*sensitivity*MAX_SENSITIVITY,
+                    simpleHands[1].fingers[i].pos.z*sensitivity*MAX_SENSITIVITY);
+            }
+        }
         
     }
     
@@ -50,7 +76,7 @@ void LeapDataHandler::recieveNewData() {
 
 void LeapDataHandler::drawLeapCalibrationMenu() {
     
-    for(int i = 0; i < 5; i++) {
+    for(int i = 0; i < 10; i++) {
         
         int x = fingersPositions[i].x;
         int y = -fingersPositions[i].y;
@@ -65,7 +91,7 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
     ofDrawBitmapString("Palm", palmPosition.x+palmPosition.z, -palmPosition.y+palmPosition.z);
     
     if(calibrated) {
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < 10; i++) {
             
             ofSetColor(0,255,255);
             int x =  fingersCalibration[i].x;

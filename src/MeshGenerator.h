@@ -51,6 +51,8 @@ public:
     
     void generateMesh();
     
+    ofImage addAlphaToImage(ofImage img);
+    
     ofMesh getMesh();
     ofPolyline getContour();
     

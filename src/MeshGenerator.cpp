@@ -146,6 +146,7 @@ bool MeshGenerator::isMeshBroken() {
                 ofLog() << "loose vertex at " << i;
             }
             
+            
         }
         
     }
@@ -202,7 +203,7 @@ void MeshGenerator::generateMesh() {
         
         meshGenerated = false;
         
-    } else {
+    } //else {
         
         meshGenerated = true;
         
@@ -213,7 +214,7 @@ void MeshGenerator::generateMesh() {
             mesh.addTexCoord(vec);
         }
         
-    }
+    //}
     
     // somehow fix broken meshes
     // i.e., there exist whole pieces of the mesh that are
@@ -221,6 +222,28 @@ void MeshGenerator::generateMesh() {
     // (this causes ofxPuppet to disappear or even crash)
     
     //todo
+    
+}
+
+ofImage MeshGenerator::addAlphaToImage(ofImage img) {
+    
+    // currently broken ...
+    /*
+    ofImage grayImg;
+    grayImg.allocate(cvImage.width, cvImage.height,OF_IMAGE_GRAYSCALE);
+    unsigned char * pixels = cvImage.getPixels();
+    grayImg.setFromPixels(pixels, cvImage.width, cvImage.height,OF_IMAGE_GRAYSCALE);
+    
+    for(int x = 0; x < img.width; x++) {
+        for(int y = 0; y < img.height; y++) {
+            if(grayImg.getColor(x, y).r < 100){
+                img.setColor(x, y, ofColor(0,0,0,0));
+            }
+        }
+    }
+     */
+    
+    return img;
     
 }
 

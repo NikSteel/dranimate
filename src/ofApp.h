@@ -20,6 +20,7 @@
 #include "LeapDataHandler.h"
 #include "Utils.h"
 #include "ImageFromCamera.h"
+#include "Resources.h"
 
 class ofApp : public ofBaseApp {
     
@@ -74,13 +75,13 @@ public:
     bool addingBone = false;
     int boneRootVertexIndex;
     
-    float backgroundBrightness;
-    
     int hoveredVertexIndex;
     int selectedVertexIndex;
     int selectedPuppetIndex;
     
     int selectedRecordingIndex;
+    
+    ofxButton b;
     
 // clickdown menu
     

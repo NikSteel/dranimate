@@ -16,6 +16,7 @@
 #include "OSCNamespace.h"
 #include "Utils.h"
 #include "LeapDataHandler.h"
+#include "Resources.h"
 
 class Puppet {
     
@@ -57,20 +58,17 @@ public:
     ofMesh subdivided;
     ofxButterfly butterfly;
     
-    float scale = 1;//todo fix this...
-    float oldScale;
-    
     // puppeteering
     
     ofxPuppet meshDeformer;
     vector<ExpressionZone> expressionZones;
     
-    bool isPaused;
-    
     // image
     
     ofImage image;
     ofPolyline contour;
+    
+    bool isBeingEdited;
     
 };
 

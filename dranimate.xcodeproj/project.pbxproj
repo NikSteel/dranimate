@@ -77,6 +77,7 @@
 		D6A4A8EAF84D136E7139B1F0 /* WmlVector4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52ADCD05F29713A7103C0859 /* WmlVector4.cpp */; };
 		D71539AF406640D0D108A702 /* WmlLinearSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CF53464B98B59DEEDD6FA /* WmlLinearSystem.cpp */; };
 		DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D347FB65D19015303863922A /* Wrappers.cpp */; };
+		DF02C7C21B3B00A500AD4020 /* Resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF02C7C01B3B00A500AD4020 /* Resources.cpp */; };
 		DF54E87F1B334BB300D19A12 /* ImageFromCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF54E87D1B334BB300D19A12 /* ImageFromCamera.cpp */; };
 		DF54E8821B334C0800D19A12 /* LeapDataHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF54E8801B334C0800D19A12 /* LeapDataHandler.cpp */; };
 		DFAF1A471B30561600974550 /* ofxCDMEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAF1A411B30561600974550 /* ofxCDMEvent.cpp */; };
@@ -382,6 +383,8 @@
 		DB8653D6433E14BF06F3EFAF /* cvwimage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvwimage.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cvwimage.h; sourceTree = SOURCE_ROOT; };
 		DCB56F4E9F44E31D571BC9C4 /* index_testing.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = index_testing.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/index_testing.h; sourceTree = SOURCE_ROOT; };
 		DEA2EDC0AFD59176FDEDC222 /* ofxCvShortImage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvShortImage.h; path = ../../../addons/ofxOpenCv/src/ofxCvShortImage.h; sourceTree = SOURCE_ROOT; };
+		DF02C7C01B3B00A500AD4020 /* Resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resources.cpp; sourceTree = "<group>"; };
+		DF02C7C11B3B00A500AD4020 /* Resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resources.h; sourceTree = "<group>"; };
 		DF54E87D1B334BB300D19A12 /* ImageFromCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageFromCamera.cpp; sourceTree = "<group>"; };
 		DF54E87E1B334BB300D19A12 /* ImageFromCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageFromCamera.h; sourceTree = "<group>"; };
 		DF54E8801B334C0800D19A12 /* LeapDataHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LeapDataHandler.cpp; sourceTree = "<group>"; };
@@ -1340,6 +1343,8 @@
 				DF54E87E1B334BB300D19A12 /* ImageFromCamera.h */,
 				200DCBBE1B233A95002EA7A3 /* Utils.cpp */,
 				200DCBBF1B233A95002EA7A3 /* Utils.h */,
+				DF02C7C01B3B00A500AD4020 /* Resources.cpp */,
+				DF02C7C11B3B00A500AD4020 /* Resources.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1511,6 +1516,7 @@
 				2006E5691B16625000F1CCA7 /* MeshGenerator.cpp in Sources */,
 				F0D4B323F3C5DEAF5EF07A14 /* mesh.cpp in Sources */,
 				B6840996567E78436F7ECFAB /* ETF.cpp in Sources */,
+				DF02C7C21B3B00A500AD4020 /* Resources.cpp in Sources */,
 				200DCBC01B233A95002EA7A3 /* Utils.cpp in Sources */,
 				F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */,
 				EBCDE831EFAE08274E799C97 /* Calibration.cpp in Sources */,

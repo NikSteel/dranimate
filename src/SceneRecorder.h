@@ -2,7 +2,7 @@
 #define __dranimate__SceneRecorder__
 
 #include <stdio.h>
-#include <vector.h>
+#include <vector>
 
 #include "ofMain.h"
 #include "PuppetRecorder.h"

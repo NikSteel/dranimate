@@ -12,12 +12,14 @@ bool Utils::hasEnding (std::string const &fullString, std::string const &ending)
 
 bool Utils::filenameIsImage(std::string fn) {
     
-    return  Utils::hasEnding(fn, ".png") ||
-            Utils::hasEnding(fn, ".psd") ||
-            Utils::hasEnding(fn, ".gif") ||
-            Utils::hasEnding(fn, ".bmp") ||
-            Utils::hasEnding(fn, ".jpg") ||
-            Utils::hasEnding(fn, ".jpeg");
+    return  Utils::hasEnding(fn, ".png")  ||
+            Utils::hasEnding(fn, ".psd")  ||
+            Utils::hasEnding(fn, ".gif")  ||
+            Utils::hasEnding(fn, ".bmp")  ||
+            Utils::hasEnding(fn, ".jpg")  ||
+            Utils::hasEnding(fn, ".jpeg") ||
+            Utils::hasEnding(fn, ".JPG")  ||
+            Utils::hasEnding(fn, ".JPEG");
     
 }
 
@@ -78,8 +80,11 @@ int Utils::getClosestIndex(ofMesh mesh, int x, int y) {
 
 void Utils::drawControls(string s) {
     
+    ofSetColor(0,0,0);
+    for(int x = -1; x <= 1; x++) { for(int y = -1; y <= 1; y++) {
+    Resources::verdana12.drawString(s, ofGetWidth()-350-x, 30+y); }}
     ofSetColor(255,255,255);
-    ofDrawBitmapString(s, ofGetWidth()-350, 90);
+    Resources::verdana12.drawString(s, ofGetWidth()-350, 30);
     
 }
 
@@ -87,15 +92,17 @@ void Utils::drawWarning(string s) {
     
     float flash = abs(sin(ofGetElapsedTimef()*10)*100);
     ofSetColor(255,flash,flash);
-    ofDrawBitmapString(s, ofGetWidth()-350, 60);
+    Resources::verdana16.drawString(s, ofGetWidth()-350, 90);
     
 }
 
 void Utils::drawState(string s) {
     
-    float flash = abs(sin(ofGetElapsedTimef()*3)*100)+100;
-    ofSetColor(flash,flash,255);
-    ofDrawBitmapString(s, ofGetWidth()-350, 30);
+    ofSetColor(0,0,0);
+    for(int x = -1; x <= 1; x++) { for(int y = -1; y <= 1; y++) {
+    Resources::verdana16.drawString(s, 30-x, ofGetHeight()-30+y); }}
+    ofSetColor(255,255,255);
+    Resources::verdana16.drawString(s, 30,   ofGetHeight()-30);
     
 }
 
@@ -147,11 +154,18 @@ bool Utils::facesOnlyShareOneVertex(ofMeshFace faceA, ofMeshFace faceB) {
     
 }
 
-ofImage Utils::hand;
-
-void Utils::loadImages() {
+void Utils::drawGrid() {
     
-    Utils::hand.loadImage("program/hand.png");
+    int nHorizontalDraws = ofGetWidth() / Resources::grid.width;
+    int nVerticalDraws   = ofGetHeight() / Resources::grid.height;
+    
+    for(int x = 0; x <= nHorizontalDraws; x++) {
+        for(int y = 0; y <= nVerticalDraws; y++) {
+            
+            Resources::grid.draw(x*Resources::grid.width,y*Resources::grid.height);
+            
+        }
+    }
     
 }
 

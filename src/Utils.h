@@ -29,9 +29,8 @@ public:
     static std::vector<int> getFacesConnectedToVertex(ofMesh mesh, int i);
     static bool facesOnlyShareOneVertex(ofMeshFace face1, ofMeshFace face2);
     
-    static void loadImages();
+    static void drawGrid();
     
-    static ofImage hand;
 };
 
 #endif
