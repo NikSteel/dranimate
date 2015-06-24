@@ -410,6 +410,7 @@ void ofApp::dragEvent(ofDragInfo info) {
         Puppet loadedPuppet;
         loadedPuppet.load(info.files.at(0));
         puppets.push_back(loadedPuppet);
+        selectedPuppetIndex = puppets.size()-1;
         state = PUPPET_STAGE;
         
     }
@@ -497,11 +498,14 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 void ofApp::mouseDragged(int x, int y, int button) {
     
-    if(selectedVertexIndex != -1) {
+    if(selectedPuppet() != NULL) {
         
-        //selectedPuppet()->meshDeformer.setControlPoint(selectedVertexIndex, ofVec2f(x,y));
-        selectedPuppet()->mesh.setVertex(selectedVertexIndex, ofVec2f(x,y)-selectedPuppet()->getExpressionZone(selectedVertexIndex)->userControlledDisplacement);
-        selectedPuppet()->update();
+        ExpressionZone *ezone = selectedPuppet()->getExpressionZone(selectedVertexIndex);
+        
+        if(ezone != NULL && ezone->isAnchorPoint) {
+            ezone->userControlledDisplacement = ofVec2f(mouseX,mouseY) - selectedPuppet()->mesh.getVertex(selectedVertexIndex);
+            selectedPuppet()->update();
+        }
         
     }
     
@@ -518,6 +522,7 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("add leap mapping");
     clickDownMenu.UnRegisterMenu("add osc mapping");
     clickDownMenu.UnRegisterMenu("add bone");
+    clickDownMenu.UnRegisterMenu("set anchor point");
     clickDownMenu.UnRegisterMenu("remove ezone");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("edit puppet");
@@ -528,7 +533,8 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("export recording as mov");
     clickDownMenu.UnRegisterMenu("remove recording");
     clickDownMenu.UnRegisterMenu(" ");
-    clickDownMenu.UnRegisterMenu("clear all");
+    clickDownMenu.UnRegisterMenu("clear all puppets");
+    clickDownMenu.UnRegisterMenu("clear all recordings");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("cancel puppet creation");
     clickDownMenu.UnRegisterMenu(" ");
@@ -542,7 +548,8 @@ void ofApp::updateClickDownMenu() {
             clickDownMenu.RegisterMenu("create puppet");
             clickDownMenu.RegisterMenu("create puppet (live)");
             clickDownMenu.RegisterMenu(" ");
-            clickDownMenu.RegisterMenu("clear all");
+            clickDownMenu.RegisterMenu("clear all puppets");
+            clickDownMenu.RegisterMenu("clear all recordings");
             clickDownMenu.RegisterMenu(" ");
             
         } else {
@@ -576,6 +583,7 @@ void ofApp::updateClickDownMenu() {
                     clickDownMenu.RegisterBranch("add leap mapping", &leapFingersBranch);
                     clickDownMenu.RegisterMenu("add osc mapping");
                     clickDownMenu.RegisterMenu("add bone");
+                    clickDownMenu.RegisterMenu("set anchor point");
                     clickDownMenu.RegisterMenu("remove ezone");
                     
                     clickDownMenu.RegisterMenu(" ");
@@ -615,6 +623,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
             Puppet loadedPuppet;
             loadedPuppet.load(openFileResult.getPath());
             puppets.push_back(loadedPuppet);
+            selectedPuppetIndex = puppets.size()-1;
             state = PUPPET_STAGE;
         }
         
@@ -702,6 +711,14 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         boneRootVertexIndex = selectedVertexIndex;
         
     }
+    if (ev.message == "menu::set anchor point") {
+        
+        // set the selected ezone to be an anchor point
+        selectedPuppet()->getExpressionZone(selectedVertexIndex)->isAnchorPoint = true;
+        
+        selectedPuppet()->getExpressionZone(selectedVertexIndex)->userControlledDisplacement = selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex) - selectedPuppet()->mesh.getVertex(selectedVertexIndex);
+        
+    }
     if (ev.message == "menu::remove ezone") {
         
         selectedPuppet()->removeExpressionZone(selectedVertexIndex);
@@ -750,9 +767,18 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         recordedPuppets.erase(recordedPuppets.begin() + selectedRecordingIndex);
         
     }
-    if (ev.message == "menu::clear all") {
+    if (ev.message == "menu::clear all puppets") {
         
         puppets.clear();
+        
+        selectedPuppetIndex = -1;
+        selectedVertexIndex = -1;
+        hoveredVertexIndex = -1;
+        
+    }
+    if (ev.message == "menu::clear all recordings") {
+        
+        recordedPuppets.clear();
         
         selectedPuppetIndex = -1;
         selectedVertexIndex = -1;

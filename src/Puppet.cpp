@@ -251,12 +251,24 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
         for(int i = 0; i < expressionZones.size(); i++) {
             ofVec3f v = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].meshIndex);
             
-            ofSetColor(255, 255, 0);
-            ofCircle(v, 7);
-            
-            if(expressionZones[i].leapFingerID != -1) {
+            if(expressionZones[i].isAnchorPoint) {
+                
+                ofSetColor(255, 0, 255);
+                ofCircle(v, 7);
+                
+            } else if(expressionZones[i].leapFingerID != -1) {
+                
+                ofSetColor(0, 255, 0);
+                ofCircle(v, 7);
+                
                 ofSetColor(255, 255, 255);
                 Resources::hand.draw(v.x-7, v.y-7, 14, 14);
+                
+            } else {
+                
+                ofSetColor(255, 255, 0);
+                ofCircle(v, 7);
+                
             }
             
             // draw bones
@@ -265,7 +277,7 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
                 ofVec3f toVertex = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].parentEzone);
                 
                 ofSetColor(255, 255, 0);
-                ofSetLineWidth(3);
+                ofSetLineWidth(2);
                 ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
                 ofSetLineWidth(1);
             }
@@ -323,6 +335,7 @@ void Puppet::addExpressionZone(int meshIndex) {
     ExpressionZone newExpressionZone;
     newExpressionZone.meshIndex = meshIndex;
     newExpressionZone.leapFingerID = -1;
+    newExpressionZone.isAnchorPoint = false;
     expressionZones.push_back(newExpressionZone);
     
 }
@@ -404,7 +417,11 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
         
         ExpressionZone *ezone = &expressionZones[i];
         
-        if(ezone->leapFingerID != -1) {
+        if(ezone->isAnchorPoint) {
+          
+            
+            
+        } else if(ezone->leapFingerID != -1) {
         
             // this ezone has a finger mapping!
             // so set this ezone's displacement to that leap finger
@@ -454,27 +471,9 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
             
             float d = ezoneVertexPosition.distance(ezoneParentVertexPosition);
             
-            /*
-            ofVec3f diff = ezoneAbsoulteVertexPosition - ezoneParentAbsoluteVertexPosition;
-            diff = diff.normalized() * d;
-            diff = ezoneParentAbsoluteVertexPosition + diff;
-            diff = diff - ezoneVertexPosition;
-             */
+            float angle = atan2(ezoneAbsoulteVertexPosition.y-ezoneParentAbsoluteVertexPosition.y, ezoneAbsoulteVertexPosition.x-ezoneParentAbsoluteVertexPosition.x);
             
             ofVec3f diff;
-            //diff = ezoneAbsoulteVertexPosition - ezoneParentAbsoluteVertexPosition;
-            
-            float angle = atan2(ezoneParentVertexPosition.y-ezoneVertexPosition.y, ezoneParentVertexPosition.x-ezoneVertexPosition.x);
-            angle += PI/2;
-            
-            float dis = (leap->calibratedPalmPosition.y - leap->fingersPositions[expressionZones[i].leapFingerID].y)*0.010;
-            if(angle > -PI/2) {
-                //angle += -ezone->userControlledDisplacement.y*0.005;
-                angle += dis;
-            } else {
-                angle -= dis;
-            }
-            
             diff = ofVec3f(cos(angle), sin(angle), 0);
             diff.normalize();
             diff = diff * d;

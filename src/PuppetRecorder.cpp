@@ -9,6 +9,8 @@ void PuppetRecorder::setup() {
     
     recorder.allocate(ofGetWidth(), ofGetHeight());
     
+    playingForwards = true;
+    
 }
 
 
@@ -26,11 +28,24 @@ void PuppetRecorder::recordPuppetFrame(Puppet *puppet) {
 
 void PuppetRecorder::nextFrame() {
     
-    currentFrame++;
+    if(playingForwards) {
     
-    // if we reached the end of the animation, reset it.
-    if(currentFrame >= animationFrames.size()) {
-        currentFrame = 0;
+        currentFrame++;
+        
+        if(currentFrame >= animationFrames.size()) {
+            playingForwards = false;
+            currentFrame = animationFrames.size()-1;
+        }
+        
+    } else {
+        
+        currentFrame--;
+        
+        if(currentFrame < 0) {
+            playingForwards = true;
+            currentFrame = 0;
+        }
+        
     }
     
 }

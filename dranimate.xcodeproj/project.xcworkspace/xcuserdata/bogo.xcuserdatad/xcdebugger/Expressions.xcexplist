@@ -3,10 +3,10 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "ofApp::mousePressed(int, int, int):ofApp.cpp">
+         contextName = "ofxLeapMotion::getSimpleHands():ofxLeapMotion.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "hoveredVertexIndex">
+               value = "hands.size()">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -19,10 +19,18 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ofxLeapMotion::getSimpleHands():ofxLeapMotion.cpp">
+         contextName = "ofApp::mousePressed(int, int, int):ofApp.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "hands.size()">
+               value = "hoveredVertexIndex">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PuppetRecorder::draw():PuppetRecorder.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentFrame">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

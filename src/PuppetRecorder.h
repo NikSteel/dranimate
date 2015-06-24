@@ -33,6 +33,7 @@ public:
     
     bool isPaused;
     int currentFrame;
+    bool playingForwards;
     
     ofFbo recorder;
     

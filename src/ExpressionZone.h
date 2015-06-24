@@ -22,6 +22,8 @@ public:
     int parentEzone = -1;
     vector<int> childrenEzones;
     
+    bool isAnchorPoint;
+    
 };
 
 #endif
