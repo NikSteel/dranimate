@@ -80,29 +80,49 @@ int Utils::getClosestIndex(ofMesh mesh, int x, int y) {
 
 void Utils::drawControls(string s) {
     
+    /*
     ofSetColor(0,0,0);
     for(int x = -1; x <= 1; x++) { for(int y = -1; y <= 1; y++) {
     Resources::verdana12.drawString(s, ofGetWidth()-350-x, 30+y); }}
     ofSetColor(255,255,255);
     Resources::verdana12.drawString(s, ofGetWidth()-350, 30);
+     */
+    
+    ofSetColor(0,0,0,200);
+    ofRect(ofGetWidth()-300, 10, 290, 70);
+    
+    ofSetColor(255,255,255);
+    ofDrawBitmapString(s, ofGetWidth()-290, 30);
     
 }
 
 void Utils::drawWarning(string s) {
     
+    /*
     float flash = abs(sin(ofGetElapsedTimef()*10)*100);
     ofSetColor(255,flash,flash);
     Resources::verdana16.drawString(s, ofGetWidth()-350, 90);
+     */
+    
+    float flash = abs(sin(ofGetElapsedTimef()*10)*200);
+    ofSetColor(255,flash,flash);
+    ofDrawBitmapString(s, ofGetWidth()-290, 100);
+    ofDrawBitmapString(s, ofGetWidth()-290+1, 100);
     
 }
 
 void Utils::drawState(string s) {
     
+    /*
     ofSetColor(0,0,0);
     for(int x = -1; x <= 1; x++) { for(int y = -1; y <= 1; y++) {
     Resources::verdana16.drawString(s, 30-x, ofGetHeight()-30+y); }}
     ofSetColor(255,255,255);
     Resources::verdana16.drawString(s, 30,   ofGetHeight()-30);
+     */
+    
+    ofSetColor(0,0,0);
+    ofDrawBitmapString(s, 30, ofGetHeight()-30);
     
 }
 

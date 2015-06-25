@@ -10,9 +10,11 @@ void ofApp::setup() {
     
     // load a demo puppet
     
+    /*
     Puppet demoPuppet;
     demoPuppet.load("puppets/demo-killingashkeboos/");
     puppets.push_back(demoPuppet);
+     */
     
     // setup ui stuff
     
@@ -20,7 +22,7 @@ void ofApp::setup() {
     
     hoveredVertexIndex = -1;
     selectedVertexIndex = -1;
-    selectedPuppetIndex = 0;
+    selectedPuppetIndex = -1;
     
     recordingPuppet = false;
 
@@ -138,17 +140,11 @@ void ofApp::draw() {
             
             mesher.draw();
             
-            Utils::drawControls("p   -   Preview mesh\nm   -   Generate mesh and create puppet");
-            
-            Utils::drawState("Puppet creator");
+            Utils::drawControls("Puppet creator\n\np - Preview mesh\nm - Generate mesh & create puppet");
             
             break;
         
         } case PUPPET_STAGE: {
-            
-            // state stuff
-            
-            Utils::drawState("Puppet stage");
             
             // big red recording button
             if(recordingScene) {
@@ -207,7 +203,7 @@ void ofApp::draw() {
             
             // instructions
             
-            Utils::drawControls("c     -    Calibrate leap contoller\nr     -    Start/stop puppet recording\ns     -    Start/stop scene recording");
+            Utils::drawControls("Puppet stage\n\nc - Calibrate leap contoller\ns - Start/stop scene recording");
             
             if(!leapHandler.calibrated) {
                 Utils::drawWarning("Leap not calibrated!");
