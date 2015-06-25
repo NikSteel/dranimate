@@ -395,7 +395,6 @@
 		DFAF1A441B30561600974550 /* ofxClickDownFader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxClickDownFader.h; path = ../../../addons/ofxClickDownMenu/ofxClickDownFader.h; sourceTree = "<group>"; };
 		DFAF1A451B30561600974550 /* ofxClickDownMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxClickDownMenu.cpp; path = ../../../addons/ofxClickDownMenu/ofxClickDownMenu.cpp; sourceTree = "<group>"; };
 		DFAF1A461B30561600974550 /* ofxClickDownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxClickDownMenu.h; path = ../../../addons/ofxClickDownMenu/ofxClickDownMenu.h; sourceTree = "<group>"; };
-		DFEB7ED11B3C76E10051238D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/data/openni/lib; sourceTree = "<group>"; };
 		DFFDDA161B38A619003D8E40 /* SceneRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRecorder.cpp; sourceTree = "<group>"; };
 		DFFDDA171B38A619003D8E40 /* SceneRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRecorder.h; sourceTree = "<group>"; };
 		E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPanel.cpp; path = ../../../addons/ofxGui/src/ofxPanel.cpp; sourceTree = SOURCE_ROOT; };
@@ -1104,7 +1103,6 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
-				DFEB7ED11B3C76E10051238D /* lib */,
 				2006E57A1B16661B00F1CCA7 /* ofxLeapMotion */,
 				480A780D8D0308AE4A368801 /* ofxGui */,
 				A0B90D3B0ADB9C1716816714 /* ofxOpenCv */,

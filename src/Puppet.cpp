@@ -238,6 +238,9 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
     //ofRotate(rotation, 0, 0, 1);
     ofTranslate(-center.x,-center.y);
     
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     image.bind();
     glEnable(GL_DEPTH_TEST);
         subdivided.drawFaces();

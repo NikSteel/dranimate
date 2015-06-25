@@ -83,6 +83,8 @@ public:
     
     ofxButton b;
     
+    bool controlsPaused;
+    
 // clickdown menu
     
     void cmdEvent(ofxCDMEvent &ev);

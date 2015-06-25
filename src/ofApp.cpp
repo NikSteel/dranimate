@@ -78,7 +78,7 @@ void ofApp::update() {
                 if(puppets[i].isBeingTransformed) {
                     puppets[i].transform(mouseX,mouseY);
                 }
-                if(i == selectedPuppetIndex && !puppets[i].isBeingEdited && !puppets[i].isBeingTransformed) {
+                if(!controlsPaused && i == selectedPuppetIndex && !puppets[i].isBeingEdited && !puppets[i].isBeingTransformed) {
                     puppets[i].recieveLeapData(&leapHandler);
                     
                     //this needs to be somewhere else
@@ -207,8 +207,8 @@ void ofApp::draw() {
             
             if(!leapHandler.calibrated) {
                 Utils::drawWarning("Leap not calibrated!");
-            } else if (wholeScenePaused) {
-                Utils::drawWarning("Animation paused!");
+            } else if (controlsPaused) {
+                Utils::drawWarning("Controls paused!");
             }
             
             break;
@@ -377,6 +377,10 @@ void ofApp::keyReleased(int key) {
             if(key == 't') {
                 selectedPuppet()->isBeingTransformed = true;
                 selectedPuppet()->initTransformPos = ofVec2f(mouseX,mouseY);
+            }
+            
+            if(key == ' ') {
+                controlsPaused = !controlsPaused;
             }
             
             break;
