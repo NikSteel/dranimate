@@ -7,7 +7,6 @@ void MeshGenerator::setup() {
     gui.add(rotation.setup("rotation", 0, 0, 3));
     gui.add(flipHorizontal.setup("flip horizontally", false));
     gui.add(flipVertical.setup("flip vertically", false));
-    
     gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
     gui.add(invertImage.setup("invert image", true));
     
@@ -81,7 +80,7 @@ void MeshGenerator::findImageContours() {
     // threshold image
     
     cvImage.setFromPixels(noAlphaImage.getPixelsRef().getChannel(1));
-    cvImage.threshold(imageThreshold);
+    cvImage.adaptiveThreshold(imageThreshold);
     if(invertImage) cvImage.invert();
     
     // find contours from thresholded image

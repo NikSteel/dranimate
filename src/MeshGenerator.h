@@ -34,7 +34,6 @@ private:
     ofxSlider<int> rotation;
     ofxToggle flipVertical;
     ofxToggle flipHorizontal;
-    
     ofxSlider<int> imageThreshold;
     ofxToggle invertImage;
     

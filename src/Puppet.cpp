@@ -227,7 +227,7 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
     if(isBeingRecorded) {
         ofSetColor(255,155,155);
     } else if(isSelected) {
-        ofSetColor(160,180,230);
+        ofSetColor(235,245,255);
     } else {
         ofSetColor(255,255,255);
     }
