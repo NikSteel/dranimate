@@ -43,6 +43,8 @@ void LeapDataHandler::recieveNewData() {
     
     if( leap.isFrameNew() && simpleHands.size() ){
         
+        handRotation = simpleHands[0].handNormal.x;
+        
         leap.setMappingX(-460, 100, -ofGetWidth()/2, ofGetWidth()/2);
         leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
         leap.setMappingZ(-300, 0, 2, 6);

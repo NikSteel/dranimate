@@ -28,6 +28,8 @@ public:
     vector<ofVec3f> fingersPositions;
     vector<ofVec3f> fingersCalibration;
     
+    float handRotation;
+    
     int calibrationTimer;
     
     bool calibrated;

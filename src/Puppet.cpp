@@ -232,11 +232,19 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
         ofSetColor(255,255,255);
     }
     
+    ofPushMatrix();
+    center = subdivided.getCentroid();
+    ofTranslate(center.x,center.y);
+    ofRotate(rotation, 0, 0, 1);
+    ofTranslate(-center.x,-center.y);
+    
     image.bind();
-        glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
         subdivided.drawFaces();
-        glDisable(GL_DEPTH_TEST);
     image.unbind();
+    glDisable(GL_DEPTH_TEST);
+    
+    ofPopMatrix();
     
     // draw the wireframe & control points as well
     
@@ -416,6 +424,8 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
     
     if(leap->calibrated) {
     
+    rotation = -leap->handRotation * 90;
+        
     // this is a bit messy, should fix it
     
     float wOffset = ofGetWidth()/2 - image.getWidth()/2;
