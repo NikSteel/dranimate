@@ -323,6 +323,7 @@ void ofApp::keyReleased(int key) {
             if(key == 'm') {
                 mesher.generateMesh();
                 
+                newPuppet.setImage(mesher.getImage());
                 newPuppet.setMesh(mesher.getMesh());
                 newPuppet.setContour(mesher.getContour());
                 

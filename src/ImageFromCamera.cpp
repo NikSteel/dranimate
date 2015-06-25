@@ -9,7 +9,7 @@ void ImageFromCamera::setup() {
     vidGrabber.setDesiredFrameRate(60);
     vidGrabber.initGrabber(camWidth,camHeight);
     
-    videoInverted 	= new unsigned char[camWidth*camHeight*3];
+    videoInverted = new unsigned char[camWidth*camHeight*3];
     videoTexture.allocate(camWidth,camHeight, GL_RGB);
     
     image.allocate(camWidth, camHeight, OF_IMAGE_COLOR);

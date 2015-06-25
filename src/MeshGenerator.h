@@ -22,6 +22,7 @@ private:
     ofPolyline contourLine;
     ofxTriangleMesh triangleMesh;
     
+    ofImage image;
     ofImage noAlphaImage;
     ofxCvGrayscaleImage cvImage;
     ofxCv::ContourFinder contourFinder;
@@ -29,8 +30,14 @@ private:
     std::vector<ofPoint> extraVerts;
     
     ofxPanel gui;
+    
+    ofxSlider<int> rotation;
+    ofxToggle flipVertical;
+    ofxToggle flipHorizontal;
+    
     ofxSlider<int> imageThreshold;
     ofxToggle invertImage;
+    
     ofxSlider<int> contourResampleAmt;
     ofxSlider<int> triangleAngleConstraint;
     ofxSlider<int> triangleSizeConstraint;
@@ -53,6 +60,7 @@ public:
     
     ofImage addAlphaToImage(ofImage img);
     
+    ofImage getImage();
     ofMesh getMesh();
     ofPolyline getContour();
     

@@ -24,6 +24,8 @@ public:
     
     bool isAnchorPoint;
     
+    ofVec2f physicsDisplacement;
+    
 };
 
 #endif

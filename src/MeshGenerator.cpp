@@ -3,8 +3,14 @@
 void MeshGenerator::setup() {
     
     gui.setup();
+    
+    gui.add(rotation.setup("rotation", 0, 0, 3));
+    gui.add(flipHorizontal.setup("flip horizontally", false));
+    gui.add(flipVertical.setup("flip vertically", false));
+    
     gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
     gui.add(invertImage.setup("invert image", true));
+    
     gui.add(contourResampleAmt.setup("contour resample amount", 15, 15, 60));
     gui.add(triangleAngleConstraint.setup("triangle angle constraint", 28, 0, 28));
     gui.add(triangleSizeConstraint.setup("triangle size constraint", -1, -1, 100));
@@ -92,6 +98,10 @@ void MeshGenerator::findImageContours() {
 
 void MeshGenerator::setImage(ofImage img) {
     
+    img.rotate90(rotation);
+    img.mirror(flipVertical, flipHorizontal);
+    
+    image = img;
     noAlphaImage = img;
     
     // replace alpha channel with white
@@ -244,6 +254,12 @@ ofImage MeshGenerator::addAlphaToImage(ofImage img) {
      */
     
     return img;
+    
+}
+
+ofImage MeshGenerator::getImage() {
+    
+    return image;
     
 }
 

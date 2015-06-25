@@ -235,7 +235,7 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
     ofPushMatrix();
     center = subdivided.getCentroid();
     ofTranslate(center.x,center.y);
-    ofRotate(rotation, 0, 0, 1);
+    //ofRotate(rotation, 0, 0, 1);
     ofTranslate(-center.x,-center.y);
     
     image.bind();
