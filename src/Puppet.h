@@ -46,6 +46,8 @@ public:
     void recieveOSCMessage(ofxOscMessage message, float value);
     void recieveLeapData(LeapDataHandler *leap);
     
+    void transform(int x, int y);
+    
     const static int MIN_SELECT_VERT_DIST = 20;
     const static int MESH_SMOOTH_SUBDIVISIONS = 2;
     const static int IMAGE_BASE_SIZE = 800;
@@ -68,7 +70,15 @@ public:
     ofImage image;
     ofPolyline contour;
     
+    // state (change to enum pls)
+    
     bool isBeingEdited;
+    bool isBeingTransformed;
+    
+    // transformation stuff
+    
+    ofVec2f center;
+    ofVec2f initTransformPos;
     
 };
 

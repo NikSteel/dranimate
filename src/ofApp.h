@@ -98,4 +98,8 @@ public:
     bool recordingScene;
     SceneRecorder sceneRecorder;
     
+// osc
+    
+    ofxOscReceiver receiver;
+    
 };

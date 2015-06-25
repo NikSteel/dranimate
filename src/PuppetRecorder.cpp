@@ -130,7 +130,9 @@ void PuppetRecorder::draw() {
         ofSetColor(255,255,255,255);
         
         image.bind();
+        glEnable(GL_DEPTH_TEST);
         animationFrames[currentFrame].drawFaces();
+        glDisable(GL_DEPTH_TEST);
         image.unbind();
         
     }

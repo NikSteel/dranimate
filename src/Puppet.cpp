@@ -3,6 +3,7 @@
 void Puppet::load(string path) {
     
     isBeingEdited = false;
+    isBeingTransformed = false;
     
     // load image
     image.loadImage(path + "/image.png");
@@ -377,6 +378,11 @@ ExpressionZone* Puppet::getExpressionZone(int meshIndex) {
 
 void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
     
+    ofLog() << message.getAddress();
+    
+    float wOffset = ofGetWidth()/2 - image.getWidth()/2;
+    float hOffset = ofGetHeight()/2 - image.getHeight()/2;
+    
     // this is a bit messy, should fix it
     
     for(int i = 0; i < expressionZones.size(); i++) {
@@ -393,9 +399,9 @@ void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
             if(namesp.message == message.getAddress()) {
                 
                 if(namesp.controlType == "x") {
-                    expressionZones[i].userControlledDisplacement.y = value;
+                    expressionZones[i].userControlledDisplacement.x = -mesh.getVertex(expressionZones[i].meshIndex).x+value;
                 } else if(namesp.controlType == "y") {
-                    expressionZones[i].userControlledDisplacement.x = value;
+                    expressionZones[i].userControlledDisplacement.y = -mesh.getVertex(expressionZones[i].meshIndex).y+value;
                 }
                 
             }
@@ -407,6 +413,8 @@ void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
 }
 
 void Puppet::recieveLeapData(LeapDataHandler *leap) {
+    
+    if(leap->calibrated) {
     
     // this is a bit messy, should fix it
     
@@ -483,5 +491,24 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
         }
         
     }
+    }
+}
+
+void Puppet::transform(int x, int y) {
+    
+    ofVec2f transformDiff = ofVec2f(x,y) - initTransformPos;
+    
+    ofLog() << transformDiff.length();
+    
+    for(int i = 0; i < mesh.getVertices().size(); i++) {
+        
+        ofVec3f v = mesh.getVertex(i);
+        v = v * transformDiff.length();
+        //mesh.setVertex(i, v);
+        
+    }
+    
+    meshDeformer.setup(mesh);
+    regenerateSubdivisionMesh();
     
 }

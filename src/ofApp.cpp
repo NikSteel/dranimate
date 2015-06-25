@@ -34,6 +34,8 @@ void ofApp::setup() {
     
     Resources::loadResources();
     
+    receiver.setup(8000);
+    
 }
 
 void ofApp::update() {
@@ -71,11 +73,25 @@ void ofApp::update() {
             // update & send new leap data to puppets
             leapHandler.update();
             for(int i = 0; i < puppets.size(); i++) {
-                if(i == selectedPuppetIndex && !puppets[i].isBeingEdited) {
+                if(puppets[i].isBeingTransformed) {
+                    puppets[i].transform(mouseX,mouseY);
+                }
+                if(i == selectedPuppetIndex && !puppets[i].isBeingEdited && !puppets[i].isBeingTransformed) {
                     puppets[i].recieveLeapData(&leapHandler);
+                    
+                    //this needs to be somewhere else
+                    while(receiver.hasWaitingMessages()) {
+                        
+                        // get the next message
+                        ofxOscMessage m;
+                        receiver.getNextMessage(&m);
+                        
+                        puppets[i].recieveOSCMessage(m, m.getArgAsFloat(0));
+                    }
+                    
                     puppets[i].update();
                 }
-                if(i != selectedPuppetIndex) {
+                if(i != selectedPuppetIndex && !puppets[i].isBeingTransformed) {
                     puppets[i].isBeingEdited = false;
                 }
             }
@@ -111,7 +127,8 @@ void ofApp::update() {
 void ofApp::draw() {
     
     ofSetColor(255);
-    ofBackgroundGradient(ofColor(50,50,50), ofColor(25,25,25), OF_GRADIENT_LINEAR);
+    //ofBackgroundGradient(ofColor(50,50,50), ofColor(25,25,25), OF_GRADIENT_LINEAR);
+    ofBackgroundGradient(ofColor(255,255,255), ofColor(210,210,210), OF_GRADIENT_LINEAR);
     
     switch(state) {
             
@@ -307,10 +324,7 @@ void ofApp::keyReleased(int key) {
                 mesher.generateMesh();
                 
                 newPuppet.setMesh(mesher.getMesh());
-                newPuppet.setImage(mesher.addAlphaToImage(newPuppet.image));
                 newPuppet.setContour(mesher.getContour());
-                
-                newPuppet.isBeingEdited = true;
                 
                 puppets.push_back(newPuppet);
                 state = PUPPET_STAGE;
@@ -327,13 +341,17 @@ void ofApp::keyReleased(int key) {
             }
             
             // delete selected puppet
-            if(key == OF_KEY_BACKSPACE) {
-                if(selectedPuppet() != NULL) {
-                    puppets.erase(puppets.begin() + selectedPuppetIndex);
-                    selectedPuppetIndex = -1;
-                    selectedVertexIndex = -1;
-                    hoveredVertexIndex = -1;
-                }
+            if(key == OF_KEY_BACKSPACE && selectedPuppet() != NULL) {
+                puppets.erase(puppets.begin() + selectedPuppetIndex);
+                selectedPuppetIndex = -1;
+                selectedVertexIndex = -1;
+                hoveredVertexIndex = -1;
+            }
+            
+            // edit selected puppet
+            
+            if(key == OF_KEY_TAB && selectedPuppet() != NULL) {
+                selectedPuppet()->isBeingEdited = !selectedPuppet()->isBeingEdited;
             }
             
             // toggle puppet recording
@@ -356,6 +374,12 @@ void ofApp::keyReleased(int key) {
                     sceneRecorder.exportAsMovie();
                     recordingScene = false;
                 }
+            }
+            
+            // (debug) transform puppet
+            if(key == 't') {
+                selectedPuppet()->isBeingTransformed = true;
+                selectedPuppet()->initTransformPos = ofVec2f(mouseX,mouseY);
             }
             
             break;
@@ -646,6 +670,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     if (ev.message == "menu::create puppet (live)") {
         
         createPuppetLiveMode = true;
+        mesher.reset();
         newPuppet.reset();
         state = NEW_PUPPET_CREATION;
         

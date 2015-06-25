@@ -16,6 +16,8 @@
 		<string>https://github.com/cmuartfab/dranimate</string>
 		<key>6C10E9CB62EEF6C0C2AD759B4DA022783425AA2C</key>
 		<string>https://github.com/loveandsheep/ofxClickDownMenu.git</string>
+		<key>D8811CE32924E36E8903BAF4011407E4BAF64556</key>
+		<string>https://github.com/gameoverhack/ofxOpenNI.git</string>
 		<key>E3CEEF7062ECD9A173891CC71888AC7F04311EF8</key>
 		<string>https://github.com/golanlevin/ofxPuppet.git</string>
 	</dict>
@@ -29,6 +31,8 @@
 		<string>../..</string>
 		<key>6C10E9CB62EEF6C0C2AD759B4DA022783425AA2C</key>
 		<string>../../../addons/ofxClickDownMenu</string>
+		<key>D8811CE32924E36E8903BAF4011407E4BAF64556</key>
+		<string>../../../../../addons/ofxOpenNI</string>
 		<key>E3CEEF7062ECD9A173891CC71888AC7F04311EF8</key>
 		<string>../../../addons/ofxPuppet</string>
 	</dict>
@@ -63,6 +67,14 @@
 			<string>37526DA425E5430474A14FBFA1BC4525160B5FC1</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ofxCv</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D8811CE32924E36E8903BAF4011407E4BAF64556</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxOpenNI</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>

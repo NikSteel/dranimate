@@ -395,6 +395,7 @@
 		DFAF1A441B30561600974550 /* ofxClickDownFader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxClickDownFader.h; path = ../../../addons/ofxClickDownMenu/ofxClickDownFader.h; sourceTree = "<group>"; };
 		DFAF1A451B30561600974550 /* ofxClickDownMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxClickDownMenu.cpp; path = ../../../addons/ofxClickDownMenu/ofxClickDownMenu.cpp; sourceTree = "<group>"; };
 		DFAF1A461B30561600974550 /* ofxClickDownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxClickDownMenu.h; path = ../../../addons/ofxClickDownMenu/ofxClickDownMenu.h; sourceTree = "<group>"; };
+		DFEB7ED11B3C76E10051238D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/data/openni/lib; sourceTree = "<group>"; };
 		DFFDDA161B38A619003D8E40 /* SceneRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRecorder.cpp; sourceTree = "<group>"; };
 		DFFDDA171B38A619003D8E40 /* SceneRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRecorder.h; sourceTree = "<group>"; };
 		E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPanel.cpp; path = ../../../addons/ofxGui/src/ofxPanel.cpp; sourceTree = SOURCE_ROOT; };
@@ -1103,6 +1104,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				DFEB7ED11B3C76E10051238D /* lib */,
 				2006E57A1B16661B00F1CCA7 /* ofxLeapMotion */,
 				480A780D8D0308AE4A368801 /* ofxGui */,
 				A0B90D3B0ADB9C1716816714 /* ofxOpenCv */,
@@ -1325,8 +1327,6 @@
 				2006E55E1B16625000F1CCA7 /* main.cpp */,
 				2006E5611B16625000F1CCA7 /* ofApp.cpp */,
 				2006E5621B16625000F1CCA7 /* ofApp.h */,
-				2006E55F1B16625000F1CCA7 /* MeshGenerator.cpp */,
-				2006E5601B16625000F1CCA7 /* MeshGenerator.h */,
 				2006E5651B16625000F1CCA7 /* Puppet.cpp */,
 				2006E5661B16625000F1CCA7 /* Puppet.h */,
 				2006E55C1B16625000F1CCA7 /* ExpressionZone.cpp */,
@@ -1339,6 +1339,8 @@
 				DFFDDA171B38A619003D8E40 /* SceneRecorder.h */,
 				DF54E8801B334C0800D19A12 /* LeapDataHandler.cpp */,
 				DF54E8811B334C0800D19A12 /* LeapDataHandler.h */,
+				2006E55F1B16625000F1CCA7 /* MeshGenerator.cpp */,
+				2006E5601B16625000F1CCA7 /* MeshGenerator.h */,
 				DF54E87D1B334BB300D19A12 /* ImageFromCamera.cpp */,
 				DF54E87E1B334BB300D19A12 /* ImageFromCamera.h */,
 				200DCBBE1B233A95002EA7A3 /* Utils.cpp */,
@@ -1851,7 +1853,7 @@
 					../../../addons/ofxLeapMotion/libs/lib/osx,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)Debug";
-				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxOsc/libs/oscpack/src/ip/win32 ../../../addons/ofxOsc/libs/oscpack/src ../../../addons/ofxOsc/libs/oscpack ../../../addons/ofxOsc/libs/oscpack/src/ip/posix ../../../addons/ofxOsc/libs/oscpack/src/ip ../../../addons/ofxOsc/libs ../../../addons/ofxOsc/libs/oscpack/src/osc";
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxOsc/libs/oscpack/src/osc ../../../addons/ofxOsc/libs/oscpack/src ../../../addons/ofxOsc/libs/oscpack ../../../addons/ofxOsc/libs/oscpack/src/ip/posix ../../../addons/ofxOsc/libs/oscpack/src/ip ../../../addons/ofxOsc/libs ../../../addons/ofxOsc/libs/oscpack/src/ip/win32";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../../../addons/ofxOsc/libs/oscpack/src/osc ../../../addons/ofxOsc/libs/oscpack/src/ip/win32 ../../../addons/ofxOsc/libs/oscpack/src/ip/posix ../../../addons/ofxOsc/libs/oscpack/src/ip ../../../addons/ofxOsc/libs/oscpack/src ../../../addons/ofxOsc/libs/oscpack ../../../addons/ofxOsc/libs";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1940,7 +1942,7 @@
 					"$(BUILT_PRODUCTS_DIR)lib/osx",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxOsc/libs/oscpack/src/ip/win32 ../../../addons/ofxOsc/libs/oscpack/src ../../../addons/ofxOsc/libs/oscpack ../../../addons/ofxOsc/libs/oscpack/src/ip/posix ../../../addons/ofxOsc/libs/oscpack/src/ip ../../../addons/ofxOsc/libs ../../../addons/ofxOsc/libs/oscpack/src/osc";
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxOsc/libs/oscpack/src/osc ../../../addons/ofxOsc/libs/oscpack/src ../../../addons/ofxOsc/libs/oscpack ../../../addons/ofxOsc/libs/oscpack/src/ip/posix ../../../addons/ofxOsc/libs/oscpack/src/ip ../../../addons/ofxOsc/libs ../../../addons/ofxOsc/libs/oscpack/src/ip/win32";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

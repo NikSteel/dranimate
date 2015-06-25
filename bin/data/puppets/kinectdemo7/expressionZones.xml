@@ -1,0 +1,95 @@
+<expressionZone>
+    <meshIndex>147</meshIndex>
+    <oscNamespace>
+        <message>head/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>head/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>123</meshIndex>
+    <oscNamespace>
+        <message>lefthand/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>lefthand/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>136</meshIndex>
+    <oscNamespace>
+        <message>righthand/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>righthand/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>144</meshIndex>
+    <oscNamespace>
+        <message>torso/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>torso/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>129</meshIndex>
+    <oscNamespace>
+        <message></message>
+        <controlType></controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>leftelbow/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>leftelbow/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>135</meshIndex>
+    <oscNamespace>
+        <message>rightelbow/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>rightelbow/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>156</meshIndex>
+    <oscNamespace>
+        <message>neck/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>neck/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>

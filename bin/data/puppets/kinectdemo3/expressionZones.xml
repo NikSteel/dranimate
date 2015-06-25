@@ -1,0 +1,31 @@
+<expressionZone>
+    <meshIndex>147</meshIndex>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>123</meshIndex>
+    <oscNamespace>
+        <message>lefthand/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>lefthand/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>136</meshIndex>
+    <oscNamespace>
+        <message>righthand/x</message>
+        <controlType>x</controlType>
+    </oscNamespace>
+    <oscNamespace>
+        <message>righthand/y</message>
+        <controlType>y</controlType>
+    </oscNamespace>
+    <fingerID>-1</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
