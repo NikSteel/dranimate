@@ -1,0 +1,15 @@
+<expressionZone>
+    <meshIndex>192</meshIndex>
+    <fingerID>1</fingerID>
+    <parentEzone>188</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>188</meshIndex>
+    <fingerID>2</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>
+<expressionZone>
+    <meshIndex>220</meshIndex>
+    <fingerID>3</fingerID>
+    <parentEzone>-1</parentEzone>
+</expressionZone>

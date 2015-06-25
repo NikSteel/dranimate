@@ -7,12 +7,14 @@ void MeshGenerator::setup() {
     gui.add(rotation.setup("rotation", 0, 0, 3));
     gui.add(flipHorizontal.setup("flip horizontally", false));
     gui.add(flipVertical.setup("flip vertically", false));
+    
     gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
+    gui.add(useAdaptiveThreshold.setup("use adaptive threshold", true));
     gui.add(invertImage.setup("invert image", true));
     
-    gui.add(contourResampleAmt.setup("contour resample amount", 15, 15, 60));
-    gui.add(triangleAngleConstraint.setup("triangle angle constraint", 28, 0, 28));
-    gui.add(triangleSizeConstraint.setup("triangle size constraint", -1, -1, 100));
+    gui.add(contourResampleAmt.setup("contour resample amt", 15, 15, 60));
+    gui.add(triangleAngleConstraint.setup("angle constraint", 28, 0, 28));
+    gui.add(triangleSizeConstraint.setup("size constraint", -1, -1, 100));
     
     meshGenerated = false;
     
@@ -80,7 +82,13 @@ void MeshGenerator::findImageContours() {
     // threshold image
     
     cvImage.setFromPixels(noAlphaImage.getPixelsRef().getChannel(1));
-    cvImage.adaptiveThreshold(imageThreshold);
+    
+    if(useAdaptiveThreshold) {
+        cvImage.adaptiveThreshold(imageThreshold);
+    } else {
+        cvImage.threshold(imageThreshold);
+    }
+    
     if(invertImage) cvImage.invert();
     
     // find contours from thresholded image
