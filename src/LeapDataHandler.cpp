@@ -3,10 +3,14 @@
 void LeapDataHandler::setup() {
     
     leap.open();
+    
     fingersPositions.resize(10);
     fingersCalibration.resize(10);
-    calibrated = false;
     
+    palmPositions.resize(2);
+    calibratedPalmPositions.resize(2);
+    
+    calibrated = false;
     calibrationTimer = 0;
     
 }
@@ -16,7 +20,10 @@ void LeapDataHandler::calibrate() {
     for(int i = 0; i < 10; i++) {
         fingersCalibration[i] = fingersPositions[i];
     }
-    calibratedPalmPosition = palmPosition;
+    
+    calibratedPalmPositions[0] = palmPositions[0];
+    calibratedPalmPositions[1] = palmPositions[1];
+    
     calibrated = true;
     
 }
@@ -49,7 +56,7 @@ void LeapDataHandler::recieveNewData() {
         leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
         leap.setMappingZ(-300, 0, 2, 6);
         
-        palmPosition = ofVec3f(
+        palmPositions[0] = ofVec3f(
             simpleHands[0].handPos.x*sensitivity*MAX_SENSITIVITY,
             simpleHands[0].handPos.y*sensitivity*MAX_SENSITIVITY,
             simpleHands[0].handPos.z*sensitivity*MAX_SENSITIVITY);
@@ -66,6 +73,11 @@ void LeapDataHandler::recieveNewData() {
                     simpleHands[1].fingers[i].pos.x*sensitivity*MAX_SENSITIVITY,
                     simpleHands[1].fingers[i].pos.y*sensitivity*MAX_SENSITIVITY,
                     simpleHands[1].fingers[i].pos.z*sensitivity*MAX_SENSITIVITY);
+                
+                palmPositions[1] = ofVec3f(
+                                           simpleHands[1].handPos.x*sensitivity*MAX_SENSITIVITY,
+                                           simpleHands[1].handPos.y*sensitivity*MAX_SENSITIVITY,
+                                           simpleHands[1].handPos.z*sensitivity*MAX_SENSITIVITY);
             }
         }
         
@@ -89,8 +101,12 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
         ofDrawBitmapString(ofToString(i), x+z, y+z);
         
     }
-    ofCircle(palmPosition.x, -palmPosition.y, palmPosition.z);
-    ofDrawBitmapString("Palm", palmPosition.x+palmPosition.z, -palmPosition.y+palmPosition.z);
+    
+    ofCircle(palmPositions[0].x, -palmPositions[0].y, palmPositions[0].z);
+    ofDrawBitmapString("Palm 0", palmPositions[0].x+palmPositions[0].z, -palmPositions[0].y+palmPositions[0].z);
+    
+    ofCircle(palmPositions[1].x, -palmPositions[1].y, palmPositions[1].z);
+    ofDrawBitmapString("Palm 1", palmPositions[1].x+palmPositions[1].z, -palmPositions[1].y+palmPositions[1].z);
     
     if(calibrated) {
         for(int i = 0; i < 10; i++) {
@@ -103,12 +119,18 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
             
             ofDrawBitmapString(ofToString(i), x+z, y+z);
         }
-        ofCircle( calibratedPalmPosition.x,
-                 -calibratedPalmPosition.y,
-                  calibratedPalmPosition.z);
-        ofDrawBitmapString("Palm",
-                           calibratedPalmPosition.x+calibratedPalmPosition.z,
-                           -calibratedPalmPosition.y+calibratedPalmPosition.z);
+        ofCircle( calibratedPalmPositions[0].x,
+                 -calibratedPalmPositions[0].y,
+                  calibratedPalmPositions[0].z);
+        ofCircle( calibratedPalmPositions[1].x,
+                 -calibratedPalmPositions[1].y,
+                  calibratedPalmPositions[1].z);
+        ofDrawBitmapString("Palm 0",
+                           calibratedPalmPositions[0].x+calibratedPalmPositions[0].z,
+                           -calibratedPalmPositions[0].y+calibratedPalmPositions[0].z);
+        ofDrawBitmapString("Palm 1",
+                           calibratedPalmPositions[1].x+calibratedPalmPositions[1].z,
+                           -calibratedPalmPositions[1].y+calibratedPalmPositions[1].z);
     }
     
     if(!calibrated) {

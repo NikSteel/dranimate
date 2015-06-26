@@ -188,6 +188,22 @@ void Puppet::reset() {
 
 void Puppet::update() {
     
+    // update which palm controls this puppet
+    
+    palmControlsPuppet = 1;
+    
+    for(int i = 0; i < expressionZones.size(); i++) {
+        
+        int fid = expressionZones[i].leapFingerID;
+        
+        // if there exists an expression zone controlled by the right hand,
+        // make the right palm control the overall position of the puppet.
+        if(fid != -1 && fid < 5) {
+            palmControlsPuppet = 0;
+        }
+        
+    }
+    
     // do ofxPuppet puppeteering stuff (if there is more than one point;
     // as rigid as possible freaks out with onely one control point.)
     
@@ -227,7 +243,8 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
     if(isBeingRecorded) {
         ofSetColor(255,155,155);
     } else if(isSelected) {
-        ofSetColor(235,245,255);
+        float flash = abs(sin(ofGetElapsedTimef()*3))*50+205;
+        ofSetColor(flash,flash,flash);
     } else {
         ofSetColor(255,255,255);
     }
@@ -273,8 +290,9 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
                 ofSetColor(0, 255, 0);
                 ofCircle(v, 7);
                 
-                ofSetColor(255, 255, 255);
-                Resources::hand.draw(v.x-7, v.y-7, 14, 14);
+                string s = ofToString(expressionZones[i].leapFingerID);
+                ofSetColor(0, 0, 0);
+                ofDrawBitmapString(s, v.x-4, v.y+5);
                 
             } else {
                 
@@ -464,13 +482,13 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
             
             ezone->userControlledDisplacement.x =
             wOffset+
-            leap->palmPosition.x
-            -leap->calibratedPalmPosition.x;
+            leap->palmPositions[palmControlsPuppet].x
+            -leap->calibratedPalmPositions[palmControlsPuppet].x;
             
             ezone->userControlledDisplacement.y =
             hOffset+
-            (-leap->palmPosition.y)
-            -(-leap->calibratedPalmPosition.y);
+            (-leap->palmPositions[palmControlsPuppet].y)
+            -(-leap->calibratedPalmPositions[palmControlsPuppet].y);
             
         }
         

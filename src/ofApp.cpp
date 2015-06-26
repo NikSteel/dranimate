@@ -78,7 +78,7 @@ void ofApp::update() {
                 if(puppets[i].isBeingTransformed) {
                     puppets[i].transform(mouseX,mouseY);
                 }
-                if(!controlsPaused && i == selectedPuppetIndex && !puppets[i].isBeingEdited && !puppets[i].isBeingTransformed) {
+                if(!controlsPaused && !puppets[i].isBeingEdited && !puppets[i].isBeingTransformed) {
                     puppets[i].recieveLeapData(&leapHandler);
                     
                     //this needs to be somewhere else
@@ -561,7 +561,7 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("clear all puppets");
     clickDownMenu.UnRegisterMenu("clear all recordings");
     clickDownMenu.UnRegisterMenu(" ");
-    clickDownMenu.UnRegisterMenu("cancel puppet creation");
+    clickDownMenu.UnRegisterMenu("back to stage");
     clickDownMenu.UnRegisterMenu(" ");
     
     if(state == PUPPET_STAGE) {
@@ -632,7 +632,7 @@ void ofApp::updateClickDownMenu() {
         }
     } else {
         
-        clickDownMenu.RegisterMenu("cancel puppet creation");
+        clickDownMenu.RegisterMenu("back to stage");
         clickDownMenu.RegisterMenu(" ");
         
     }
@@ -811,7 +811,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         hoveredVertexIndex = -1;
         
     }
-    if (ev.message == "menu::cancel puppet creation") {
+    if (ev.message == "menu::back to stage") {
         
         state = PUPPET_STAGE;
         

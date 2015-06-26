@@ -60,6 +60,8 @@ public:
     ofMesh subdivided;
     ofxButterfly butterfly;
     
+    int palmControlsPuppet;
+    
     // puppeteering
     
     ofxPuppet meshDeformer;

@@ -23,8 +23,8 @@ public:
     ofxLeapMotion leap;
     vector <ofxLeapMotionSimpleHand> simpleHands;
     
-    ofVec3f palmPosition;
-    ofVec3f calibratedPalmPosition;
+    vector<ofVec3f> palmPositions;
+    vector<ofVec3f> calibratedPalmPositions;
     vector<ofVec3f> fingersPositions;
     vector<ofVec3f> fingersCalibration;
     

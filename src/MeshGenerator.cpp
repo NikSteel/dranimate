@@ -59,8 +59,26 @@ void MeshGenerator::draw() {
     // draw contours found from the thresholded image
     
     if(!meshGenerated) {
+        
+        ofPushStyle();
+        ofNoFill();
+        
+        int nPolylines = (int)contourFinder.getPolylines().size();
+        
+        // largest contour
         ofSetColor(255, 0, 0);
-        contourFinder.draw();
+        if(nPolylines > 0) {
+            contourFinder.getPolyline(0).draw();
+        }
+        
+        // other contours
+        ofSetColor(155, 100, 100);
+        for(int i = 1; i < nPolylines; i++) {
+            contourFinder.getPolyline(i).draw();
+        }
+        
+        ofPopStyle();
+        
     }
     
     ofPopMatrix();
