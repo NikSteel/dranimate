@@ -13,7 +13,7 @@ void MeshGenerator::setup() {
     gui.add(invertImage.setup("invert image", true));
     
     gui.add(contourResampleAmt.setup("contour resample amt", 15, 15, 60));
-    gui.add(triangleAngleConstraint.setup("angle constraint", 28, 0, 28));
+    gui.add(triangleAngleConstraint.setup("angle constraint", 14, 0, 28));
     gui.add(triangleSizeConstraint.setup("size constraint", -1, -1, 100));
     
     meshGenerated = false;
@@ -97,9 +97,18 @@ void MeshGenerator::reset() {
 
 void MeshGenerator::findImageContours() {
     
-    // threshold image
+    // create an image with luminescence as r channel
+    ofImage lumiImg = noAlphaImage;
+    for(int x = 0; x < lumiImg.width; x++) {
+        for(int y = 0; y < lumiImg.height; y++) {
+            ofColor c = lumiImg.getColor(x,y);
+            c.r = (c.r + c.g + c.b) / 3;
+            lumiImg.setColor(x, y, c);
+        }
+    }
     
-    cvImage.setFromPixels(noAlphaImage.getPixelsRef().getChannel(1));
+    // threshold image
+    cvImage.setFromPixels(lumiImg.getPixelsRef().getChannel(1));
     
     if(useAdaptiveThreshold) {
         cvImage.adaptiveThreshold(imageThreshold);
