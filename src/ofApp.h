@@ -102,6 +102,6 @@ public:
     
 // osc
     
-    ofxOscReceiver receiver;
+    ofxOscReceiver oscReceiver;
     
 };

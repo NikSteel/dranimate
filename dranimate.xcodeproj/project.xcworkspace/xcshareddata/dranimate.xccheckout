@@ -32,7 +32,7 @@
 		<key>6C10E9CB62EEF6C0C2AD759B4DA022783425AA2C</key>
 		<string>../../../addons/ofxClickDownMenu</string>
 		<key>D8811CE32924E36E8903BAF4011407E4BAF64556</key>
-		<string>../../../../../addons/ofxOpenNI</string>
+		<string>../../../addons/ofxOpenNI</string>
 		<key>E3CEEF7062ECD9A173891CC71888AC7F04311EF8</key>
 		<string>../../../addons/ofxPuppet</string>
 	</dict>

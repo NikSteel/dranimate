@@ -5,6 +5,7 @@
 
 #include "ofMain.h"
 #include "ofxLeapMotion.h"
+#include "ofxStrip.h"
 
 class LeapDataHandler {
     
@@ -17,22 +18,30 @@ public:
     
     void drawLeapCalibrationMenu();
     
-    const float MAX_SENSITIVITY = 3.5;
-    float sensitivity = 0.5;
-    
     ofxLeapMotion leap;
     vector <ofxLeapMotionSimpleHand> simpleHands;
     
     vector<ofVec3f> palmPositions;
     vector<ofVec3f> calibratedPalmPositions;
+    
     vector<ofVec3f> fingersPositions;
     vector<ofVec3f> fingersCalibration;
+    vector<ofVec3f> fingersTotalMovement;
+    
+    vector<ofVec3f> fingersVelocities;
     
     float handRotation;
     
     int calibrationTimer;
-    
     bool calibrated;
+    
+    ofFbo handFbo;
+    ofEasyCam cam;
+    ofLight l1;
+    ofLight l2;
+    ofMaterial m1;
+    
+    ofVec2f pointerPosition;
     
 };
 

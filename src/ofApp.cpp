@@ -7,14 +7,13 @@ void ofApp::setup() {
     cam.setup();
     mesher.setup();
     leapHandler.setup();
+    oscReceiver.setup(8000);
     
-    // load a demo puppet
+    // load demo puppet
     
-    /*
-    Puppet demoPuppet;
-    demoPuppet.load("puppets/demo-killingashkeboos/");
-    puppets.push_back(demoPuppet);
-     */
+    Puppet p;
+    p.load("puppets/horse/");
+    puppets.push_back(p);
     
     // setup ui stuff
     
@@ -35,8 +34,6 @@ void ofApp::setup() {
     // load resources
     
     Resources::loadResources();
-    
-    receiver.setup(8000);
     
 }
 
@@ -69,7 +66,7 @@ void ofApp::update() {
             
             // update where the mouse is pointing
             if(selectedPuppet() != NULL && selectedPuppet()->isBeingEdited && clickDownMenu.phase == PHASE_WAIT) {
-                hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(), mouseX, mouseY);
+                hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(), leapHandler.pointerPosition.x, leapHandler.pointerPosition.y);
             }
             
             // update & send new leap data to puppets
@@ -81,12 +78,12 @@ void ofApp::update() {
                 if(!controlsPaused && !puppets[i].isBeingEdited && !puppets[i].isBeingTransformed) {
                     puppets[i].recieveLeapData(&leapHandler);
                     
-                    //this needs to be somewhere else
-                    while(receiver.hasWaitingMessages()) {
+                    //!!this needs to be somewhere else!!
+                    while(oscReceiver.hasWaitingMessages()) {
                         
                         // get the next message
                         ofxOscMessage m;
-                        receiver.getNextMessage(&m);
+                        oscReceiver.getNextMessage(&m);
                         
                         puppets[i].recieveOSCMessage(m, m.getArgAsFloat(0));
                     }
@@ -96,6 +93,20 @@ void ofApp::update() {
                 if(i != selectedPuppetIndex && !puppets[i].isBeingTransformed) {
                     puppets[i].isBeingEdited = false;
                 }
+            }
+            
+            //
+            for(int i = 1; i < 5; i++) {
+                
+                if(abs(leapHandler.fingersVelocities[i].y) > 1500
+                   && selectedPuppet() != NULL
+                   && hoveredVertexIndex != -1){
+                    if(selectedPuppet()->getExpressionZone(hoveredVertexIndex) == NULL) {
+                        selectedPuppet()->addExpressionZone(hoveredVertexIndex);
+                    }
+                    selectedPuppet()->getExpressionZone(hoveredVertexIndex)->leapFingerID = i;
+                }
+                
             }
             
             // update puppet recorder
@@ -211,6 +222,8 @@ void ofApp::draw() {
                 Utils::drawWarning("Controls paused!");
             }
             
+            leapHandler.drawLeapCalibrationMenu();
+            
             break;
             
         }
@@ -237,7 +250,7 @@ int ofApp::getClosestPuppetIndex() {
     int closestPuppetIndex = -1;
     
     for(int p = 0; p < puppets.size(); p++) {
-        if(Utils::isPointInsideMesh(puppets[p].meshDeformer.getDeformedMesh(), mouseX,mouseY)) {
+        if(Utils::isPointInsideMesh(puppets[p].meshDeformer.getDeformedMesh(), mouseX, mouseY)) {
             closestPuppetIndex = p;
             break;
         }
