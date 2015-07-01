@@ -20,7 +20,7 @@ void LeapDataHandler::setup() {
     l1.setPosition(200, 300, 50);
     l2.setPosition(-200, -200, 50);
     
-    cam.setOrientation(ofPoint(0, 0, 0));
+    cam.setOrientation(ofPoint(-20, 0, 0));
     
     
 }

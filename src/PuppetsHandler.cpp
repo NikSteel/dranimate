@@ -67,7 +67,10 @@ void PuppetsHandler::update(LeapDataHandler *leap,
             puppets[i].transform(mouseX,mouseY);
         }
          */
-        if(!controlsPaused && !puppets[i].isBeingEdited && !puppets[i].isBeingTransformed) {
+        if(   !controlsPaused
+           && !puppets[i].isBeingEdited
+           && !puppets[i].isBeingTransformed) {
+            
             puppets[i].recieveLeapData(leap);
             
             while(osc->hasWaitingMessages()) {

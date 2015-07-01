@@ -108,7 +108,7 @@ void ofApp::draw() {
             
             leapHandler.drawLeapCalibrationMenu();
             
-            Utils::drawControls("c   -   Set calibration");
+            Utils::drawControls("c   -   Set calibration\nt   -   Calibrate on timer");
             
             break;
             

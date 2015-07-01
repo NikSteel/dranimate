@@ -445,85 +445,101 @@ void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
 
 void Puppet::recieveLeapData(LeapDataHandler *leap) {
     
-    if(leap->calibrated) {
-    
-    rotation = -leap->handRotation * 90;
-        
-    // this is a bit messy, should fix it
-    
     float wOffset = ofGetWidth()/2 - image.getWidth()/2;
     float hOffset = ofGetHeight()/2 - image.getHeight()/2;
     
-    for(int i = 0; i < expressionZones.size(); i++) {
-        
-        ExpressionZone *ezone = &expressionZones[i];
-        
-        if(ezone->isAnchorPoint) {
-          
-            
-            
-        } else if(ezone->leapFingerID != -1) {
-        
-            // this ezone has a finger mapping!
-            // so set this ezone's displacement to that leap finger
-            
-            ezone->userControlledDisplacement.x =
-                wOffset+
-                leap->fingersPositions[expressionZones[i].leapFingerID].x
-                -leap->fingersCalibration[expressionZones[i].leapFingerID].x;
-            
-            ezone->userControlledDisplacement.y =
-                hOffset+
-                (-leap->fingersPositions[expressionZones[i].leapFingerID].y)
-                -(-leap->fingersCalibration[expressionZones[i].leapFingerID].y);
-            
-        } else {
-            
-            // this ezone has no finger mapping.
-            // so just set the displacement to the palm position
-            
-            ezone->userControlledDisplacement.x =
-            wOffset+
-            leap->palmPositions[palmControlsPuppet].x
-            -leap->calibratedPalmPositions[palmControlsPuppet].x;
-            
-            ezone->userControlledDisplacement.y =
-            hOffset+
-            (-leap->palmPositions[palmControlsPuppet].y)
-            -(-leap->calibratedPalmPositions[palmControlsPuppet].y);
-            
-        }
-        
-    }
+    if(leap->calibrated) {
     
-    for(int i = 0; i < expressionZones.size(); i++) {
+        rotation = -leap->handRotation * 90;
+            
+        // this is a bit messy, should fix it
         
-        ExpressionZone *ezone = &expressionZones[i];
-        
-        // restrict points to parent (rigidity) (if they have a parent bone)
-        
-        if(ezone->parentEzone != -1) {
+        for(int i = 0; i < expressionZones.size(); i++) {
             
-            ofVec3f ezoneVertexPosition = mesh.getVertex(ezone->meshIndex);
-            ofVec3f ezoneAbsoulteVertexPosition = ezoneVertexPosition + ezone->userControlledDisplacement;
+            ExpressionZone *ezone = &expressionZones[i];
             
-            ofVec3f ezoneParentVertexPosition = mesh.getVertex(ezone->parentEzone);
-            ofVec3f ezoneParentAbsoluteVertexPosition = ezoneParentVertexPosition + getExpressionZone(ezone->parentEzone)->userControlledDisplacement;
+            if(ezone->isAnchorPoint) {
+              
+                
+                
+            } else if(ezone->leapFingerID != -1) {
             
-            float d = ezoneVertexPosition.distance(ezoneParentVertexPosition);
-            
-            float angle = atan2(ezoneAbsoulteVertexPosition.y-ezoneParentAbsoluteVertexPosition.y, ezoneAbsoulteVertexPosition.x-ezoneParentAbsoluteVertexPosition.x);
-            
-            ofVec3f diff;
-            diff = ofVec3f(cos(angle), sin(angle), 0);
-            diff.normalize();
-            diff = diff * d;
-            
-            ezone->userControlledDisplacement = diff;
+                // this ezone has a finger mapping!
+                // so set this ezone's displacement to that leap finger
+                
+                ezone->userControlledDisplacement.x =
+                    wOffset+
+                    leap->fingersPositions[expressionZones[i].leapFingerID].x
+                    -leap->fingersCalibration[expressionZones[i].leapFingerID].x;
+                
+                ezone->userControlledDisplacement.y =
+                    hOffset+
+                    (-leap->fingersPositions[expressionZones[i].leapFingerID].y)
+                    -(-leap->fingersCalibration[expressionZones[i].leapFingerID].y);
+                
+            } else {
+                
+                // this ezone has no finger mapping.
+                // so just set the displacement to the palm position
+                
+                ezone->userControlledDisplacement.x =
+                wOffset+
+                leap->palmPositions[palmControlsPuppet].x
+                -leap->calibratedPalmPositions[palmControlsPuppet].x;
+                
+                ezone->userControlledDisplacement.y =
+                hOffset+
+                (-leap->palmPositions[palmControlsPuppet].y)
+                -(-leap->calibratedPalmPositions[palmControlsPuppet].y);
+                
+            }
             
         }
         
-    }
+        for(int i = 0; i < expressionZones.size(); i++) {
+            
+            ExpressionZone *ezone = &expressionZones[i];
+            
+            // restrict points to parent (rigidity) (if they have a parent bone)
+            
+            if(ezone->parentEzone != -1) {
+                
+                ofVec3f ezoneVertexPosition = mesh.getVertex(ezone->meshIndex);
+                ofVec3f ezoneAbsoulteVertexPosition = ezoneVertexPosition + ezone->userControlledDisplacement;
+                
+                ofVec3f ezoneParentVertexPosition = mesh.getVertex(ezone->parentEzone);
+                ofVec3f ezoneParentAbsoluteVertexPosition = ezoneParentVertexPosition + getExpressionZone(ezone->parentEzone)->userControlledDisplacement;
+                
+                float d = ezoneVertexPosition.distance(ezoneParentVertexPosition);
+                
+                float angle = atan2(ezoneAbsoulteVertexPosition.y-ezoneParentAbsoluteVertexPosition.y, ezoneAbsoulteVertexPosition.x-ezoneParentAbsoluteVertexPosition.x);
+                
+                ofVec3f diff;
+                diff = ofVec3f(cos(angle), sin(angle), 0);
+                diff.normalize();
+                diff = diff * d;
+                
+                ezone->userControlledDisplacement = diff;
+                
+            }
+            
+        }
+    } else {
+        
+        
+        for(int i = 0; i < expressionZones.size(); i++) {
+            
+            ExpressionZone *ezone = &expressionZones[i];
+            
+            ezone->userControlledDisplacement.x =
+            wOffset;
+        
+            ezone->userControlledDisplacement.y =
+            hOffset;
+                
+            
+        }
+        
     }
 }
 
