@@ -48,12 +48,6 @@ public:
     bool addingBone = false;
     int boneRootVertexIndex;
     
-    enum ControlType {
-        CONTROLS_MOUSE,
-        CONTROLS_LEAP
-    };
-    ControlType controlType;
-    
     int hoveredVertexIndex;
     int selectedVertexIndex;
     int selectedPuppetIndex;
@@ -63,6 +57,9 @@ public:
     bool controlsPaused;
     
     bool cdMenuOpen;
+    
+    bool enableLeapControls;
+    int leapClickAgainTimer;
     
     // recording
     

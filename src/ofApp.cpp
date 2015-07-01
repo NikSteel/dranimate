@@ -54,6 +54,7 @@ void ofApp::update() {
             leapHandler.update();
             
             puppetsHandler.cdMenuOpen = clickDownMenu.phase != PHASE_WAIT;
+            puppetsHandler.enableLeapControls = leapHandler.leap.getLeapHands().size() == 2;
             puppetsHandler.update(&leapHandler, &oscReceiver, &clickDownMenu);
             
             break;

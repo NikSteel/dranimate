@@ -213,11 +213,11 @@ void Puppet::update() {
         // add displacements to puppet control points
         for(int i = 0; i < expressionZones.size(); i++) {
             
-            if(expressionZones[i].parentEzone == -1) {
+            if(expressionZones[i].parentEzone == -1 || isBeingEdited) {
                 // no parent, this ezone moves independently
                 meshDeformer.setControlPoint(expressionZones[i].meshIndex,
-                                       mesh.getVertex(expressionZones[i].meshIndex)+
-                                       expressionZones[i].userControlledDisplacement);
+                                             mesh.getVertex(expressionZones[i].meshIndex)+
+                                             expressionZones[i].userControlledDisplacement);
             } else {
                 meshDeformer.setControlPoint(expressionZones[i].meshIndex,
                                              mesh.getVertex(expressionZones[i].parentEzone)+
@@ -448,7 +448,7 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
     float wOffset = ofGetWidth()/2 - image.getWidth()/2;
     float hOffset = ofGetHeight()/2 - image.getHeight()/2;
     
-    if(leap->calibrated) {
+    if(leap->calibrated && !isBeingEdited) {
     
         rotation = -leap->handRotation * 90;
             
@@ -531,11 +531,8 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
             
             ExpressionZone *ezone = &expressionZones[i];
             
-            ezone->userControlledDisplacement.x =
-            wOffset;
-        
-            ezone->userControlledDisplacement.y =
-            hOffset;
+            ezone->userControlledDisplacement.x = wOffset;
+            ezone->userControlledDisplacement.y = hOffset;
                 
             
         }

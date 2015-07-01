@@ -6,12 +6,12 @@ void PuppetsHandler::setup() {
     selectedVertexIndex = -1;
     selectedPuppetIndex = -1;
     
-    controlType = CONTROLS_LEAP;
+    leapClickAgainTimer = 0;
     
     recordingPuppet = false;
     
     Puppet p;
-    p.load("puppets/almost-centaur-with-butt");
+    p.load("puppets/demo-killingashkeboos");
     puppets.push_back(p);
     
     ofRegisterKeyEvents(this);
@@ -23,14 +23,15 @@ void PuppetsHandler::update(LeapDataHandler *leap,
                             ofxOscReceiver *osc,
                             ofxClickDownMenu *cdmenu) {
     
-    // update where the mouse is pointing
-    if(   controlType == CONTROLS_LEAP
+    // update which vertex the leap is pointing to
+    if(   enableLeapControls
        && selectedPuppet() != NULL
        && selectedPuppet()->isBeingEdited
        && cdmenu->phase == PHASE_WAIT) {
         
         hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(),
-                                                    leap->pointerPosition.x, leap->pointerPosition.y);
+                                                    leap->pointerPosition.x,
+                                                    leap->pointerPosition.y);
         
     }
     
@@ -47,28 +48,37 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         }
         
     }
-    if(abs(leap->fingersVelocities[6].y) > 1500) {
+    
+    if(leapClickAgainTimer > 0) {
+        leapClickAgainTimer--;
+    }
+    
+    if(abs(leap->fingersVelocities[6].y) > 1500 && leapClickAgainTimer == 0) {
         
         int clickedPuppetIndex = getClosestPuppetIndex(leap->pointerPosition.x,
                                                        leap->pointerPosition.y);
-        if(clickedPuppetIndex == selectedPuppetIndex && clickedPuppetIndex != -1) {
+        if(clickedPuppetIndex != -1) {
             
-            // clicked on the same puppet. so edit that puppet.
-            //selectedPuppet()->isBeingEdited = !selectedPuppet()->isBeingEdited;
+            selectedPuppetIndex = clickedPuppetIndex;
+            selectedPuppet()->isBeingEdited = true;
             
         }
+        if(selectedPuppetIndex != -1 && clickedPuppetIndex == -1) {
+            
+            selectedPuppetIndex = -1;
+            hoveredVertexIndex = -1;
+            selectedVertexIndex = -1;
+            
+        }
+        
+        leapClickAgainTimer = 20;
         
     }
     
     // update & send new leap and osc data to puppets
     for(int i = 0; i < puppets.size(); i++) {
-        /*
-        if(puppets[i].isBeingTransformed) {
-            puppets[i].transform(mouseX,mouseY);
-        }
-         */
+        
         if(   !controlsPaused
-           && !puppets[i].isBeingEdited
            && !puppets[i].isBeingTransformed) {
             
             puppets[i].recieveLeapData(leap);
@@ -84,9 +94,11 @@ void PuppetsHandler::update(LeapDataHandler *leap,
             
             puppets[i].update();
         }
-        if(i != selectedPuppetIndex && !puppets[i].isBeingTransformed) {
+        
+        if(i != selectedPuppetIndex) {
             puppets[i].isBeingEdited = false;
         }
+        
     }
     
     
@@ -366,7 +378,7 @@ void PuppetsHandler::mouseMoved(ofMouseEventArgs &mouse){
     if(   !cdMenuOpen
        && selectedPuppet() != NULL
        && selectedPuppet()->isBeingEdited
-       && controlType == CONTROLS_MOUSE) {
+       && !enableLeapControls) {
         
         hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(),
                                                     mouse.x, mouse.y);
@@ -566,14 +578,6 @@ void PuppetsHandler::recieveMenuCommand(string command) {
         selectedVertexIndex = -1;
         hoveredVertexIndex = -1;
         
-    }
-    
-    if (command == "menu::control type::mouse") {
-        controlType = CONTROLS_MOUSE;
-    }
-    
-    if (command == "menu::control type::leap") {
-        controlType = CONTROLS_LEAP;
     }
 
     
