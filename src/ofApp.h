@@ -14,6 +14,7 @@
 #include "ofxClickDownMenu.h"
 
 #include "Puppet.h"
+#include "PuppetsHandler.h"
 #include "MeshGenerator.h"
 #include "PuppetRecorder.h"
 #include "SceneRecorder.h"
@@ -30,34 +31,24 @@ public:
     void update();
     void draw();
     
-    int getClosestPuppetIndex();
-    int getClosestRecordingIndex();
-    
-    Puppet *selectedPuppet();
-    
-    string getSelectedVertexInfo();
-    
     void keyReleased(int key);
     void mousePressed(int x, int y, int button);
     void mouseDragged(int x, int y, int button);
     void dragEvent(ofDragInfo dragInfo);
     
-// puppets
+    void cmdEvent(ofxCDMEvent &ev);
+    void updateClickDownMenu();
     
-    vector<Puppet> puppets;
+// all the things
     
-    Puppet newPuppet;
     MeshGenerator mesher;
-    
-    bool recordingPuppet;
-    PuppetRecorder puppetRecorder;
-    vector<PuppetRecorder> recordedPuppets;
-    
-// leap
-    
+    PuppetsHandler puppetsHandler;
     LeapDataHandler leapHandler;
+    ofxClickDownMenu clickDownMenu;
+    ImageFromCamera cam;
+    ofxOscReceiver oscReceiver;
     
-// state
+// ui/state
     
     enum State {
         NEW_PUPPET_CREATION,
@@ -66,42 +57,9 @@ public:
     };
     State state;
     
-// ui
+// puppet creation
     
+    Puppet newPuppet;
     bool createPuppetLiveMode = false;
-    
-    bool wholeScenePaused = false;
-    
-    bool addingBone = false;
-    int boneRootVertexIndex;
-    
-    int hoveredVertexIndex;
-    int selectedVertexIndex;
-    int selectedPuppetIndex;
-    
-    int selectedRecordingIndex;
-    
-    ofxButton b;
-    
-    bool controlsPaused;
-    
-// clickdown menu
-    
-    void cmdEvent(ofxCDMEvent &ev);
-    void updateClickDownMenu();
-    ofxClickDownMenu clickDownMenu;
-    
-// camera
-    
-    ImageFromCamera cam;
-    
-// scene recorder
-    
-    bool recordingScene;
-    SceneRecorder sceneRecorder;
-    
-// osc
-    
-    ofxOscReceiver oscReceiver;
     
 };

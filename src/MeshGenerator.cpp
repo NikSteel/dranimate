@@ -97,7 +97,7 @@ void MeshGenerator::reset() {
 
 void MeshGenerator::findImageContours() {
     
-    // create an image with luminescence as r channel
+    // create an image with brightness as red channel
     ofImage lumiImg = noAlphaImage;
     for(int x = 0; x < lumiImg.width; x++) {
         for(int y = 0; y < lumiImg.height; y++) {

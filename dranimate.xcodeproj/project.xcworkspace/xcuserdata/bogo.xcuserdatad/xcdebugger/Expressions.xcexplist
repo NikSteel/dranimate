@@ -3,6 +3,14 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "Puppet::recieveLeapData(LeapDataHandler*):Puppet.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "palmControlsPuppet">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ofxLeapMotion::getSimpleHands():ofxLeapMotion.cpp">
          <PersistentStrings>
             <PersistentString

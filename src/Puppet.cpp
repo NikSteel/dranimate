@@ -2,6 +2,8 @@
 
 void Puppet::load(string path) {
     
+    palmControlsPuppet = 0;
+    
     isBeingEdited = false;
     isBeingTransformed = false;
     

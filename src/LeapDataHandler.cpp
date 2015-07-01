@@ -20,7 +20,7 @@ void LeapDataHandler::setup() {
     l1.setPosition(200, 300, 50);
     l2.setPosition(-200, -200, 50);
     
-    cam.setOrientation(ofPoint(-20, 0, 0));
+    cam.setOrientation(ofPoint(0, 0, 0));
     
     
 }
@@ -104,6 +104,8 @@ void LeapDataHandler::recieveNewData() {
 
 void LeapDataHandler::drawLeapCalibrationMenu() {
     
+    if(leap.getLeapHands().size() > 0) {
+        
     //glEnable(GL_DEPTH_TEST);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
@@ -115,7 +117,9 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
     
     ofSetColor(200);
     //ofDrawBitmapString("ofxLeapMotion - Example App\nLeap Connected? " + ofToString(leap.isConnected()), 20, 20);
-    
+        
+        cam.setPosition(ofPoint(0,0,1000));
+        
     cam.begin();
     
     ofPushMatrix();
@@ -131,6 +135,8 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
     m1.begin();
     m1.setShininess(0.6);
     
+        
+    //cam.move(0, 0, 100);
     
     l2.disable();
     
@@ -143,7 +149,6 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
         
         ofEnableLighting();
         
-        
         // fingers
         
         for(int f = 0; f < simpleHands[i].fingers.size(); f++){
@@ -152,13 +157,14 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
             ofSetColor(0, 200, 0);
             ofDrawSphere(simpleHands[i].fingers[f].pos, 10);
             
-            ofLine(   simpleHands[i].fingers[f].base, simpleHands[i].fingers[f].pos);
+            ofSetColor(100, 100, 100);
+            ofLine(simpleHands[i].fingers[f].base, simpleHands[i].fingers[f].pos);
             
             // finger base
             ofDrawBox(simpleHands[i].fingers[f].base, 20);
             
-            ofSetColor(190);
-            ofLine(   simpleHands[i].handPos,         simpleHands[i].fingers[f].base);
+            ofSetColor(100, 100, 100);
+            ofLine(simpleHands[i].handPos,         simpleHands[i].fingers[f].base);
             
         }
         
@@ -193,6 +199,7 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
     
     
     m1.end();
+        //cam.move(0, 0, -100);
     cam.end();
     
     for(int i = 0; i < simpleHands.size(); i++){
@@ -205,57 +212,7 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
         
         
     }
-    
-    
-    /*
-    for(int i = 0; i < 10; i++) {
-        
-        int x = fingersPositions[i].x;
-        int y = -fingersPositions[i].y;
-        int z = fingersPositions[i].z;
-        
-        ofSetColor(0,0,0);
-        ofCircle(x, y, 10);
-        ofDrawBitmapString(ofToString(i), x+z, y+z);
-        
     }
-    
-    ofCircle(palmPositions[0].x, -palmPositions[0].y, palmPositions[0].z);
-    ofDrawBitmapString("Palm 0", palmPositions[0].x+palmPositions[0].z, -palmPositions[0].y+palmPositions[0].z);
-    
-    ofCircle(palmPositions[1].x, -palmPositions[1].y, palmPositions[1].z);
-    ofDrawBitmapString("Palm 1", palmPositions[1].x+palmPositions[1].z, -palmPositions[1].y+palmPositions[1].z);
-    
-    if(calibrated) {
-        for(int i = 0; i < 10; i++) {
-            
-            ofSetColor(0,255,255);
-            int x =  fingersCalibration[i].x;
-            int y = -fingersCalibration[i].y;
-            int z = fingersCalibration[i].z;
-            ofCircle(x, y, z);
-            
-            ofDrawBitmapString(ofToString(i), x+z, y+z);
-        }
-        ofCircle( calibratedPalmPositions[0].x,
-                 -calibratedPalmPositions[0].y,
-                  calibratedPalmPositions[0].z);
-        ofCircle( calibratedPalmPositions[1].x,
-                 -calibratedPalmPositions[1].y,
-                  calibratedPalmPositions[1].z);
-        ofDrawBitmapString("Palm 0",
-                           calibratedPalmPositions[0].x+calibratedPalmPositions[0].z,
-                           -calibratedPalmPositions[0].y+calibratedPalmPositions[0].z);
-        ofDrawBitmapString("Palm 1",
-                           calibratedPalmPositions[1].x+calibratedPalmPositions[1].z,
-                           -calibratedPalmPositions[1].y+calibratedPalmPositions[1].z);
-    }
-    
-    if(!calibrated) {
-        
-        ofSetColor(255,255,255);
-        ofDrawBitmapString("Place hand above the leap controller and position fingers in a resting position.", ofGetWidth()/2-300, ofGetHeight()-100);
-    }*/
     
     
 }
