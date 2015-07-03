@@ -123,25 +123,10 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
     
     if(leap.getLeapHands().size()   > 0) {
         
-        //glEnable(GL_DEPTH_TEST);
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_NORMALIZE);
         
-        ofDisableLighting();
-        //ofBackgroundGradient(ofColor(90, 90, 90), ofColor(30, 30, 30),  OF_GRADIENT_BAR);
-        
-        ofSetColor(200);
-        //ofDrawBitmapString("ofxLeapMotion - Example App\nLeap Connected? " + ofToString(leap.isConnected()), 20, 20);
-            
-            //cam.setPosition(ofPoint(0,0,1000));
-            
         cam.begin();
-        
-        ofPushMatrix();
-        ofRotate(90, 0, 0, 1);
-        ofSetColor(20);
-        //ofDrawGridPlane(800, 20, false);
-        ofPopMatrix();
         
         ofEnableLighting();
         l1.enable();
@@ -149,9 +134,6 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
         
         m1.begin();
         m1.setShininess(0.6);
-        
-            
-        //cam.move(0, 0, 100);
         
         l2.disable();
         
@@ -190,7 +172,6 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
                         ofSetColor(0, 50, 200);
                         ofDrawSphere(simpleHands[i].fingers[f].pos, 10);
                         
-                        
                     }
                     
                 } else {
@@ -199,41 +180,36 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
                     ofSetColor(200, 100, 0);
                     ofDrawSphere(simpleHands[i].fingers[1].pos, 10);
                     
-                    
                 }
                 
                 // palm
                 
                 ofPushMatrix();
-                ofTranslate(simpleHands[i].handPos);
-                //rotate the hand by the downwards normal
-                ofQuaternion q;
-                q.makeRotate(ofPoint(0, -1, 0), simpleHands[i].handNormal);
-                ofMatrix4x4 m;
-                q.get(m);
-                glMultMatrixf(m.getPtr());
-                ofScale(1, 0.35, 1.0);
-                ofDrawBox(0, 0, 0, 60);
+                    ofTranslate(simpleHands[i].handPos);
+                
+                    //rotate the hand by the downwards normal
+                    ofQuaternion q;
+                    q.makeRotate(ofPoint(0, -1, 0), simpleHands[i].handNormal);
+                    ofMatrix4x4 m;
+                    q.get(m);
+                    glMultMatrixf(m.getPtr());
+                
+                    ofScale(1, 0.35, 1.0);
+                
+                    ofDrawBox(0, 0, 0, 60);
                 ofPopMatrix();
                 
-                
                 ofDisableLighting();
-                
                 ofPopStyle();
 
             }
 
         }
         
-        
-        
-        
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_NORMALIZE);
         
-        
         m1.end();
-            //cam.move(0, 0, -100);
         cam.end();
         
     }
