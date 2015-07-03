@@ -38,7 +38,7 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     // leap interface (flick to to add control point mapped to right hand finger 'i')
     for(int i = 0; i < 5; i++) {
         
-        if(leap->fingerFlicked(i) && selectedPuppet() != NULL && hoveredVertexIndex != -1){
+        if(leap->renderHands && leap->fingerFlicked(i) && selectedPuppet() != NULL && hoveredVertexIndex != -1){
             
             if(selectedPuppet()->getExpressionZone(hoveredVertexIndex) == NULL) {
                 selectedPuppet()->addExpressionZone(hoveredVertexIndex);
@@ -53,7 +53,7 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     }
     
     // leap interface (flick a puppet with left index finger to toggle edit mode)
-    if(leap->fingerFlicked(6) && leapClickAgainTimer == 0) {
+    if(leap->renderHands && leap->fingerFlicked(6) && leapClickAgainTimer == 0) {
         
         int clickedPuppetIndex = getClosestPuppetIndex(leap->pointerPosition.x,
                                                        leap->pointerPosition.y);
@@ -165,7 +165,11 @@ void PuppetsHandler::draw() {
     // highlight the vertex that the mouse is hovered over
     
     if(hoveredVertexIndex != -1) {
-        ofSetColor(ofColor(0,155,255));
+        
+        ofSetColor(ofColor(255,0,0,100));
+        ofCircle(selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex), 10);
+        
+        ofSetColor(ofColor(255,0,0,100));
         ofCircle(selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex), 5);
     }
     

@@ -13,6 +13,7 @@ private:
     
     vector<ofVec3f> palmPositions;
     vector<ofVec3f> calibratedPalmPositions;
+    vector<ofVec3f> palmVelocities;
     
     vector<ofVec3f> fingersPositions;
     vector<ofVec3f> fingersCalibration;
@@ -50,6 +51,8 @@ public:
     int calibrationTimer;
     int calibrationTimerLength = 60*3;
     bool calibrated;
+    
+    bool renderHands;
     
     ofVec2f pointerPosition;
     

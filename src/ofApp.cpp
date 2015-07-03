@@ -192,6 +192,11 @@ void ofApp::keyReleased(int key) {
         ofToggleFullscreen();
     }
     
+    // toggle render hands
+    if(key == 'h') {
+        leapHandler.renderHands = !leapHandler.renderHands;
+    }
+    
 }
 
 void ofApp::dragEvent(ofDragInfo info) {

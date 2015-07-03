@@ -12,6 +12,7 @@ void LeapDataHandler::setup() {
     
     palmPositions.resize(2);
     calibratedPalmPositions.resize(2);
+    palmVelocities.resize(2);
     
     calibrated = false;
     calibrationTimer = 0;
@@ -22,6 +23,7 @@ void LeapDataHandler::setup() {
     
     cam.setOrientation(ofPoint(-20, 0, 0));
     
+    renderHands = true;
     
 }
 
@@ -136,7 +138,7 @@ void LeapDataHandler::recieveNewData() {
 
 void LeapDataHandler::draw(bool drawCalibration) {
     
-    if(getLeapHands().size()   > 0) {
+    if(renderHands && getLeapHands().size() > 0) {
         
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_NORMALIZE);
@@ -170,13 +172,14 @@ void LeapDataHandler::draw(bool drawCalibration) {
                 
                 for(int f = 0; f < simpleHands[i].fingers.size(); f++){
                     
-                    ofSetColor(100, 100, 100);
+                    ofSetColor(255);
                     ofLine(simpleHands[i].fingers[f].base, simpleHands[i].fingers[f].pos);
                     
                     // finger base
-                    ofDrawBox(simpleHands[i].fingers[f].base, 20);
+                    ofSetColor(150,150,150,50);
+                    ofDrawSphere(simpleHands[i].fingers[f].base, 10);
                     
-                    ofSetColor(100, 100, 100);
+                    ofSetColor(255);
                     ofLine(simpleHands[i].handPos,         simpleHands[i].fingers[f].base);
                     
                 }
@@ -271,7 +274,14 @@ ofVec3f LeapDataHandler::getCalibratedPalmPosition(int i) {
 
 ofVec3f LeapDataHandler::getFingerVelocity(int i) {
     
-    return fingersVelocities[i];
+    ofVec3f palmVel;
+    if(i < 5) {
+        palmVel = palmVelocities[0];
+    } else {
+        palmVel = palmVelocities[1];
+    }
+    
+    return fingersVelocities[i] - palmVel;
     
 }
 
@@ -281,9 +291,24 @@ int LeapDataHandler::getHandCount() {
     
 }
 
-bool LeapDataHandler::fingerFlicked(int i) {
+bool LeapDataHandler::fingerFlicked(int finger) {
     
-    return abs(getFingerVelocity(i).y)+abs(getFingerVelocity(i).x) > 1500;
+    ofVec3f avgVelocity = ofVec3f(0,0,0);
+    if(finger < 5) {
+        for(int i = 0; i < 5; i++) {
+            if(i != finger) avgVelocity += getFingerVelocity(i);
+        }
+    } else {
+        for(int i = 5; i < 10; i++) {
+            if(i != finger) avgVelocity += getFingerVelocity(i);
+        }
+    }
+    avgVelocity /= 4;
+    
+    float fingerVel = abs(getFingerVelocity(finger).y)+abs(getFingerVelocity(finger).x);
+    float avgVel = abs(avgVelocity.y)+abs(avgVelocity.x);
+    
+    return fingerVel - avgVel > 1400 && fingerVel > 1500;
     
 }
 

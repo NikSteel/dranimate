@@ -245,8 +245,9 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
     if(isBeingRecorded) {
         ofSetColor(255,155,155);
     } else if(isSelected) {
-        float flash = abs(sin(ofGetElapsedTimef()*3))*50+205;
-        ofSetColor(flash,flash,flash);
+        //float flash = abs(sin(ofGetElapsedTimef()*3))*50+205;
+        //ofSetColor(flash,flash,flash);
+        ofSetColor(255,255,255,50);
     } else {
         ofSetColor(255,255,255);
     }
@@ -274,8 +275,9 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
         
         // draw wireframe
         glLineWidth(1.0);
-        float flash = abs(sin(ofGetElapsedTimef()*2)*100)+100;
-        ofSetColor(100,255,100,flash);
+        //float flash = abs(sin(ofGetElapsedTimef()*2)*100)+100;
+        //ofSetColor(100,255,100,flash);
+        ofSetColor(ofColor::orangeRed);
         meshDeformer.getDeformedMesh().drawWireframe();
         
         // draw control points
@@ -289,7 +291,7 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
                 
             } else if(expressionZones[i].leapFingerID != -1) {
                 
-                ofSetColor(0, 50, 255);
+                ofSetColor(ofColor::orangeRed);
                 ofCircle(v, 10);
                 
                 ofSetColor(255, 255, 0);
