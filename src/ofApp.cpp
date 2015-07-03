@@ -54,7 +54,7 @@ void ofApp::update() {
             leapHandler.update();
             
             puppetsHandler.cdMenuOpen = clickDownMenu.phase != PHASE_WAIT;
-            puppetsHandler.enableLeapControls = leapHandler.leap.getLeapHands().size() == 2;
+            puppetsHandler.enableLeapControls = leapHandler.getHandCount() == 2;
             puppetsHandler.update(&leapHandler, &oscReceiver, &clickDownMenu);
             
             break;
@@ -99,7 +99,7 @@ void ofApp::draw() {
                 Utils::drawWarning("Controls paused!");
             }
             
-            leapHandler.drawLeapCalibrationMenu();
+            leapHandler.draw(false);
             
             break;
             
@@ -107,9 +107,15 @@ void ofApp::draw() {
             
         case LEAP_CALIBRATION:
             
-            leapHandler.drawLeapCalibrationMenu();
+            leapHandler.draw(true);
             
-            Utils::drawControls("c   -   Set calibration\nt   -   Calibrate on timer");
+            Utils::drawControls("c   -   Set calibration\nt   -   Calibrate on timer\nb   -   Back to puppet stage");
+            
+            if(leapHandler.calibrationTimer != 0) {
+                string timeLeftString = ofToString(leapHandler.calibrationSecondsLeft());
+                ofSetColor(0,0,0);
+                Resources::verdana54.drawString(timeLeftString, ofGetWidth()/2, ofGetHeight()/2);
+            }
             
             break;
             
@@ -166,7 +172,12 @@ void ofApp::keyReleased(int key) {
             
             // set leap calibration (on timer)
             if(key == 't') {
-                leapHandler.calibrationTimer = 100;
+                leapHandler.calibrationTimer = leapHandler.calibrationTimerLength;
+            }
+            
+            // back to puppet stage
+            if(key == 'b') {
+                state = PUPPET_STAGE;
             }
             
             break;
@@ -183,9 +194,9 @@ void ofApp::keyReleased(int key) {
     
 }
 
-// lets us drag an image/puppet directory into the window to load it - very convenient
-
 void ofApp::dragEvent(ofDragInfo info) {
+    
+    // lets us drag an image/puppet directory into the window to load it - very convenient
     
     if(Utils::filenameIsImage(info.files.at(0))) {
         

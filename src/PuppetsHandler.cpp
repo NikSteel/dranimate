@@ -35,25 +35,25 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         
     }
     
-    // leap interface
-    for(int i = 1; i < 5; i++) {
+    // leap interface (flick to to add control point mapped to right hand finger 'i')
+    for(int i = 0; i < 5; i++) {
         
-        if(abs(leap->fingersVelocities[i].y) > 1500
-           && selectedPuppet() != NULL
-           && hoveredVertexIndex != -1){
+        if(leap->fingerFlicked(i) && selectedPuppet() != NULL && hoveredVertexIndex != -1){
+            
             if(selectedPuppet()->getExpressionZone(hoveredVertexIndex) == NULL) {
                 selectedPuppet()->addExpressionZone(hoveredVertexIndex);
             }
             selectedPuppet()->getExpressionZone(hoveredVertexIndex)->leapFingerID = i;
+            
         }
         
     }
-    
     if(leapClickAgainTimer > 0) {
         leapClickAgainTimer--;
     }
     
-    if(abs(leap->fingersVelocities[6].y) > 1500 && leapClickAgainTimer == 0) {
+    // leap interface (flick a puppet with left index finger to toggle edit mode)
+    if(leap->fingerFlicked(6) && leapClickAgainTimer == 0) {
         
         int clickedPuppetIndex = getClosestPuppetIndex(leap->pointerPosition.x,
                                                        leap->pointerPosition.y);
@@ -116,6 +116,7 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         }
     }
     
+    // update puppet recordings
     for(int i = 0; i < recordedPuppets.size(); i++) {
         recordedPuppets[i].update();
     }

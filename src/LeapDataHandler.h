@@ -7,19 +7,9 @@
 #include "ofxLeapMotion.h"
 #include "ofxStrip.h"
 
-class LeapDataHandler {
+class LeapDataHandler : ofxLeapMotion {
     
-public:
-    
-    void setup();
-    void update();
-    void calibrate();
-    void recieveNewData();
-    
-    void drawLeapCalibrationMenu();
-    
-    ofxLeapMotion leap;
-    vector <ofxLeapMotionSimpleHand> simpleHands;
+private:
     
     vector<ofVec3f> palmPositions;
     vector<ofVec3f> calibratedPalmPositions;
@@ -30,16 +20,36 @@ public:
     
     vector<ofVec3f> fingersVelocities;
     
-    float handRotation;
-    
-    int calibrationTimer;
-    bool calibrated;
-    
     ofFbo handFbo;
     ofEasyCam cam;
     ofLight l1;
     ofLight l2;
     ofMaterial m1;
+    
+public:
+    
+    void setup();
+    void update();
+    void draw(bool drawCalibration);
+    
+    void calibrate();
+    void recieveNewData();
+    
+    ofVec3f getCalibratedFingerPosition(int i);
+    ofVec3f getCalibratedPalmPosition(int i);
+    ofVec3f getFingerVelocity(int i);
+    
+    int getHandCount();
+    
+    int calibrationSecondsLeft();
+    
+    bool fingerFlicked(int i);
+    
+    float handRotation;
+    
+    int calibrationTimer;
+    int calibrationTimerLength = 60*3;
+    bool calibrated;
     
     ofVec2f pointerPosition;
     

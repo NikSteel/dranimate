@@ -289,7 +289,10 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
                 
             } else if(expressionZones[i].leapFingerID != -1) {
                 
-                ofSetColor(0, 255, 0);
+                ofSetColor(0, 50, 255);
+                ofCircle(v, 10);
+                
+                ofSetColor(255, 255, 0);
                 ofCircle(v, 7);
                 
                 string s = ofToString(expressionZones[i].leapFingerID);
@@ -450,47 +453,33 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
     
     if(leap->calibrated && !isBeingEdited) {
     
-        rotation = -leap->handRotation * 90;
-            
-        // this is a bit messy, should fix it
-        
         for(int i = 0; i < expressionZones.size(); i++) {
             
             ExpressionZone *ezone = &expressionZones[i];
             
             if(ezone->isAnchorPoint) {
               
-                
+                // ezone doesn't move
                 
             } else if(ezone->leapFingerID != -1) {
             
                 // this ezone has a finger mapping!
                 // so set this ezone's displacement to that leap finger
                 
-                ezone->userControlledDisplacement.x =
-                    wOffset+
-                    leap->fingersPositions[expressionZones[i].leapFingerID].x
-                    -leap->fingersCalibration[expressionZones[i].leapFingerID].x;
+                ofVec3f calibratedFinger = leap->getCalibratedFingerPosition(expressionZones[i].leapFingerID);
                 
-                ezone->userControlledDisplacement.y =
-                    hOffset+
-                    (-leap->fingersPositions[expressionZones[i].leapFingerID].y)
-                    -(-leap->fingersCalibration[expressionZones[i].leapFingerID].y);
+                ezone->userControlledDisplacement.x = wOffset+calibratedFinger.x;
+                ezone->userControlledDisplacement.y = hOffset-calibratedFinger.y;
                 
             } else {
                 
                 // this ezone has no finger mapping.
                 // so just set the displacement to the palm position
                 
-                ezone->userControlledDisplacement.x =
-                wOffset+
-                leap->palmPositions[palmControlsPuppet].x
-                -leap->calibratedPalmPositions[palmControlsPuppet].x;
+                ofVec3f calibratedPalm = leap->getCalibratedPalmPosition(palmControlsPuppet);
                 
-                ezone->userControlledDisplacement.y =
-                hOffset+
-                (-leap->palmPositions[palmControlsPuppet].y)
-                -(-leap->calibratedPalmPositions[palmControlsPuppet].y);
+                ezone->userControlledDisplacement.x = wOffset+calibratedPalm.x;
+                ezone->userControlledDisplacement.y = hOffset-calibratedPalm.y;
                 
             }
             

@@ -2,7 +2,7 @@
 
 void LeapDataHandler::setup() {
     
-    leap.open();
+    open();
     
     fingersPositions.resize(10);
     fingersCalibration.resize(10);
@@ -56,34 +56,39 @@ void LeapDataHandler::update() {
 
 void LeapDataHandler::recieveNewData() {
     
-    simpleHands = leap.getSimpleHands();
+    vector<ofxLeapMotionSimpleHand> simpleHands = getSimpleHands();
     
-    if( leap.isFrameNew() && simpleHands.size() && leap.getLeapHands().size() ){
+    bool rightHandOnScreen = false;
+    bool leftHandOnScreen = false;
+    
+    if( isFrameNew() && simpleHands.size() && getLeapHands().size() ){
         
         handRotation = simpleHands[0].handNormal.x;
         
         // original
-        leap.setMappingX(-460, 100, -ofGetWidth()/2, ofGetWidth()/2);
-        leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
-        leap.setMappingZ(-300, 0, 2, 6);
+        setMappingX(-460, 100, -ofGetWidth()/2, ofGetWidth()/2);
+        setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
+        setMappingZ(-300, 0, 2, 6);
         
         // from example
-        leap.setMappingX(-230, 230, -ofGetWidth()/2, ofGetWidth()/2);
-        leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
-        leap.setMappingZ(-150, 150, -200, 200);
+        setMappingX(-230, 230, -ofGetWidth()/2, ofGetWidth()/2);
+        setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
+        setMappingZ(-150, 150, -200, 200);
         
         
         for(int h = 0; h < simpleHands.size(); h++) {
             
             ofxLeapMotionSimpleHand hand = simpleHands[h];
-            Hand handWithAllData = leap.getLeapHands()[h];
+            Hand handWithAllData = getLeapHands()[h];
             
             // the right hand is always at index 0, the left is always at 1
             int handIndex = -1;
             if(handWithAllData.isRight()) {
                 handIndex = 0;
+                rightHandOnScreen = true;
             } else if(handWithAllData.isLeft()) {
                 handIndex = 1;
+                leftHandOnScreen = true;
             }
             
             // set the 'pointer' position to the left hand's index finger
@@ -114,14 +119,24 @@ void LeapDataHandler::recieveNewData() {
         
     }
     
-    leap.markFrameAsOld();
+    if(!rightHandOnScreen) {
+        for(int i = 0; i < 5; i++) {
+            fingersVelocities[i] = ofVec3f(0,0,0);
+        }
+    }
+    if(!leftHandOnScreen) {
+        for(int i = 0; i < 5; i++) {
+            fingersVelocities[i+5] = ofVec3f(0,0,0);
+        }
+    }
+    
+    markFrameAsOld();
     
 }
 
-
-void LeapDataHandler::drawLeapCalibrationMenu() {
+void LeapDataHandler::draw(bool drawCalibration) {
     
-    if(leap.getLeapHands().size()   > 0) {
+    if(getLeapHands().size()   > 0) {
         
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_NORMALIZE);
@@ -137,10 +152,12 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
         
         l2.disable();
         
+        vector<ofxLeapMotionSimpleHand> simpleHands = getSimpleHands();
+        
         for(int i = 0; i < simpleHands.size(); i++){
             
-            if(i < leap.getLeapHands().size()) {
-                bool isRightHand = leap.getLeapHands()[i].isRight();
+            if(i < getLeapHands().size()) {
+                bool isRightHand = getLeapHands()[i].isRight();
                 
                 ofPushStyle();
                 
@@ -178,29 +195,53 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
                     
                     // fingertip
                     ofSetColor(200, 100, 0);
-                    ofDrawSphere(simpleHands[i].fingers[1].pos, 10);
+                    
+                    // make the pointer finger cone point in the right direction
+                    ofVec3f pos = simpleHands[i].fingers[1].pos;
+                    ofVec3f base = simpleHands[i].fingers[1].base;
+                    ofQuaternion q;
+                    q.makeRotate(ofPoint(0, -1, 0), pos-base);
+                    ofMatrix4x4 m;
+                    q.get(m);
+                    
+                    ofPushMatrix();
+                    ofTranslate(pos.x, pos.y, pos.z);
+                    glMultMatrixf(m.getPtr());
+                        ofDrawCone(0,0,0,10,20);
+                    ofPopMatrix();
                     
                 }
                 
                 // palm
                 
                 ofPushMatrix();
-                    ofTranslate(simpleHands[i].handPos);
+                ofTranslate(simpleHands[i].handPos);
                 
-                    //rotate the hand by the downwards normal
-                    ofQuaternion q;
-                    q.makeRotate(ofPoint(0, -1, 0), simpleHands[i].handNormal);
-                    ofMatrix4x4 m;
-                    q.get(m);
-                    glMultMatrixf(m.getPtr());
+                //rotate the hand by the downwards normal
+                ofQuaternion q;
+                q.makeRotate(ofPoint(0, -1, 0), simpleHands[i].handNormal);
+                ofMatrix4x4 m;
+                q.get(m);
+                glMultMatrixf(m.getPtr());
                 
-                    ofScale(1, 0.35, 1.0);
+                ofScale(1, 0.35, 1.0);
                 
-                    ofDrawBox(0, 0, 0, 60);
+                ofDrawBox(0, 0, 0, 60);
                 ofPopMatrix();
                 
                 ofDisableLighting();
                 ofPopStyle();
+                
+                // calibration
+                
+                if(drawCalibration) {
+                    for(int f = 0; f < 10; f++){
+                        
+                        ofSetColor(155,155,255,155);
+                        ofDrawSphere(fingersCalibration[f], 10);
+                        
+                    }
+                }
 
             }
 
@@ -214,5 +255,40 @@ void LeapDataHandler::drawLeapCalibrationMenu() {
         
     }
     
+}
+
+ofVec3f LeapDataHandler::getCalibratedFingerPosition(int i) {
+    
+    return fingersPositions[i]-fingersCalibration[i];
+    
+}
+
+ofVec3f LeapDataHandler::getCalibratedPalmPosition(int i) {
+    
+    return palmPositions[i]-calibratedPalmPositions[i];
+    
+}
+
+ofVec3f LeapDataHandler::getFingerVelocity(int i) {
+    
+    return fingersVelocities[i];
+    
+}
+
+int LeapDataHandler::getHandCount() {
+    
+    return getLeapHands().size();
+    
+}
+
+bool LeapDataHandler::fingerFlicked(int i) {
+    
+    return abs(getFingerVelocity(i).y)+abs(getFingerVelocity(i).x) > 1500;
+    
+}
+
+int LeapDataHandler::calibrationSecondsLeft() {
+    
+    return calibrationTimer/60+1;
     
 }

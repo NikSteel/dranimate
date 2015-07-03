@@ -15,6 +15,7 @@ public:
     static ofTrueTypeFont verdana24;
     static ofTrueTypeFont verdana16;
     static ofTrueTypeFont verdana12;
+    static ofTrueTypeFont verdana54;
     
 };
 
