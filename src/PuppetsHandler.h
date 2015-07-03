@@ -22,7 +22,7 @@ public:
     void update(LeapDataHandler *leap,
                 ofxOscReceiver *osc,
                 ofxClickDownMenu *cdmenu);
-    void draw();
+    void draw(LeapDataHandler *leap);
     
     void mousePressed(ofMouseEventArgs& mouse);
     void mouseDragged(ofMouseEventArgs& mouse);
@@ -69,6 +69,12 @@ public:
     
     bool recordingScene;
     SceneRecorder sceneRecorder;
+    
+    // (temp hack) line connecting fingers to ezones
+    int connectTimer;
+    int connectedFinger = -1;
+    int connectedEzone = -1;
+    int connectedPuppet = -1;
     
 };
 

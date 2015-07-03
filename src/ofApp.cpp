@@ -87,7 +87,7 @@ void ofApp::draw() {
         
         } case PUPPET_STAGE: {
             
-            puppetsHandler.draw();
+            puppetsHandler.draw(&leapHandler);
                         
             // instructions
             

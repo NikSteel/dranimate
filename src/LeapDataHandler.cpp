@@ -6,6 +6,7 @@ void LeapDataHandler::setup() {
     
     fingersPositions.resize(10);
     fingersCalibration.resize(10);
+    fingersScreenPositions.resize(10);
     fingersTotalMovement.resize(10);
     
     fingersVelocities.resize(10);
@@ -94,9 +95,9 @@ void LeapDataHandler::recieveNewData() {
             }
             
             // set the 'pointer' position to the left hand's index finger
-            if(handIndex == 1) {
-                ofVec3f wp = cam.worldToScreen(simpleHands[h].fingers[1].pos);
-                pointerPosition = ofVec2f(wp.x,wp.y);
+            for(int i = 0; i < 5; i++) {
+                ofVec3f wp = cam.worldToScreen(simpleHands[h].fingers[i].pos);
+                fingersScreenPositions[i+handIndex*5] = ofVec2f(wp.x,wp.y);
             }
             
             // get palm position
@@ -260,9 +261,21 @@ void LeapDataHandler::draw(bool drawCalibration) {
     
 }
 
+ofVec3f LeapDataHandler::getFingerPosition(int i) {
+    
+    return fingersPositions[i];
+    
+}
+
 ofVec3f LeapDataHandler::getCalibratedFingerPosition(int i) {
     
     return fingersPositions[i]-fingersCalibration[i];
+    
+}
+
+ofVec3f LeapDataHandler::getFingerScreenPosition(int i) {
+    
+    return fingersScreenPositions[i];
     
 }
 

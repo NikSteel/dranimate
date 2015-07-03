@@ -17,6 +17,7 @@ private:
     
     vector<ofVec3f> fingersPositions;
     vector<ofVec3f> fingersCalibration;
+    vector<ofVec3f> fingersScreenPositions;
     vector<ofVec3f> fingersTotalMovement;
     
     vector<ofVec3f> fingersVelocities;
@@ -36,7 +37,9 @@ public:
     void calibrate();
     void recieveNewData();
     
+    ofVec3f getFingerPosition(int i);
     ofVec3f getCalibratedFingerPosition(int i);
+    ofVec3f getFingerScreenPosition(int i);
     ofVec3f getCalibratedPalmPosition(int i);
     ofVec3f getFingerVelocity(int i);
     
@@ -53,8 +56,6 @@ public:
     bool calibrated;
     
     bool renderHands;
-    
-    ofVec2f pointerPosition;
     
 };
 
