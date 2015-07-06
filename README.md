@@ -1,6 +1,7 @@
 # dranimate
 
-![Puppet example](design/puppet-example.gif)
+![Scene example](design/scene-example.gif)
+![Collaboration example](design/collab-example.gif)
 
 Instructions:
 
