@@ -60,6 +60,10 @@ void MeshGenerator::draw() {
     
     if(!meshGenerated) {
         
+        ofPushMatrix();
+        ofTranslate(-image.width/2,
+                    -image.height/2);
+        
         ofPushStyle();
         ofNoFill();
         
@@ -80,6 +84,8 @@ void MeshGenerator::draw() {
         }
         
         ofPopStyle();
+        
+        ofPopMatrix();
         
     }
     
