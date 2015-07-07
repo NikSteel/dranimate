@@ -210,6 +210,7 @@ void Puppet::update() {
     // as rigid as possible freaks out with onely one control point.)
     
     if(expressionZones.size() > 1) {
+        
         // add displacements to puppet control points
         for(int i = 0; i < expressionZones.size(); i++) {
             
@@ -228,6 +229,7 @@ void Puppet::update() {
         }
     
         meshDeformer.update();
+        
     }
     
     // attach the subdivided mesh to the mesh deformed by the puppet
@@ -450,9 +452,6 @@ void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
 
 void Puppet::recieveLeapData(LeapDataHandler *leap) {
     
-    float wOffset = ofGetWidth()/2 - image.getWidth()/2;
-    float hOffset = ofGetHeight()/2 - image.getHeight()/2;
-    
     if(leap->calibrated && !isBeingEdited) {
     
         for(int i = 0; i < expressionZones.size(); i++) {
@@ -470,8 +469,8 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
                 
                 ofVec3f calibratedFinger = leap->getCalibratedFingerPosition(expressionZones[i].leapFingerID);
                 
-                ezone->userControlledDisplacement.x = wOffset+calibratedFinger.x;
-                ezone->userControlledDisplacement.y = hOffset-calibratedFinger.y;
+                ezone->userControlledDisplacement.x = calibratedFinger.x;
+                ezone->userControlledDisplacement.y = -calibratedFinger.y;
                 
             } else {
                 
@@ -480,8 +479,8 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
                 
                 ofVec3f calibratedPalm = leap->getCalibratedPalmPosition(palmControlsPuppet);
                 
-                ezone->userControlledDisplacement.x = wOffset+calibratedPalm.x;
-                ezone->userControlledDisplacement.y = hOffset-calibratedPalm.y;
+                ezone->userControlledDisplacement.x = calibratedPalm.x;
+                ezone->userControlledDisplacement.y = -calibratedPalm.y;
                 
             }
             
@@ -503,7 +502,8 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
                 
                 float d = ezoneVertexPosition.distance(ezoneParentVertexPosition);
                 
-                float angle = atan2(ezoneAbsoulteVertexPosition.y-ezoneParentAbsoluteVertexPosition.y, ezoneAbsoulteVertexPosition.x-ezoneParentAbsoluteVertexPosition.x);
+                float angle = atan2(ezoneAbsoulteVertexPosition.y-ezoneParentAbsoluteVertexPosition.y,
+                                    ezoneAbsoulteVertexPosition.x-ezoneParentAbsoluteVertexPosition.x);
                 
                 ofVec3f diff;
                 diff = ofVec3f(cos(angle), sin(angle), 0);
@@ -517,13 +517,16 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
         }
     } else {
         
+        // the leap isn't calibrated, or the puppet is being edited.
+        // so return all the ezones to their original positions.
+        // this returns the puppet to it's original pose.
         
         for(int i = 0; i < expressionZones.size(); i++) {
             
             ExpressionZone *ezone = &expressionZones[i];
             
-            ezone->userControlledDisplacement.x = wOffset;
-            ezone->userControlledDisplacement.y = hOffset;
+            ezone->userControlledDisplacement.x = 0;
+            ezone->userControlledDisplacement.y = 0;
                 
             
         }

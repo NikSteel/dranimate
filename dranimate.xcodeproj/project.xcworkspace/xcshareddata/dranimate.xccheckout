@@ -12,6 +12,8 @@
 	<dict>
 		<key>37526DA425E5430474A14FBFA1BC4525160B5FC1</key>
 		<string>https://github.com/kylemcdonald/ofxCv.git</string>
+		<key>4AB9E2F3B00B6247D16213DAC5A5CDE7781B5223</key>
+		<string>https://github.com/cmuartfab/ofxLeapGestures.git</string>
 		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
 		<string>https://github.com/cmuartfab/dranimate</string>
 		<key>6C10E9CB62EEF6C0C2AD759B4DA022783425AA2C</key>
@@ -27,6 +29,8 @@
 	<dict>
 		<key>37526DA425E5430474A14FBFA1BC4525160B5FC1</key>
 		<string>../../../addons/ofxCv</string>
+		<key>4AB9E2F3B00B6247D16213DAC5A5CDE7781B5223</key>
+		<string>../../../addons/ofxLeapGestures</string>
 		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
 		<string>../..</string>
 		<key>6C10E9CB62EEF6C0C2AD759B4DA022783425AA2C</key>
@@ -67,6 +71,14 @@
 			<string>37526DA425E5430474A14FBFA1BC4525160B5FC1</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ofxCv</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>4AB9E2F3B00B6247D16213DAC5A5CDE7781B5223</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxLeapGestures</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>

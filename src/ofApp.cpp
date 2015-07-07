@@ -70,7 +70,6 @@ void ofApp::update() {
 void ofApp::draw() {
     
     ofSetColor(255);
-    //ofBackgroundGradient(ofColor(50,50,50), ofColor(25,25,25), OF_GRADIENT_LINEAR);
     ofBackgroundGradient(ofColor(255,255,255), ofColor(210,210,210), OF_GRADIENT_LINEAR);
     
     switch(state) {
@@ -87,8 +86,11 @@ void ofApp::draw() {
         
         } case PUPPET_STAGE: {
             
+            ofPushMatrix();
+            ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
             puppetsHandler.draw(&leapHandler);
-                        
+            ofPopMatrix();
+            
             // instructions
             
             Utils::drawControls("Puppet stage\n\nc - Calibrate leap contoller\ns - Start/stop scene recording");

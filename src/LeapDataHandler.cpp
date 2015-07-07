@@ -26,6 +26,9 @@ void LeapDataHandler::setup() {
     
     renderHands = true;
     
+    leapGestures.setup();
+    leapGestures.setClassifyMode();
+    
 }
 
 void LeapDataHandler::calibrate() {
@@ -66,6 +69,9 @@ void LeapDataHandler::recieveNewData() {
     
     if( isFrameNew() && simpleHands.size() && getLeapHands().size() ){
         
+        // disabled because we need to put this on its own thread beacuse it's laggin everything when we classify the gesture
+        //leapGestures.recieveNewLeapData(leapHandler.getLeapHands());
+        
         handRotation = simpleHands[0].handNormal.x;
         
         // original
@@ -97,6 +103,7 @@ void LeapDataHandler::recieveNewData() {
             // set the 'pointer' position to the left hand's index finger
             for(int i = 0; i < 5; i++) {
                 ofVec3f wp = cam.worldToScreen(simpleHands[h].fingers[i].pos);
+                wp -= ofVec3f(ofGetWidth()/2,ofGetHeight()/2);
                 fingersScreenPositions[i+handIndex*5] = ofVec2f(wp.x,wp.y);
             }
             

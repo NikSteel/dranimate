@@ -31,15 +31,15 @@ void MeshGenerator::draw() {
     // draw image
     
     ofPushMatrix();
-    ofTranslate(ofGetWidth()/2  - cvImage.width/2,
-                ofGetHeight()/2 - cvImage.height/2);
+    ofTranslate(ofGetWidth()/2,
+                ofGetHeight()/2);
     
     if(!meshGenerated) {
         ofSetColor(255,255,255,255);
     } else {
         ofSetColor(100,100,100,255);
     }
-    noAlphaImage.draw(0,0);
+    noAlphaImage.draw(-noAlphaImage.width/2,-noAlphaImage.height/2);
     
     // draw mesh
     
@@ -62,6 +62,8 @@ void MeshGenerator::draw() {
         
         ofPushStyle();
         ofNoFill();
+        
+        ofSetLineWidth(5);
         
         int nPolylines = (int)contourFinder.getPolylines().size();
         
@@ -243,11 +245,11 @@ void MeshGenerator::generateMesh() {
     
     if(isMeshBroken()) {
         
-        ofLog() << "could not generate mesh. try changing the contour resample amount.";
+        ofLog() << "warning: mesh is broken. this will crash ofxPuppet.";
         
         meshGenerated = false;
         
-    } //else {
+    } else {
         
         meshGenerated = true;
         
@@ -258,7 +260,15 @@ void MeshGenerator::generateMesh() {
             mesh.addTexCoord(vec);
         }
         
-    //}
+        // center mesh
+        for(int i = 0; i < len; i++) {
+            ofVec3f v = mesh.getVertex(i);
+            v.x -= image.width/2;
+            v.y -= image.height/2;
+            mesh.setVertex(i, v);
+        }
+        
+    }
     
     // somehow fix broken meshes
     // i.e., there exist whole pieces of the mesh that are

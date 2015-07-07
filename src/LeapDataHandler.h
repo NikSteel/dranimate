@@ -6,8 +6,9 @@
 #include "ofMain.h"
 #include "ofxLeapMotion.h"
 #include "ofxStrip.h"
+#include "ofxLeapGestures.h"
 
-class LeapDataHandler : ofxLeapMotion {
+class LeapDataHandler : public ofxLeapMotion {
     
 private:
     
@@ -56,6 +57,8 @@ public:
     bool calibrated;
     
     bool renderHands;
+    
+    ofxLeapGestures leapGestures;
     
 };
 

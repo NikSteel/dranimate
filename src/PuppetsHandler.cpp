@@ -11,7 +11,7 @@ void PuppetsHandler::setup() {
     recordingPuppet = false;
     
     Puppet p;
-    p.load("puppets/demo-killingashkeboos");
+    p.load("puppets/demo-killing-ashkeboos");
     puppets.push_back(p);
     
     ofRegisterKeyEvents(this);
@@ -304,10 +304,10 @@ void PuppetsHandler::mousePressed(ofMouseEventArgs &mouse){
         int button = mouse.button;
         
         if(button == 2) {
-            selectedRecordingIndex = getClosestRecordingIndex(mouse.x,mouse.y);
+            selectedRecordingIndex = getClosestRecordingIndex(mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2);
         }
         
-        int clickedPuppetIndex = getClosestPuppetIndex(mouse.x,mouse.y);
+        int clickedPuppetIndex = getClosestPuppetIndex(mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2);
         if(button == 0 && clickedPuppetIndex == selectedPuppetIndex && clickedPuppetIndex != -1) {
             
             // clicked on the same puppet. so edit that puppet.
@@ -390,7 +390,7 @@ void PuppetsHandler::mouseDragged(ofMouseEventArgs &mouse){
         ExpressionZone *ezone = selectedPuppet()->getExpressionZone(selectedVertexIndex);
         
         if(ezone != NULL && ezone->isAnchorPoint) {
-            ezone->userControlledDisplacement = ofVec2f(mouse.x,mouse.y) - selectedPuppet()->mesh.getVertex(selectedVertexIndex);
+            ezone->userControlledDisplacement = ofVec2f(mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2) - selectedPuppet()->mesh.getVertex(selectedVertexIndex);
             selectedPuppet()->update();
         }
         
@@ -406,7 +406,7 @@ void PuppetsHandler::mouseMoved(ofMouseEventArgs &mouse){
        && !enableLeapControls) {
         
         hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(),
-                                                    mouse.x, mouse.y);
+                                                    mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2);
     
     }
     

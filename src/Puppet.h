@@ -79,6 +79,8 @@ public:
     
     // transformation stuff
     
+    bool meshCentered=false;
+    
     ofVec2f center;
     ofVec2f initTransformPos;
     float rotation;
