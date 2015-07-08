@@ -129,7 +129,7 @@ void MeshGenerator::findImageContours() {
     // find contours from thresholded image
     
     contourFinder.setMinArea(1000);
-    contourFinder.setMaxArea(640*480);
+    contourFinder.setMaxArea(640*640);
     //contourFinder.setFindHoles(true);
     contourFinder.setSortBySize(true);
     

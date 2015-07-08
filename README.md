@@ -11,6 +11,7 @@ Instructions:
 <a href="https://github.com/ofZach/ofxTriangleMesh">ofxTriangleMesh</a><br />
 <a href="https://github.com/kylemcdonald/ofxCv">ofxCv</a><br />
 <a href="https://github.com/ofTheo/ofxLeapMotion">ofxLeapMotion</a><br />
+<a href="https://github.com/cmuartfab/ofxLeapGestures">ofxLeapGestures</a><br />
 <a href="https://github.com/loveandsheep/ofxClickDownMenu">ofxClickDownMenu</a><br />
 
 (Note: you can also use the <a href="https://github.com/golanlevin/ofxPuppet/tree/accelerate">experimental version of ofxPuppet</a> that uses the Accelerate framework for a signifigant performance boost.)
