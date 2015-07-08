@@ -155,6 +155,7 @@ void ofApp::keyReleased(int key) {
                 newPuppet.setImage(mesher.getImage(), !createPuppetLiveMode);
                 newPuppet.setMesh(mesher.getMesh());
                 newPuppet.setContour(mesher.getContour());
+                newPuppet.addCenterpoint();
                 
                 puppetsHandler.addPuppet(newPuppet);
                 state = PUPPET_STAGE;
@@ -172,6 +173,14 @@ void ofApp::keyReleased(int key) {
             // swap pointing hand and puppeteering hand
             if(key == OF_KEY_TAB) {
                 leapHandler.swapHandControls();
+            }
+            
+            // switch to puppet creation mode (camera)
+            if(key == 'm') {
+                createPuppetLiveMode = true;
+                mesher.reset();
+                newPuppet.reset();
+                state = NEW_PUPPET_CREATION;
             }
             
             break;

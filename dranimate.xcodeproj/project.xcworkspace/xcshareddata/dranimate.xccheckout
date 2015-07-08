@@ -7,7 +7,7 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>EA166CF3-4EF5-4409-AAA3-BEFFEC2C9C1F</string>
 	<key>IDESourceControlProjectName</key>
-	<string>dranimate</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>37526DA425E5430474A14FBFA1BC4525160B5FC1</key>
@@ -15,33 +15,25 @@
 		<key>4AB9E2F3B00B6247D16213DAC5A5CDE7781B5223</key>
 		<string>https://github.com/cmuartfab/ofxLeapGestures.git</string>
 		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
-		<string>https://github.com/cmuartfab/dranimate</string>
+		<string>https://github.com/cmuartfab/dranimate.git</string>
 		<key>6C10E9CB62EEF6C0C2AD759B4DA022783425AA2C</key>
 		<string>https://github.com/loveandsheep/ofxClickDownMenu.git</string>
-		<key>D8811CE32924E36E8903BAF4011407E4BAF64556</key>
-		<string>https://github.com/gameoverhack/ofxOpenNI.git</string>
-		<key>E3CEEF7062ECD9A173891CC71888AC7F04311EF8</key>
-		<string>https://github.com/golanlevin/ofxPuppet.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>dranimate.xcodeproj</string>
+	<string>dranimate.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>37526DA425E5430474A14FBFA1BC4525160B5FC1</key>
-		<string>../../../addons/ofxCv</string>
+		<string>../../../../../addons/ofxCv</string>
 		<key>4AB9E2F3B00B6247D16213DAC5A5CDE7781B5223</key>
-		<string>../../../addons/ofxLeapGestures</string>
+		<string>../../../../../addons/ofxLeapGestures</string>
 		<key>5F7B07C06DB7376F0D1BAC9E3EE8F2035327AC65</key>
 		<string>../..</string>
 		<key>6C10E9CB62EEF6C0C2AD759B4DA022783425AA2C</key>
-		<string>../../../addons/ofxClickDownMenu</string>
-		<key>D8811CE32924E36E8903BAF4011407E4BAF64556</key>
-		<string>../../../addons/ofxOpenNI</string>
-		<key>E3CEEF7062ECD9A173891CC71888AC7F04311EF8</key>
-		<string>../../../addons/ofxPuppet</string>
+		<string>../../../../../addons/ofxClickDownMenu</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/cmuartfab/dranimate</string>
+	<string>https://github.com/cmuartfab/dranimate.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
@@ -79,22 +71,6 @@
 			<string>4AB9E2F3B00B6247D16213DAC5A5CDE7781B5223</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ofxLeapGestures</string>
-		</dict>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>D8811CE32924E36E8903BAF4011407E4BAF64556</string>
-			<key>IDESourceControlWCCName</key>
-			<string>ofxOpenNI</string>
-		</dict>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>E3CEEF7062ECD9A173891CC71888AC7F04311EF8</string>
-			<key>IDESourceControlWCCName</key>
-			<string>ofxPuppet</string>
 		</dict>
 	</array>
 </dict>

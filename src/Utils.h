@@ -18,7 +18,7 @@ public:
     
     static bool isPointInsideMesh(ofMesh mesh, int x, int y);
 
-    static int getClosestIndex(ofMesh mesh, int x, int y);
+    static int getClosestIndex(ofMesh mesh, int x, int y, int min);
     
     static void drawControls(string s);
     static void drawWarning(string s);

@@ -29,6 +29,8 @@ public:
     void setMesh(ofMesh m);
     void setContour(ofPolyline line);
     
+    void addCenterpoint();
+    
     void reset();
     void update();
     void draw(bool isSelected, bool isBeingRecorded);

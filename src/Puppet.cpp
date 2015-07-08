@@ -182,6 +182,13 @@ void Puppet::setContour(ofPolyline line) {
 
 }
 
+void Puppet::addCenterpoint() {
+
+    ofVec3f c = mesh.getCentroid();
+    addExpressionZone(Utils::getClosestIndex(mesh, c.x,c.y, INT_MAX));
+    
+}
+
 void Puppet::reset() {
     
     removeAllExpressionZones();

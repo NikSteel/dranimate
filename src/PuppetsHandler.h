@@ -35,7 +35,6 @@ public:
     
     void addPuppet(Puppet p);
     Puppet *getPuppet(int i);
-    
     int getClosestPuppetIndex(int x, int y);
     int getClosestRecordingIndex(int x, int y);
     

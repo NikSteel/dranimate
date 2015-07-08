@@ -60,7 +60,7 @@ bool Utils::isPointInsideMesh(ofMesh mesh, int x, int y) {
     
 }
 
-int Utils::getClosestIndex(ofMesh mesh, int x, int y) {
+int Utils::getClosestIndex(ofMesh mesh, int x, int y, int min) {
     
     float closestDistance = MAXFLOAT;
     int closestIndex = -1;
@@ -68,7 +68,7 @@ int Utils::getClosestIndex(ofMesh mesh, int x, int y) {
     for(int i = 0; i < mesh.getVertices().size(); i++) {
         ofVec3f v = mesh.getVertex(i);
         float d = v.distance(ofVec3f(x,y,0));
-        if(d < closestDistance && d < Puppet::MIN_SELECT_VERT_DIST) {
+        if(d < closestDistance && d < min) {
             closestDistance = d;
             closestIndex = i;
         }

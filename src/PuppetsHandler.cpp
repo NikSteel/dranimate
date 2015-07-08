@@ -34,7 +34,8 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         hoveredVertexIndex = Utils::getClosestIndex(
             selectedPuppet()->meshDeformer.getDeformedMesh(),
             leap->getFingerScreenPosition(leap->pointingFinger+1).x,
-            leap->getFingerScreenPosition(leap->pointingFinger+1).y);
+            leap->getFingerScreenPosition(leap->pointingFinger+1).y,
+            Puppet::MIN_SELECT_VERT_DIST);
         
     }
     
@@ -60,6 +61,8 @@ void PuppetsHandler::update(LeapDataHandler *leap,
                 selectedPuppet()->addExpressionZone(hoveredVertexIndex);
             }
             selectedPuppet()->getExpressionZone(hoveredVertexIndex)->leapFingerID = i;
+            
+            selectedPuppet()->getExpressionZone(hoveredVertexIndex)->parentEzone = selectedPuppet()->expressionZones[0].meshIndex;
             
             leapClickAgainTimer = 20;
             
@@ -416,7 +419,7 @@ void PuppetsHandler::mouseMoved(ofMouseEventArgs &mouse){
        && !enableLeapControls) {
         
         hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(),
-                                                    mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2);
+                                                    mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2, Puppet::MIN_SELECT_VERT_DIST);
     
     }
     
