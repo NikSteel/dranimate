@@ -2,8 +2,8 @@
 
 void ImageFromCamera::setup() {
     
-    camWidth 		= 1920;	// try to grab at this size.
-    camHeight 		= 1080;
+    camWidth 		= 1024;	// try to grab at this size.
+    camHeight 		= 768;
     
     vidGrabber.setDeviceID(0);
     vidGrabber.setDesiredFrameRate(60);

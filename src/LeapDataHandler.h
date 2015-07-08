@@ -50,6 +50,8 @@ public:
     
     bool fingerFlicked(int i);
     
+    void swapHandControls();
+    
     float handRotation;
     
     int calibrationTimer;
@@ -57,6 +59,9 @@ public:
     bool calibrated;
     
     bool renderHands;
+    
+    int pointingFinger = 5;
+    int puppetFinger = 0;
     
     ofxLeapGestures leapGestures;
     

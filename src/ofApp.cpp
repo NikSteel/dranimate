@@ -14,6 +14,8 @@ void ofApp::setup() {
     
     state = PUPPET_STAGE;
 
+    hideGui = true;
+    
     clickDownMenu.OnlyRightClick = true;
     clickDownMenu.menu_name = "menu";
     ofAddListener(ofxCDMEvent::MenuPressed, this, &ofApp::cmdEvent);
@@ -40,7 +42,7 @@ void ofApp::update() {
             // the camera and give it to the meshe generator
             if(createPuppetLiveMode) {
                 cam.update();
-                newPuppet.setImage(cam.image);
+                newPuppet.setImage(cam.image, false);
                 mesher.setImage(newPuppet.image);
             }
             
@@ -70,7 +72,8 @@ void ofApp::update() {
 void ofApp::draw() {
     
     ofSetColor(255);
-    ofBackgroundGradient(ofColor(255,255,255), ofColor(210,210,210), OF_GRADIENT_LINEAR);
+    //ofBackgroundGradient(ofColor(255,255,255), ofColor(210,210,210), OF_GRADIENT_LINEAR);
+    ofBackground(255,255,255);
     
     switch(state) {
             
@@ -80,7 +83,9 @@ void ofApp::draw() {
             
             mesher.draw();
             
-            Utils::drawControls("Puppet creator\n\np - Preview mesh\nm - Generate mesh & create puppet");
+            if(!hideGui) {
+                Utils::drawControls("Puppet creator\n\np - Preview mesh\nm - Generate mesh & create puppet");
+            }
             
             break;
         
@@ -93,12 +98,14 @@ void ofApp::draw() {
             
             // instructions
             
-            Utils::drawControls("Puppet stage\n\nc - Calibrate leap contoller\ns - Start/stop scene recording");
+            if(!hideGui) {
+                Utils::drawControls("Puppet stage\n\nc - Calibrate leap contoller\ns - Start/stop scene recording");
             
-            if(!leapHandler.calibrated) {
-                Utils::drawWarning("Leap not calibrated!");
-            } else if (puppetsHandler.controlsPaused) {
-                Utils::drawWarning("Controls paused!");
+                if(!leapHandler.calibrated) {
+                    Utils::drawWarning("Leap not calibrated!");
+                } else if (puppetsHandler.controlsPaused) {
+                    Utils::drawWarning("Controls paused!");
+                }
             }
             
             leapHandler.draw(false);
@@ -145,7 +152,7 @@ void ofApp::keyReleased(int key) {
             if(key == 'm') {
                 mesher.generateMesh();
                 
-                newPuppet.setImage(mesher.getImage());
+                newPuppet.setImage(mesher.getImage(), !createPuppetLiveMode);
                 newPuppet.setMesh(mesher.getMesh());
                 newPuppet.setContour(mesher.getContour());
                 
@@ -160,6 +167,11 @@ void ofApp::keyReleased(int key) {
             // switch to leap calibration mode
             if(key == 'c') {
                 state = LEAP_CALIBRATION;
+            }
+            
+            // swap pointing hand and puppeteering hand
+            if(key == OF_KEY_TAB) {
+                leapHandler.swapHandControls();
             }
             
             break;
@@ -199,6 +211,10 @@ void ofApp::keyReleased(int key) {
         leapHandler.renderHands = !leapHandler.renderHands;
     }
     
+    if(key == 'g') {
+        hideGui = !hideGui;
+    }
+    
 }
 
 void ofApp::dragEvent(ofDragInfo info) {
@@ -210,7 +226,7 @@ void ofApp::dragEvent(ofDragInfo info) {
         // image file to be used for puppet generation dragged into window
         
         newPuppet.reset();
-        newPuppet.setImage(info.files.at(0));
+        newPuppet.setImage(info.files.at(0), true);
         mesher.reset();
         mesher.setImage(newPuppet.image);
         
@@ -385,7 +401,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         
         if (openFileResult.bSuccess){
             newPuppet.reset();
-            newPuppet.setImage(openFileResult.getPath());
+            newPuppet.setImage(openFileResult.getPath(), true);
             mesher.reset();
             mesher.setImage(newPuppet.image);
             

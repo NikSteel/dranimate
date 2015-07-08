@@ -58,6 +58,8 @@ public:
     };
     State state;
     
+    bool hideGui;
+    
 // puppet creation
     
     Puppet newPuppet;

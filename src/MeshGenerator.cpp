@@ -116,7 +116,7 @@ void MeshGenerator::findImageContours() {
     }
     
     // threshold image
-    cvImage.setFromPixels(lumiImg.getPixelsRef().getChannel(1));
+    cvImage.setFromPixels(lumiImg.getPixelsRef().getChannel(0));
     
     if(useAdaptiveThreshold) {
         cvImage.adaptiveThreshold(imageThreshold);

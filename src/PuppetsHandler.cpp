@@ -10,9 +10,11 @@ void PuppetsHandler::setup() {
     
     recordingPuppet = false;
     
+    /*
     Puppet p;
     p.load("puppets/demo-killing-ashkeboos");
     puppets.push_back(p);
+     */
     
     ofRegisterKeyEvents(this);
     ofRegisterMouseEvents(this);
@@ -29,9 +31,10 @@ void PuppetsHandler::update(LeapDataHandler *leap,
        && selectedPuppet()->isBeingEdited
        && cdmenu->phase == PHASE_WAIT) {
         
-        hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(),
-                                                    leap->getFingerScreenPosition(6).x,
-                                                    leap->getFingerScreenPosition(6).y);
+        hoveredVertexIndex = Utils::getClosestIndex(
+            selectedPuppet()->meshDeformer.getDeformedMesh(),
+            leap->getFingerScreenPosition(leap->pointingFinger+1).x,
+            leap->getFingerScreenPosition(leap->pointingFinger+1).y);
         
     }
     
@@ -40,9 +43,13 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         connectTimer--;
     }
     
-    for(int i = 0; i < 5; i++) {
+    for(int i = leap->puppetFinger; i < leap->puppetFinger+5; i++) {
         
-        if(leap->renderHands && leap->fingerFlicked(i) && selectedPuppet() != NULL && hoveredVertexIndex != -1 && leapClickAgainTimer == 0){
+        if(   leap->renderHands
+           && leap->fingerFlicked(i)
+           && selectedPuppet() != NULL
+           && hoveredVertexIndex != -1
+           && leapClickAgainTimer == 0){
             
             connectTimer = 60;
             connectedFinger = i;
@@ -61,10 +68,12 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     }
     
     // leap interface (flick a puppet with left index finger to toggle edit mode)
-    if(leap->renderHands && leap->fingerFlicked(6) && leapClickAgainTimer == 0) {
+    if(leap->renderHands && leap->fingerFlicked(leap->pointingFinger+1) && leapClickAgainTimer == 0) {
         
-        int clickedPuppetIndex = getClosestPuppetIndex(leap->getFingerScreenPosition(6).x,
-                                                       leap->getFingerScreenPosition(6).y);
+        int clickedPuppetIndex = getClosestPuppetIndex(
+            leap->getFingerScreenPosition(leap->pointingFinger+1).x,
+            leap->getFingerScreenPosition(leap->pointingFinger+1).y);
+        
         if(clickedPuppetIndex != -1) {
             
             selectedPuppetIndex = clickedPuppetIndex;
@@ -89,8 +98,7 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     // update & send new leap and osc data to puppets
     for(int i = 0; i < puppets.size(); i++) {
         
-        if(   !controlsPaused
-           && !puppets[i].isBeingTransformed) {
+        if(   !controlsPaused) {
             
             puppets[i].recieveLeapData(leap);
             
@@ -199,11 +207,13 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
     // (temp) draw connection between finger and ezone
     if(connectTimer > 0) {
         ofSetColor(0,155,255,255*connectTimer/60.0);
+        ofPushStyle();
         ofSetLineWidth(5);
         ofLine(leap->getFingerScreenPosition(connectedFinger).x,
                leap->getFingerScreenPosition(connectedFinger).y,
                puppets[connectedPuppet].meshDeformer.getDeformedMesh().getVertex(puppets[connectedPuppet].getExpressionZone(connectedEzone)->meshIndex).x,
                puppets[connectedPuppet].meshDeformer.getDeformedMesh().getVertex(puppets[connectedPuppet].getExpressionZone(connectedEzone)->meshIndex).y);
+        ofPopStyle();
     }
     
 }

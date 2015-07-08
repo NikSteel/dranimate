@@ -168,6 +168,8 @@ void LeapDataHandler::draw(bool drawCalibration) {
             
             if(i < getLeapHands().size()) {
                 bool isRightHand = getLeapHands()[i].isRight();
+                bool isPointerHand = (isRightHand && pointingFinger == 0) ||
+                                     (!isRightHand && pointingFinger == 5);
                 
                 ofPushStyle();
                 
@@ -192,7 +194,7 @@ void LeapDataHandler::draw(bool drawCalibration) {
                     
                 }
                 
-                if(isRightHand) {
+                if(!isPointerHand) {
                 
                     for(int f = 0; f < simpleHands[i].fingers.size(); f++){
                         
@@ -335,5 +337,13 @@ bool LeapDataHandler::fingerFlicked(int finger) {
 int LeapDataHandler::calibrationSecondsLeft() {
     
     return calibrationTimer/60+1;
+    
+}
+
+void LeapDataHandler::swapHandControls() {
+    
+    int temp = pointingFinger;
+    pointingFinger = puppetFinger;
+    puppetFinger = temp;
     
 }

@@ -5,7 +5,6 @@ void Puppet::load(string path) {
     palmControlsPuppet = 0;
     
     isBeingEdited = false;
-    isBeingTransformed = false;
     
     // load image
     image.loadImage(path + "/image.png");
@@ -150,7 +149,7 @@ void Puppet::save(string path) {
     
 }
 
-void Puppet::setImage(ofImage img) {
+void Puppet::setImage(ofImage img, bool resizeImage) {
     
     image = img;
     
@@ -159,9 +158,11 @@ void Puppet::setImage(ofImage img) {
     //float whRatio = (float)image.width/(float)image.height;
     //image.resize(IMAGE_BASE_SIZE*whRatio, IMAGE_BASE_SIZE);
     
-    ofVec2f wh = ofVec2f(image.width,image.height);
-    wh.normalize();
-    image.resize(wh.x*IMAGE_BASE_SIZE, wh.y*IMAGE_BASE_SIZE);
+    if(resizeImage) {
+        ofVec2f wh = ofVec2f(image.width,image.height);
+        wh.normalize();
+        image.resize(wh.x*IMAGE_BASE_SIZE, wh.y*IMAGE_BASE_SIZE);
+    }
     
 }
 
@@ -247,18 +248,11 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
     if(isBeingRecorded) {
         ofSetColor(255,155,155);
     } else if(isSelected) {
-        //float flash = abs(sin(ofGetElapsedTimef()*3))*50+205;
-        //ofSetColor(flash,flash,flash);
-        ofSetColor(255,255,255,50);
+        float flash = abs(sin(ofGetElapsedTimef()*3))*50+150;
+        ofSetColor(255,255,255,flash);
     } else {
         ofSetColor(255,255,255);
     }
-    
-    ofPushMatrix();
-    center = subdivided.getCentroid();
-    ofTranslate(center.x,center.y);
-    //ofRotate(rotation, 0, 0, 1);
-    ofTranslate(-center.x,-center.y);
     
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -268,8 +262,6 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
         subdivided.drawFaces();
     image.unbind();
     glDisable(GL_DEPTH_TEST);
-    
-    ofPopMatrix();
     
     // draw the wireframe & control points as well
     
@@ -532,23 +524,4 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
         }
         
     }
-}
-
-void Puppet::transform(int x, int y) {
-    
-    ofVec2f transformDiff = ofVec2f(x,y) - initTransformPos;
-    
-    ofLog() << transformDiff.length();
-    
-    for(int i = 0; i < mesh.getVertices().size(); i++) {
-        
-        ofVec3f v = mesh.getVertex(i);
-        v = v * transformDiff.length();
-        //mesh.setVertex(i, v);
-        
-    }
-    
-    meshDeformer.setup(mesh);
-    regenerateSubdivisionMesh();
-    
 }
