@@ -9,7 +9,7 @@ void MeshGenerator::setup() {
     gui.add(flipVertical.setup("flip vertically", false));
     
     gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
-    gui.add(useAdaptiveThreshold.setup("use adaptive threshold", true));
+    gui.add(useAdaptiveThreshold.setup("use adaptive threshold", false));
     gui.add(invertImage.setup("invert image", true));
     
     gui.add(contourResampleAmt.setup("contour resample amt", 15, 15, 60));
