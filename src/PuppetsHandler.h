@@ -5,7 +5,6 @@
 
 #include "Puppet.h"
 #include "PuppetRecorder.h"
-#include "SceneRecorder.h"
 #include "LeapDataHandler.h"
 #include "ofxOscReceiver.h"
 #include "ofxClickDownMenu.h"
@@ -16,31 +15,9 @@ private:
     
     vector<Puppet> puppets;
     
-public:
-    
-    void setup();
-    void update(LeapDataHandler *leap,
-                ofxOscReceiver *osc,
-                ofxClickDownMenu *cdmenu);
-    void draw(LeapDataHandler *leap);
-    
-    void mousePressed(ofMouseEventArgs& mouse);
-    void mouseDragged(ofMouseEventArgs& mouse);
-    void mouseMoved(ofMouseEventArgs& mouse);
-    void mouseReleased(ofMouseEventArgs& mouse);
-    void keyPressed(ofKeyEventArgs  &key);
-    void keyReleased(ofKeyEventArgs &key);
-    
-    void recieveMenuCommand(string command);
-    
-    void addPuppet(Puppet p);
     Puppet *getPuppet(int i);
     int getClosestPuppetIndex(int x, int y);
     int getClosestRecordingIndex(int x, int y);
-    
-    Puppet *selectedPuppet();
-    
-    string getSelectedVertexInfo();
     
     // ui & state
     
@@ -51,12 +28,6 @@ public:
     int selectedVertexIndex;
     int selectedPuppetIndex;
     
-    int selectedRecordingIndex;
-    
-    bool controlsPaused;
-    
-    bool cdMenuOpen;
-    
     bool enableLeapControls;
     int leapClickAgainTimer;
     
@@ -66,14 +37,44 @@ public:
     PuppetRecorder puppetRecorder;
     vector<PuppetRecorder> recordedPuppets;
     
-    bool recordingScene;
-    SceneRecorder sceneRecorder;
+public:
     
-    // (temp hack) line connecting fingers to ezones
-    int connectTimer;
-    int connectedFinger = -1;
-    int connectedEzone = -1;
-    int connectedPuppet = -1;
+    void setup();
+    void update(LeapDataHandler *leap,
+                ofxOscReceiver *osc,
+                ofxClickDownMenu *cdmenu);
+    void draw(LeapDataHandler *leap);
+    
+    void addPuppet(Puppet p);
+    
+    Puppet *selectedPuppet();
+    bool isAPuppetSelected();
+    
+    string getSelectedVertexInfo();
+    
+    void clickMouseAt(int x, int y);
+    
+    void updateWhichVertexIsHoveredOver(int x, int y);
+    
+    void addExpressionZoneToCurrentPuppet();
+    void addLeapMappingToCurrentPuppet(int i);
+    void addOSCMappingToCurrentPuppet();
+    void addBoneToCurrentPuppet();
+    void removeEZoneFromCurrentPuppet();
+    void setAnchorPointOnCurrentPuppet();
+    void exportCurrentPuppet();
+    void editCurrentPuppet();
+    void removeCurrentPuppet();
+    void resetCurrentPuppet();
+    void exportCurrentPuppetRecordingAsMov();
+    void clearAllPupets();
+    void removeAllPuppets();
+    void togglePuppetRecording();
+    
+    bool emptyVertexHoveredOver();
+    bool ezoneHoveredOver();
+    
+    void loadPuppet(string path);
     
 };
 

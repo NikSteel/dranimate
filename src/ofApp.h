@@ -18,7 +18,6 @@
 #include "PuppetsHandler.h"
 #include "MeshGenerator.h"
 #include "PuppetRecorder.h"
-#include "SceneRecorder.h"
 #include "LeapDataHandler.h"
 #include "Utils.h"
 #include "ImageFromCamera.h"
@@ -33,14 +32,17 @@ public:
     void draw();
     
     void keyReleased(int key);
+    
     void mousePressed(int x, int y, int button);
+    void mouseMoved(int x, int y);
     void mouseDragged(int x, int y, int button);
+    
     void dragEvent(ofDragInfo dragInfo);
     
     void cmdEvent(ofxCDMEvent &ev);
     void updateClickDownMenu();
     
-// all the things
+// all the handlers and stuff
     
     MeshGenerator mesher;
     PuppetsHandler puppetsHandler;
@@ -49,7 +51,7 @@ public:
     ImageFromCamera cam;
     ofxOscReceiver oscReceiver;
     
-// ui/state
+    // UI & State
     
     enum State {
         NEW_PUPPET_CREATION,
@@ -57,12 +59,5 @@ public:
         LEAP_CALIBRATION
     };
     State state;
-    
-    bool hideGui;
-    
-// puppet creation
-    
-    Puppet newPuppet;
-    bool createPuppetLiveMode = false;
     
 };

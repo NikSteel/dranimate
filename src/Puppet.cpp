@@ -149,20 +149,9 @@ void Puppet::save(string path) {
     
 }
 
-void Puppet::setImage(ofImage img, bool resizeImage) {
+void Puppet::setImage(ofImage img) {
     
     image = img;
-    
-    // scale down image to a good size for the mesh generator
-    
-    //float whRatio = (float)image.width/(float)image.height;
-    //image.resize(IMAGE_BASE_SIZE*whRatio, IMAGE_BASE_SIZE);
-    
-    if(resizeImage) {
-        ofVec2f wh = ofVec2f(image.width,image.height);
-        wh.normalize();
-        image.resize(wh.x*IMAGE_BASE_SIZE, wh.y*IMAGE_BASE_SIZE);
-    }
     
 }
 

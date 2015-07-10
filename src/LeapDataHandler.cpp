@@ -146,6 +146,10 @@ void LeapDataHandler::recieveNewData() {
 
 void LeapDataHandler::draw(bool drawCalibration) {
     
+    if(!calibrated) {
+        Utils::drawWarning("Leap not calibrated! Press 'c' to calibrate");
+    }
+    
     if(renderHands && getLeapHands().size() > 0) {
         
         glDisable(GL_DEPTH_TEST);
@@ -265,6 +269,14 @@ void LeapDataHandler::draw(bool drawCalibration) {
         
         m1.end();
         cam.end();
+        
+        Utils::drawControls("c   -   Set calibration\nt   -   Calibrate on timer\nb   -   Back to puppet stage");
+        
+        if(calibrationTimer != 0) {
+            string timeLeftString = ofToString(calibrationSecondsLeft());
+            ofSetColor(0,0,0);
+            Resources::verdana54.drawString(timeLeftString, ofGetWidth()/2, ofGetHeight()/2);
+        }
         
     }
     

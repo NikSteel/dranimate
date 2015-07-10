@@ -14,16 +14,15 @@ void PuppetsHandler::setup() {
     Puppet p;
     p.load("puppets/demo-killing-ashkeboos");
     puppets.push_back(p);
-     */
-    
-    ofRegisterKeyEvents(this);
-    ofRegisterMouseEvents(this);
+    */
     
 }
 
 void PuppetsHandler::update(LeapDataHandler *leap,
                             ofxOscReceiver *osc,
                             ofxClickDownMenu *cdmenu) {
+    
+    enableLeapControls = leap->getHandCount() == 2;
     
     // update which vertex the leap is pointing to
     if(   enableLeapControls
@@ -39,11 +38,6 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         
     }
     
-    // leap interface (flick to to add control point mapped to right hand finger 'i')
-    if(connectTimer > 0) {
-        connectTimer--;
-    }
-    
     for(int i = leap->puppetFinger; i < leap->puppetFinger+5; i++) {
         
         if(   leap->renderHands
@@ -51,11 +45,6 @@ void PuppetsHandler::update(LeapDataHandler *leap,
            && selectedPuppet() != NULL
            && hoveredVertexIndex != -1
            && leapClickAgainTimer == 0){
-            
-            connectTimer = 60;
-            connectedFinger = i;
-            connectedEzone = hoveredVertexIndex;
-            connectedPuppet = selectedPuppetIndex;
             
             if(selectedPuppet()->getExpressionZone(hoveredVertexIndex) == NULL) {
                 selectedPuppet()->addExpressionZone(hoveredVertexIndex);
@@ -101,21 +90,18 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     // update & send new leap and osc data to puppets
     for(int i = 0; i < puppets.size(); i++) {
         
-        if(   !controlsPaused) {
+        puppets[i].recieveLeapData(leap);
+        
+        while(osc->hasWaitingMessages()) {
             
-            puppets[i].recieveLeapData(leap);
+            // get the next message
+            ofxOscMessage m;
+            osc->getNextMessage(&m);
             
-            while(osc->hasWaitingMessages()) {
-                
-                // get the next message
-                ofxOscMessage m;
-                osc->getNextMessage(&m);
-                
-                puppets[i].recieveOSCMessage(m, m.getArgAsFloat(0));
-            }
-            
-            puppets[i].update();
+            puppets[i].recieveOSCMessage(m, m.getArgAsFloat(0));
         }
+        
+        puppets[i].update();
         
         if(i != selectedPuppetIndex) {
             puppets[i].isBeingEdited = false;
@@ -130,13 +116,6 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         puppetRecorder.recordPuppetFrame(selectedPuppet());
     }
     
-    // update scene recorder
-    sceneRecorder.update();
-    if(recordingScene) {
-        for(int i = 0; i < recordedPuppets.size(); i++) {
-            sceneRecorder.addPuppetToFrame(recordedPuppets[i]);
-        }
-    }
     
     // update puppet recordings
     for(int i = 0; i < recordedPuppets.size(); i++) {
@@ -147,11 +126,8 @@ void PuppetsHandler::update(LeapDataHandler *leap,
 
 void PuppetsHandler::draw(LeapDataHandler *leap) {
     
-    // big red recording button
-    if(recordingScene) {
-        ofSetColor(255/2+sin(ofGetElapsedTimef()*10)*255/5, 0, 0);
-        ofCircle(50, ofGetHeight()-50, 30);
-    }
+    ofPushMatrix();
+    ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
     
     // draw puppet recordings
     
@@ -205,19 +181,8 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
         ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
         ofSetLineWidth(1);
     }
-
     
-    // (temp) draw connection between finger and ezone
-    if(connectTimer > 0) {
-        ofSetColor(0,155,255,255*connectTimer/60.0);
-        ofPushStyle();
-        ofSetLineWidth(5);
-        ofLine(leap->getFingerScreenPosition(connectedFinger).x,
-               leap->getFingerScreenPosition(connectedFinger).y,
-               puppets[connectedPuppet].meshDeformer.getDeformedMesh().getVertex(puppets[connectedPuppet].getExpressionZone(connectedEzone)->meshIndex).x,
-               puppets[connectedPuppet].meshDeformer.getDeformedMesh().getVertex(puppets[connectedPuppet].getExpressionZone(connectedEzone)->meshIndex).y);
-        ofPopStyle();
-    }
+    ofPopMatrix();
     
 }
 
@@ -258,6 +223,11 @@ Puppet* PuppetsHandler::selectedPuppet() {
     } else {
         return &puppets[selectedPuppetIndex];
     }
+    
+}
+bool PuppetsHandler::isAPuppetSelected() {
+    
+    return selectedPuppet() != NULL;
     
 }
 
@@ -310,313 +280,225 @@ Puppet *PuppetsHandler::getPuppet(int i) {
     
 }
 
-void PuppetsHandler::mousePressed(ofMouseEventArgs &mouse){
+void PuppetsHandler::clickMouseAt(int x, int y) {
     
-    if(!cdMenuOpen) {
+    
+    int clickedPuppetIndex = getClosestPuppetIndex(x-ofGetWidth() /2,
+                                                   y-ofGetHeight()/2);
+    
+    if(clickedPuppetIndex != selectedPuppetIndex
+       && hoveredVertexIndex == -1) {
         
-        int button = mouse.button;
+        // select a puppet if we clicked on it (or deselect the currently selected puppet)
         
-        if(button == 2) {
-            selectedRecordingIndex = getClosestRecordingIndex(mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2);
-        }
-        
-        int clickedPuppetIndex = getClosestPuppetIndex(mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2);
-        if(button == 0 && clickedPuppetIndex == selectedPuppetIndex && clickedPuppetIndex != -1) {
+        if(clickedPuppetIndex == -1) {
             
-            // clicked on the same puppet. so edit that puppet.
-            //selectedPuppet()->isBeingEdited = !selectedPuppet()->isBeingEdited;
-            
-        }
-            
-            if(clickedPuppetIndex != selectedPuppetIndex
-                  && hoveredVertexIndex == -1) {
-            
-            // select a puppet if we clicked on it (or deselect the currently selected puppet)
-            
-            if(clickedPuppetIndex == -1) {
-                
-                // we didn't click a puppet. so deselect everything.
-                hoveredVertexIndex = -1;
-                selectedPuppetIndex = -1;
-                selectedVertexIndex = -1;
-                
-            } else {
-                
-                // put the newly selected puppet at the back of the list
-                // (this makes it so it draws last, putting it in front of the others.)
-                Puppet movedPuppet = puppets[clickedPuppetIndex];
-                puppets.erase(puppets.begin() + clickedPuppetIndex);
-                puppets.push_back(movedPuppet);
-                
-                // update what's actually selected
-                hoveredVertexIndex = -1;
-                selectedPuppetIndex = puppets.size()-1;
-                selectedVertexIndex = -1;
-                
-            }
+            // we didn't click a puppet. so deselect everything.
+            hoveredVertexIndex = -1;
+            selectedPuppetIndex = -1;
+            selectedVertexIndex = -1;
             
         } else {
             
-            // selected puppet didn't change, so select/deselect an expression zone
+            // put the newly selected puppet at the back of the list
+            // (this makes it so it draws last, putting it in front of the others.)
+            Puppet movedPuppet = puppets[clickedPuppetIndex];
+            puppets.erase(puppets.begin() + clickedPuppetIndex);
+            puppets.push_back(movedPuppet);
             
-            if(addingBone) {
-                
-                // add bone
-                
-                if(hoveredVertexIndex != -1) {
-                    ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
-                    if(eZone != NULL) {
-                        eZone->parentEzone = boneRootVertexIndex;
-                        addingBone = false;
-                    }
-                }
-                
-            } else if(hoveredVertexIndex == -1) {
-                
-                //user clicked away from mesh, so deselect the current vertex.
-                selectedVertexIndex = -1;
-                
-            } else {
-                
+            // update what's actually selected
+            hoveredVertexIndex = -1;
+            selectedPuppetIndex = puppets.size()-1;
+            selectedVertexIndex = -1;
+            
+        }
+        
+    } else {
+        
+        // selected puppet didn't change, so select/deselect an expression zone
+        
+        if(addingBone) {
+            
+            // add bone
+            
+            if(hoveredVertexIndex != -1) {
                 ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
-                
                 if(eZone != NULL) {
-                    // if there's an expression zone there, select it.
-                    selectedVertexIndex = hoveredVertexIndex;
-                } else {
-                    selectedVertexIndex = -1;
+                    eZone->parentEzone = boneRootVertexIndex;
+                    addingBone = false;
                 }
-                
+            }
+            
+        } else if(hoveredVertexIndex == -1) {
+            
+            //user clicked away from mesh, so deselect the current vertex.
+            selectedVertexIndex = -1;
+            
+        } else {
+            
+            ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
+            
+            if(eZone != NULL) {
+                // if there's an expression zone there, select it.
+                selectedVertexIndex = hoveredVertexIndex;
+            } else {
+                selectedVertexIndex = -1;
             }
             
         }
-
         
     }
     
 }
 
-void PuppetsHandler::mouseDragged(ofMouseEventArgs &mouse){
+void PuppetsHandler::updateWhichVertexIsHoveredOver(int x, int y) {
     
-    if(selectedPuppet() != NULL) {
-        
-        ExpressionZone *ezone = selectedPuppet()->getExpressionZone(selectedVertexIndex);
-        
-        if(ezone != NULL && ezone->isAnchorPoint) {
-            ezone->userControlledDisplacement = ofVec2f(mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2) - selectedPuppet()->mesh.getVertex(selectedVertexIndex);
-            selectedPuppet()->update();
-        }
-        
-    }
-    
-}
-
-void PuppetsHandler::mouseMoved(ofMouseEventArgs &mouse){
-    
-    if(   !cdMenuOpen
-       && selectedPuppet() != NULL
+    if(   selectedPuppet() != NULL
        && selectedPuppet()->isBeingEdited
        && !enableLeapControls) {
         
         hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(),
-                                                    mouse.x-ofGetWidth()/2, mouse.y-ofGetHeight()/2, Puppet::MIN_SELECT_VERT_DIST);
+                                                    x-ofGetWidth()/2,
+                                                    y-ofGetHeight()/2,
+                                                    Puppet::MIN_SELECT_VERT_DIST);
+        
+    }
     
+}
+void PuppetsHandler::addExpressionZoneToCurrentPuppet() {
+    
+    ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
+    
+    if(eZone == NULL) {
+        // if there's no expression zone where we clicked, add one.
+        selectedPuppet()->addExpressionZone(hoveredVertexIndex);
+        selectedVertexIndex = hoveredVertexIndex;
+    }
+    
+}
+void PuppetsHandler::addLeapMappingToCurrentPuppet(int i) {
+    
+    selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = i;
+    
+}
+void PuppetsHandler::addOSCMappingToCurrentPuppet() {
+    
+    if(selectedPuppet()->getExpressionZone(selectedVertexIndex) != NULL) {
+        OSCNamespace namesp;
+        namesp.message = ofSystemTextBoxDialog("osc message?");
+        namesp.controlType = ofSystemTextBoxDialog("control type?");
+        selectedPuppet()->getExpressionZone(selectedVertexIndex)->oscNamespaces.push_back(namesp);
+        
+    }
+    
+}
+void PuppetsHandler::addBoneToCurrentPuppet() {
+    
+    addingBone = true;
+    boneRootVertexIndex = selectedVertexIndex;
+    
+}
+void PuppetsHandler::removeEZoneFromCurrentPuppet() {
+    
+    selectedPuppet()->removeExpressionZone(selectedVertexIndex);
+    selectedVertexIndex = -1;
+    
+}
+void PuppetsHandler::setAnchorPointOnCurrentPuppet() {
+    
+    // set the selected ezone to be an anchor point
+    selectedPuppet()->getExpressionZone(selectedVertexIndex)->isAnchorPoint = true;
+    
+    selectedPuppet()->getExpressionZone(selectedVertexIndex)->userControlledDisplacement = selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex) - selectedPuppet()->mesh.getVertex(selectedVertexIndex);
+    
+}
+void PuppetsHandler::exportCurrentPuppet() {
+    
+    ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
+    
+    if (saveFileResult.bSuccess){
+        string path = saveFileResult.getPath();
+        selectedPuppet()->save(path);
+    }
+    
+}
+void PuppetsHandler::editCurrentPuppet() {
+    
+    selectedPuppet()->isBeingEdited = true;
+    
+}
+void PuppetsHandler::removeCurrentPuppet() {
+    
+    puppets.erase(puppets.begin() + selectedPuppetIndex);
+    
+    selectedPuppetIndex = -1;
+    selectedVertexIndex = -1;
+    hoveredVertexIndex = -1;
+    
+}
+void PuppetsHandler::resetCurrentPuppet() {
+    
+    selectedPuppet()->reset();
+    
+    selectedVertexIndex = -1;
+    hoveredVertexIndex = -1;
+    
+}
+void PuppetsHandler::exportCurrentPuppetRecordingAsMov() {
+    
+    //recordedPuppets[selectedRecordingIndex].exportAsMovie();
+    
+}
+void PuppetsHandler::clearAllPupets() {
+    
+    puppets.clear();
+    
+    selectedPuppetIndex = -1;
+    selectedVertexIndex = -1;
+    hoveredVertexIndex = -1;
+    
+}
+void PuppetsHandler::removeAllPuppets() {
+    
+    puppets.clear();
+    
+    selectedPuppetIndex = -1;
+    selectedVertexIndex = -1;
+    hoveredVertexIndex = -1;
+    
+}
+void PuppetsHandler::togglePuppetRecording() {
+    
+    if(isAPuppetSelected() && !recordingPuppet) {
+        puppetRecorder.setup();
+        recordingPuppet = true;
+    } else {
+        recordedPuppets.push_back(puppetRecorder);
+        recordingPuppet = false;
     }
     
 }
 
-void PuppetsHandler::mouseReleased(ofMouseEventArgs &mouse){
+bool PuppetsHandler::emptyVertexHoveredOver() {
+    
+    return hoveredVertexIndex != -1
+        && selectedVertexIndex != hoveredVertexIndex;
+
+}
+bool PuppetsHandler::ezoneHoveredOver() {
+    
+    return selectedVertexIndex != -1
+        && selectedVertexIndex == hoveredVertexIndex;
     
 }
 
-void PuppetsHandler::keyPressed(ofKeyEventArgs &key){
-    
-    int keyc = key.key;
-    
-    // delete selected puppet
-    if(keyc == OF_KEY_BACKSPACE && selectedPuppet() != NULL) {
-        puppets.erase(puppets.begin() + selectedPuppetIndex);
-        selectedPuppetIndex = -1;
-        selectedVertexIndex = -1;
-        hoveredVertexIndex = -1;
-    }
-    
-    // edit selected puppet
-    
-    if(keyc == OF_KEY_TAB && selectedPuppet() != NULL) {
-        selectedPuppet()->isBeingEdited = !selectedPuppet()->isBeingEdited;
-    }
-    
-    // toggle puppet recording
-    if(keyc == 'r') {
-        if(!recordingPuppet) {
-            puppetRecorder.setup();
-            recordingPuppet = true;
-        } else {
-            recordedPuppets.push_back(puppetRecorder);
-            recordingPuppet = false;
-        }
-    }
-    
-    // toggle scene recording
-    if(keyc == 's') {
-        if(!recordingScene) {
-            sceneRecorder.setup();
-            recordingScene = true;
-        } else {
-            sceneRecorder.exportAsMovie();
-            recordingScene = false;
-        }
-    }
-    
-    if(keyc == ' ') {
-        controlsPaused = !controlsPaused;
-    }
-    
-}
 
-void PuppetsHandler::keyReleased(ofKeyEventArgs &key){
-    
-}
 
-void PuppetsHandler::recieveMenuCommand(string command) {
-    
-    if (command == "menu::add ezone") {
-        
-        ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
-        
-        if(eZone == NULL) {
-            // if there's no expression zone where we clicked, add one.
-            selectedPuppet()->addExpressionZone(hoveredVertexIndex);
-            selectedVertexIndex = hoveredVertexIndex;
-        }
-        
-    }
-    if (command == "menu::add leap mapping::none") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = -1;
-    }
-    if (command == "menu::add leap mapping::thumb  (hand 1)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 0;
-    }
-    if (command == "menu::add leap mapping::index  (hand 1)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 1;
-    }
-    if (command == "menu::add leap mapping::middle (hand 1)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 2;
-    }
-    if (command == "menu::add leap mapping::ring   (hand 1)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 3;
-    }
-    if (command == "menu::add leap mapping::pinky  (hand 1)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 4;
-    }
-    if (command == "menu::add leap mapping::thumb  (hand 2)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 5;
-    }
-    if (command == "menu::add leap mapping::index  (hand 2)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 6;
-    }
-    if (command == "menu::add leap mapping::middle (hand 2)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 7;
-    }
-    if (command == "menu::add leap mapping::ring   (hand 2)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 8;
-    }
-    if (command == "menu::add leap mapping::pinky  (hand 2)") {
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = 9;
-    }
-    if (command == "menu::add osc mapping") {
-        
-        if(selectedPuppet()->getExpressionZone(selectedVertexIndex) != NULL) {
-            OSCNamespace namesp;
-            namesp.message = ofSystemTextBoxDialog("osc message?");
-            namesp.controlType = ofSystemTextBoxDialog("control type?");
-            selectedPuppet()->getExpressionZone(selectedVertexIndex)->oscNamespaces.push_back(namesp);
-            
-        }
-        
-    }
-    if (command == "menu::add bone") {
-        
-        addingBone = true;
-        boneRootVertexIndex = selectedVertexIndex;
-        
-    }
-    if (command == "menu::set anchor point") {
-        
-        // set the selected ezone to be an anchor point
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->isAnchorPoint = true;
-        
-        selectedPuppet()->getExpressionZone(selectedVertexIndex)->userControlledDisplacement = selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex) - selectedPuppet()->mesh.getVertex(selectedVertexIndex);
-        
-    }
-    if (command == "menu::remove ezone") {
-        
-        selectedPuppet()->removeExpressionZone(selectedVertexIndex);
-        selectedVertexIndex = -1;
-        
-    }
-    
-    if (command == "menu::export puppet") {
-        
-        ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
-        
-        if (saveFileResult.bSuccess){
-            string path = saveFileResult.getPath();
-            selectedPuppet()->save(path);
-        }
-        
-    }
-    if (command == "menu::edit puppet") {
-        
-        selectedPuppet()->isBeingEdited = true;
-        
-    }
-    if (command == "menu::remove puppet") {
-        
-        puppets.erase(puppets.begin() + selectedPuppetIndex);
-        
-        selectedPuppetIndex = -1;
-        selectedVertexIndex = -1;
-        hoveredVertexIndex = -1;
-        
-    }
-    if (command == "menu::reset puppet") {
-        
-        selectedPuppet()->reset();
-        
-        selectedVertexIndex = -1;
-        hoveredVertexIndex = -1;
-        
-    }
-    if (command == "menu::export recording as mov") {
-        
-        recordedPuppets[selectedRecordingIndex].exportAsMovie();
-        
-    }
-    if (command == "menu::remove recording") {
-        
-        recordedPuppets.erase(recordedPuppets.begin() + selectedRecordingIndex);
-        
-    }
-    if (command == "menu::clear all puppets") {
-        
-        puppets.clear();
-        
-        selectedPuppetIndex = -1;
-        selectedVertexIndex = -1;
-        hoveredVertexIndex = -1;
-        
-    }
-    if (command == "menu::clear all recordings") {
-        
-        recordedPuppets.clear();
-        
-        selectedPuppetIndex = -1;
-        selectedVertexIndex = -1;
-        hoveredVertexIndex = -1;
-        
-    }
 
+void PuppetsHandler::loadPuppet(string path) {
+    
+    Puppet loadedPuppet;
+    loadedPuppet.load(path);
+    addPuppet(loadedPuppet);
     
 }

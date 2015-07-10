@@ -1,6 +1,6 @@
 #include "MeshGenerator.h"
 
-void MeshGenerator::setup() {
+void MeshGenerator::setup(bool liveMode) {
     
     gui.setup();
     
@@ -17,16 +17,33 @@ void MeshGenerator::setup() {
     gui.add(triangleSizeConstraint.setup("size constraint", -1, -1, 100));
     
     meshGenerated = false;
+    contourLine.clear();
+    extraVerts.clear();
+    
+    if(liveMode) {
+        imageType = FROM_LIFE_FEED;
+    } else {
+        imageType = FROM_FILE;
+    }
     
 }
 
 void MeshGenerator::update() {
+    
+    // if we're using a live feed image, update the image
+    // by grabbing the latest frame from the camera
+    if(imageType == FROM_LIFE_FEED) {
+        cam.update();
+        setImage(cam.image,false);
+    }
     
     findImageContours();
     
 }
 
 void MeshGenerator::draw() {
+    
+    Utils::drawGrid();
     
     // draw image
     
@@ -95,14 +112,6 @@ void MeshGenerator::draw() {
     
 }
 
-void MeshGenerator::reset() {
-    
-    meshGenerated = false;
-    contourLine.clear();
-    extraVerts.clear();
-    
-}
-
 void MeshGenerator::findImageContours() {
     
     // create an image with brightness as red channel
@@ -139,6 +148,14 @@ void MeshGenerator::findImageContours() {
 }
 
 void MeshGenerator::setImage(ofImage img) {
+    
+    // resize the image if it's from a file (because some image files are really large ofc)
+    if(imageType == FROM_FILE) {
+        ofVec2f wh = ofVec2f(img.width,img.height);
+        wh.normalize();
+        img.resize(wh.x*Puppet::IMAGE_BASE_SIZE,
+                   wh.y*Puppet::IMAGE_BASE_SIZE);
+    }
     
     img.rotate90(rotation);
     img.mirror(flipVertical, flipHorizontal);

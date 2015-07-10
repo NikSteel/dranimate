@@ -9,9 +9,29 @@
 #include "ofxCv.h"
 #include "ofxTriangleMesh.h"
 #include "ofxGui.h"
+
 #include "Utils.h"
+#include "ImageFromCamera.h"
 
 class MeshGenerator {
+    
+public:
+    
+    void setup(bool liveMode);
+    void update();
+    void draw();
+    void reset();
+    
+    void setImage(ofImage img);
+    void addExtraVertex(int x, int y);
+    
+    void generateMesh();
+    
+    ofImage addAlphaToImage(ofImage img);
+    
+    ofImage getImage();
+    ofMesh getMesh();
+    ofPolyline getContour();
     
 private:
     
@@ -47,23 +67,13 @@ private:
     
     bool meshGenerated;
     
-public:
+    ImageFromCamera cam;
     
-    void setup();
-    void update();
-    void draw();
-    void reset();
-    
-    void setImage(ofImage img);
-    void addExtraVertex(int x, int y);
-    
-    void generateMesh();
-    
-    ofImage addAlphaToImage(ofImage img);
-    
-    ofImage getImage();
-    ofMesh getMesh();
-    ofPolyline getContour();
+    enum ImageType {
+        FROM_FILE,
+        FROM_LIFE_FEED
+    };
+    ImageType imageType;
     
 };
 

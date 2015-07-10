@@ -25,7 +25,7 @@ public:
     void load(string path);
     void save(string path);
     
-    void setImage(ofImage img, bool resizeImage);
+    void setImage(ofImage img);
     void setMesh(ofMesh m);
     void setContour(ofPolyline line);
     

@@ -8,6 +8,8 @@
 #include "ofxStrip.h"
 #include "ofxLeapGestures.h"
 
+#include "Utils.h"
+
 class LeapDataHandler : public ofxLeapMotion {
     
 private:

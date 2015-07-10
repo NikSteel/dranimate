@@ -106,8 +106,8 @@ void Utils::drawWarning(string s) {
     
     float flash = abs(sin(ofGetElapsedTimef()*10)*200);
     ofSetColor(255,flash,flash);
-    ofDrawBitmapString(s, ofGetWidth()-290, 100);
-    ofDrawBitmapString(s, ofGetWidth()-290+1, 100);
+    ofDrawBitmapString(s, 50, 50);
+    ofDrawBitmapString(s, 51, 50);
     
 }
 

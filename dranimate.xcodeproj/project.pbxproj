@@ -194,7 +194,6 @@
 		DFAF1A481B30561600974550 /* ofxClickDownFader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAF1A431B30561600974550 /* ofxClickDownFader.cpp */; };
 		DFAF1A491B30561600974550 /* ofxClickDownMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAF1A451B30561600974550 /* ofxClickDownMenu.cpp */; };
 		DFE9FE761B444A3D0040EF11 /* PuppetsHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE9FE741B444A3D0040EF11 /* PuppetsHandler.cpp */; };
-		DFFDDA181B38A619003D8E40 /* SceneRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFFDDA161B38A619003D8E40 /* SceneRecorder.cpp */; };
 		DFFFC71D1B419C0D00A2BB1E /* ofxStrip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFFFC71B1B419C0D00A2BB1E /* ofxStrip.cpp */; };
 		E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A16CBF2E8CFE43AF54FE6F5 /* ofxCvHaarFinder.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
@@ -770,8 +769,6 @@
 		DFAF1A461B30561600974550 /* ofxClickDownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxClickDownMenu.h; path = ../../../addons/ofxClickDownMenu/ofxClickDownMenu.h; sourceTree = "<group>"; };
 		DFE9FE741B444A3D0040EF11 /* PuppetsHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PuppetsHandler.cpp; sourceTree = "<group>"; };
 		DFE9FE751B444A3D0040EF11 /* PuppetsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PuppetsHandler.h; sourceTree = "<group>"; };
-		DFFDDA161B38A619003D8E40 /* SceneRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRecorder.cpp; sourceTree = "<group>"; };
-		DFFDDA171B38A619003D8E40 /* SceneRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRecorder.h; sourceTree = "<group>"; };
 		DFFFC71A1B419BF400A2BB1E /* ofxStrip */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ofxStrip; path = src/ofxStrip; sourceTree = "<group>"; };
 		DFFFC71B1B419C0D00A2BB1E /* ofxStrip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxStrip.cpp; path = ofxStrip/ofxStrip.cpp; sourceTree = "<group>"; };
 		DFFFC71C1B419C0D00A2BB1E /* ofxStrip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxStrip.h; path = ofxStrip/ofxStrip.h; sourceTree = "<group>"; };
@@ -2467,14 +2464,12 @@
 				DFE9FE751B444A3D0040EF11 /* PuppetsHandler.h */,
 				2006E5651B16625000F1CCA7 /* Puppet.cpp */,
 				2006E5661B16625000F1CCA7 /* Puppet.h */,
+				41561F321B27A28A009E51BA /* PuppetRecorder.cpp */,
+				41561F331B27A28A009E51BA /* PuppetRecorder.h */,
 				2006E55C1B16625000F1CCA7 /* ExpressionZone.cpp */,
 				2006E55D1B16625000F1CCA7 /* ExpressionZone.h */,
 				2006E5631B16625000F1CCA7 /* OSCNamespace.cpp */,
 				2006E5641B16625000F1CCA7 /* OSCNamespace.h */,
-				41561F321B27A28A009E51BA /* PuppetRecorder.cpp */,
-				41561F331B27A28A009E51BA /* PuppetRecorder.h */,
-				DFFDDA161B38A619003D8E40 /* SceneRecorder.cpp */,
-				DFFDDA171B38A619003D8E40 /* SceneRecorder.h */,
 				DF54E8801B334C0800D19A12 /* LeapDataHandler.cpp */,
 				DF54E8811B334C0800D19A12 /* LeapDataHandler.h */,
 				2006E55F1B16625000F1CCA7 /* MeshGenerator.cpp */,
@@ -2629,7 +2624,6 @@
 				2006E5AA1B167C6200F1CCA7 /* ofxLeapMotion.cpp in Sources */,
 				2006E5781B16625F00F1CCA7 /* tinyxmlerror.cpp in Sources */,
 				DF0D8B031B4B40B300310672 /* ContinuousHiddenMarkovModel.cpp in Sources */,
-				DFFDDA181B38A619003D8E40 /* SceneRecorder.cpp in Sources */,
 				2006E5EA1B1A3E7800F1CCA7 /* ofxOscReceiver.cpp in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
 				DF0D8B121B4B40B300310672 /* HierarchicalClustering.cpp in Sources */,
