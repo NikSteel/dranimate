@@ -27,13 +27,12 @@ public:
     
     void generateMesh();
     
-    ofImage addAlphaToImage(ofImage img);
-    
     ofImage getImage();
     ofMesh getMesh();
-    ofPolyline getContour();
     
 private:
+    
+    const static int IMAGE_BASE_SIZE = 800;
     
     void findImageContours();
     

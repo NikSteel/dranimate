@@ -165,12 +165,6 @@ void Puppet::setMesh(ofMesh m) {
     
 }
 
-void Puppet::setContour(ofPolyline line) {
-    
-    contour = line;
-
-}
-
 void Puppet::addCenterpoint() {
 
     ofVec3f c = mesh.getCentroid();

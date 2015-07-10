@@ -438,7 +438,6 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         Puppet newPuppet;
         newPuppet.setImage(mesher.getImage());
         newPuppet.setMesh(mesher.getMesh());
-        newPuppet.setContour(mesher.getContour());
         newPuppet.addCenterpoint();
         
         puppetsHandler.addPuppet(newPuppet);

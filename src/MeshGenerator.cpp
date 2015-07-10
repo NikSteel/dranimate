@@ -34,7 +34,7 @@ void MeshGenerator::update() {
     // by grabbing the latest frame from the camera
     if(imageType == FROM_LIFE_FEED) {
         cam.update();
-        setImage(cam.image,false);
+        setImage(cam.image);
     }
     
     findImageContours();
@@ -153,8 +153,8 @@ void MeshGenerator::setImage(ofImage img) {
     if(imageType == FROM_FILE) {
         ofVec2f wh = ofVec2f(img.width,img.height);
         wh.normalize();
-        img.resize(wh.x*Puppet::IMAGE_BASE_SIZE,
-                   wh.y*Puppet::IMAGE_BASE_SIZE);
+        img.resize(wh.x*IMAGE_BASE_SIZE,
+                   wh.y*IMAGE_BASE_SIZE);
     }
     
     img.rotate90(rotation);
@@ -302,28 +302,6 @@ void MeshGenerator::generateMesh() {
     
 }
 
-ofImage MeshGenerator::addAlphaToImage(ofImage img) {
-    
-    // currently broken ...
-    /*
-    ofImage grayImg;
-    grayImg.allocate(cvImage.width, cvImage.height,OF_IMAGE_GRAYSCALE);
-    unsigned char * pixels = cvImage.getPixels();
-    grayImg.setFromPixels(pixels, cvImage.width, cvImage.height,OF_IMAGE_GRAYSCALE);
-    
-    for(int x = 0; x < img.width; x++) {
-        for(int y = 0; y < img.height; y++) {
-            if(grayImg.getColor(x, y).r < 100){
-                img.setColor(x, y, ofColor(0,0,0,0));
-            }
-        }
-    }
-     */
-    
-    return img;
-    
-}
-
 ofImage MeshGenerator::getImage() {
     
     return image;
@@ -333,11 +311,5 @@ ofImage MeshGenerator::getImage() {
 ofMesh MeshGenerator::getMesh() {
     
     return mesh;
-    
-}
-
-ofPolyline MeshGenerator::getContour() {
-    
-    return contourLine;
     
 }

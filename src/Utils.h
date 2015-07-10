@@ -4,7 +4,7 @@
 #include <iostream>
 #include "ofVec3f.h"
 #include "ofMain.h"
-#include "Puppet.h"
+#include "Resources.h"
 
 class Utils {
     
