@@ -18,11 +18,11 @@ void PuppetRecorder::recordPuppetFrame(Puppet *puppet) {
     
     // if we haven't copied the puppet base image over, get it now
     if(!imageLoaded) {
-        image = puppet->image;
+        //image = puppet->image;
     }
     
     // add a 'frame' (which is really just the mesh of a puppet at a point in time)
-    animationFrames.push_back(puppet->subdivided);
+    //animationFrames.push_back(puppet->subdivided);
     
 }
 

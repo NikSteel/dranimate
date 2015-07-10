@@ -139,7 +139,7 @@ void ofApp::keyReleased(int key) {
     }
     
     if(key == 'r') {
-        puppetsHandler.togglePuppetRecording();
+        //puppetsHandler.togglePuppetRecording();
     }
     
 }
@@ -151,9 +151,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     }
     
     if(clickDownMenu.phase == PHASE_WAIT) {
-
         puppetsHandler.clickMouseAt(x,y);
-        
     }
     
 }
@@ -208,13 +206,9 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("set anchor point");
     clickDownMenu.UnRegisterMenu("delete ezone");
     clickDownMenu.UnRegisterMenu(" ");
-    clickDownMenu.UnRegisterMenu("edit puppet");
     clickDownMenu.UnRegisterMenu("export puppet");
     clickDownMenu.UnRegisterMenu("delete puppet");
     clickDownMenu.UnRegisterMenu("reset puppet");
-    clickDownMenu.UnRegisterMenu(" ");
-    clickDownMenu.UnRegisterMenu("export recording as mov");
-    clickDownMenu.UnRegisterMenu("delete recording");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("new stage");
     clickDownMenu.UnRegisterMenu(" ");
@@ -226,7 +220,7 @@ void ofApp::updateClickDownMenu() {
     
     if(state == PUPPET_STAGE) {
         
-        if(puppetsHandler.selectedPuppet() == NULL) {
+        if(!puppetsHandler.isAPuppetSelected()) {
             
             // no puppet is selected
             clickDownMenu.RegisterMenu("load puppet");
@@ -238,7 +232,7 @@ void ofApp::updateClickDownMenu() {
             
         } else {
             
-            if(puppetsHandler.selectedPuppet()->isBeingEdited) {
+            if(puppetsHandler.selectedPuppet()->isInEditMode()) {
                 
                 if(puppetsHandler.emptyVertexHoveredOver()) {
                     
@@ -279,7 +273,6 @@ void ofApp::updateClickDownMenu() {
             }
             
             // a puppet is selected
-            clickDownMenu.RegisterMenu("edit puppet");
             clickDownMenu.RegisterMenu("export puppet");
             clickDownMenu.RegisterMenu("delete puppet");
             clickDownMenu.RegisterMenu("reset puppet");
@@ -287,13 +280,6 @@ void ofApp::updateClickDownMenu() {
             
         }
         
-        /*
-        if(puppetsHandler.selectedRecordingIndex != -1) {
-            clickDownMenu.RegisterMenu("export recording as mov");
-            clickDownMenu.RegisterMenu("remove recording");
-            clickDownMenu.RegisterMenu(" ");
-        }
-         */
     } else {
         
         clickDownMenu.RegisterMenu("preview mesh");
@@ -399,11 +385,6 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         puppetsHandler.exportCurrentPuppet();
         
     }
-    if (ev.message == "menu::edit puppet") {
-        
-        puppetsHandler.editCurrentPuppet();
-        
-    }
     if (ev.message == "menu::delete puppet") {
         
         puppetsHandler.removeCurrentPuppet();
@@ -412,11 +393,6 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     if (ev.message == "menu::reset puppet") {
         
         puppetsHandler.resetCurrentPuppet();
-        
-    }
-    if (ev.message == "menu::export recording as mov") {
-        
-        puppetsHandler.exportCurrentPuppetRecordingAsMov();
         
     }
     

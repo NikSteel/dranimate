@@ -21,6 +21,9 @@ private:
     
     // ui & state
     
+    void updateLeapUIControls(LeapDataHandler *leap,
+                              ofxClickDownMenu *cdmenu);
+    
     bool addingBone = false;
     int boneRootVertexIndex;
     
@@ -31,11 +34,11 @@ private:
     bool enableLeapControls;
     int leapClickAgainTimer;
     
-    // recording
-    
-    bool recordingPuppet;
-    PuppetRecorder puppetRecorder;
-    vector<PuppetRecorder> recordedPuppets;
+    enum CurrentUIControlType {
+        LEAP,
+        MOUSE
+    };
+    CurrentUIControlType currentUIControlType;
     
 public:
     
@@ -66,10 +69,8 @@ public:
     void editCurrentPuppet();
     void removeCurrentPuppet();
     void resetCurrentPuppet();
-    void exportCurrentPuppetRecordingAsMov();
     void clearAllPupets();
     void removeAllPuppets();
-    void togglePuppetRecording();
     
     bool emptyVertexHoveredOver();
     bool ezoneHoveredOver();

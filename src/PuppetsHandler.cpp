@@ -8,33 +8,115 @@ void PuppetsHandler::setup() {
     
     leapClickAgainTimer = 0;
     
-    recordingPuppet = false;
-    
-    /*
     Puppet p;
     p.load("puppets/demo-killing-ashkeboos");
     puppets.push_back(p);
-    */
     
 }
-
 void PuppetsHandler::update(LeapDataHandler *leap,
                             ofxOscReceiver *osc,
                             ofxClickDownMenu *cdmenu) {
     
-    enableLeapControls = leap->getHandCount() == 2;
+    // check which type of ui control we're using
+    //(if the leap found two hands, control ui with leap)
+    if(leap->getHandCount() == 2) {
+        currentUIControlType = LEAP;
+    } else {
+        currentUIControlType = MOUSE;
+    }
+    
+    if(currentUIControlType == LEAP) {
+        updateLeapUIControls(leap,cdmenu);
+    }
+    
+    for(int i = 0; i < puppets.size(); i++) {
+        
+        // send new leap data to puppet
+        puppets[i].recieveLeapData(leap);
+        
+        // send new osc messages to puppet
+        while(osc->hasWaitingMessages()) {
+            ofxOscMessage m;
+            osc->getNextMessage(&m);
+            puppets[i].recieveOSCMessage(m, m.getArgAsFloat(0));
+        }
+        
+        // update puppet
+        puppets[i].update();
+        
+        // make sure the selected puppet is being edited (and no one else is)
+        if(i == selectedPuppetIndex) {
+            puppets[i].setEditMode(true);
+        } else {
+            puppets[i].setEditMode(false);
+        }
+        
+    }
+    
+}
+void PuppetsHandler::draw(LeapDataHandler *leap) {
+    
+    ofPushMatrix();
+    ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+    
+    // draw puppets
+    for(int i = 0; i < puppets.size(); i++) {
+        
+        glEnable(GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+        puppets[i].draw();
+        
+    }
+    
+    // draw currently selected vertex info
+    if(selectedPuppet() != NULL && selectedVertexIndex != -1) {
+        float blinkAlpha = 150+sin(ofGetElapsedTimef()*10)*100;
+        ofSetColor(ofColor(255,0,100,blinkAlpha));
+        ofCircle(selectedPuppet()->getDeformedMesh().getVertex(selectedVertexIndex), 8);
+    }
+    
+    ofSetColor(ofColor(0,200,255));
+    ofDrawBitmapString(getSelectedVertexInfo(), ofGetWidth()-350, 160);
+    
+    // highlight the vertex that the mouse is hovered over
+    if(hoveredVertexIndex != -1) {
+        
+        ofSetColor(ofColor(255,0,0,100));
+        ofCircle(selectedPuppet()->getDeformedMesh().getVertex(hoveredVertexIndex), 10);
+        
+        ofSetColor(ofColor(255,0,0,100));
+        ofCircle(selectedPuppet()->getDeformedMesh().getVertex(hoveredVertexIndex), 5);
+    }
+    
+    // draw bones
+    if(addingBone && hoveredVertexIndex != -1) {
+        ofVec3f fromVertex = selectedPuppet()->getDeformedMesh().getVertex(boneRootVertexIndex);
+        ofVec3f toVertex = selectedPuppet()->getDeformedMesh().getVertex(hoveredVertexIndex);
+        
+        ofSetColor(255, 255, 0);
+        ofSetLineWidth(3);
+        ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
+        ofSetLineWidth(1);
+    }
+    
+    ofPopMatrix();
+    
+}
+
+void PuppetsHandler::updateLeapUIControls(LeapDataHandler *leap,
+                                          ofxClickDownMenu *cdmenu) {
     
     // update which vertex the leap is pointing to
-    if(   enableLeapControls
-       && selectedPuppet() != NULL
-       && selectedPuppet()->isBeingEdited
+    if(   selectedPuppet() != NULL
+       && selectedPuppet()->isInEditMode()
        && cdmenu->phase == PHASE_WAIT) {
         
         hoveredVertexIndex = Utils::getClosestIndex(
-            selectedPuppet()->meshDeformer.getDeformedMesh(),
-            leap->getFingerScreenPosition(leap->pointingFinger+1).x,
-            leap->getFingerScreenPosition(leap->pointingFinger+1).y,
-            Puppet::MIN_SELECT_VERT_DIST);
+                                                    selectedPuppet()->getDeformedMesh(),
+                                                    leap->getFingerScreenPosition(leap->pointingFinger+1).x,
+                                                    leap->getFingerScreenPosition(leap->pointingFinger+1).y,
+                                                    Puppet::MIN_SELECT_VERT_DIST);
         
     }
     
@@ -51,7 +133,8 @@ void PuppetsHandler::update(LeapDataHandler *leap,
             }
             selectedPuppet()->getExpressionZone(hoveredVertexIndex)->leapFingerID = i;
             
-            selectedPuppet()->getExpressionZone(hoveredVertexIndex)->parentEzone = selectedPuppet()->expressionZones[0].meshIndex;
+            // autobone (disabled for now...)
+            //selectedPuppet()->getExpressionZone(hoveredVertexIndex)->parentEzone = selectedPuppet()->expressionZones[0].meshIndex;
             
             leapClickAgainTimer = 20;
             
@@ -63,13 +146,13 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     if(leap->renderHands && leap->fingerFlicked(leap->pointingFinger+1) && leapClickAgainTimer == 0) {
         
         int clickedPuppetIndex = getClosestPuppetIndex(
-            leap->getFingerScreenPosition(leap->pointingFinger+1).x,
-            leap->getFingerScreenPosition(leap->pointingFinger+1).y);
+                                                       leap->getFingerScreenPosition(leap->pointingFinger+1).x,
+                                                       leap->getFingerScreenPosition(leap->pointingFinger+1).y);
         
         if(clickedPuppetIndex != -1) {
             
             selectedPuppetIndex = clickedPuppetIndex;
-            selectedPuppet()->isBeingEdited = true;
+            selectedPuppet()->setEditMode(true);
             
         }
         if(selectedPuppetIndex != -1 && clickedPuppetIndex == -1) {
@@ -87,103 +170,6 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         leapClickAgainTimer--;
     }
     
-    // update & send new leap and osc data to puppets
-    for(int i = 0; i < puppets.size(); i++) {
-        
-        puppets[i].recieveLeapData(leap);
-        
-        while(osc->hasWaitingMessages()) {
-            
-            // get the next message
-            ofxOscMessage m;
-            osc->getNextMessage(&m);
-            
-            puppets[i].recieveOSCMessage(m, m.getArgAsFloat(0));
-        }
-        
-        puppets[i].update();
-        
-        if(i != selectedPuppetIndex) {
-            puppets[i].isBeingEdited = false;
-        }
-        
-    }
-    
-    
-    // update puppet recorder
-    puppetRecorder.update();
-    if(recordingPuppet && selectedPuppet() != NULL) {
-        puppetRecorder.recordPuppetFrame(selectedPuppet());
-    }
-    
-    
-    // update puppet recordings
-    for(int i = 0; i < recordedPuppets.size(); i++) {
-        recordedPuppets[i].update();
-    }
-    
-}
-
-void PuppetsHandler::draw(LeapDataHandler *leap) {
-    
-    ofPushMatrix();
-    ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-    
-    // draw puppet recordings
-    
-    for(int i = 0; i < recordedPuppets.size(); i++) {
-        recordedPuppets[i].draw();
-    }
-    
-    // draw puppets
-    
-    for(int i = 0; i < puppets.size(); i++) {
-        
-        glEnable(GL_BLEND);
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        bool isSelected = i == selectedPuppetIndex;
-        bool isBeingRecorded = isSelected && recordingPuppet;
-        puppets[i].draw(isSelected, isBeingRecorded);
-        
-    }
-    
-    // draw currently selected vertex info
-    
-    if(selectedPuppet() != NULL && selectedVertexIndex != -1) {
-        float blinkAlpha = 150+sin(ofGetElapsedTimef()*10)*100;
-        ofSetColor(ofColor(255,0,100,blinkAlpha));
-        ofCircle(selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex), 8);
-    }
-    
-    ofSetColor(ofColor(0,200,255));
-    ofDrawBitmapString(getSelectedVertexInfo(), ofGetWidth()-350, 160);
-    
-    // highlight the vertex that the mouse is hovered over
-    
-    if(hoveredVertexIndex != -1) {
-        
-        ofSetColor(ofColor(255,0,0,100));
-        ofCircle(selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex), 10);
-        
-        ofSetColor(ofColor(255,0,0,100));
-        ofCircle(selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex), 5);
-    }
-    
-    // draw bones
-    
-    if(addingBone && hoveredVertexIndex != -1) {
-        ofVec3f fromVertex = selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(boneRootVertexIndex);
-        ofVec3f toVertex = selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(hoveredVertexIndex);
-        
-        ofSetColor(255, 255, 0);
-        ofSetLineWidth(3);
-        ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
-        ofSetLineWidth(1);
-    }
-    
-    ofPopMatrix();
-    
 }
 
 int PuppetsHandler::getClosestPuppetIndex(int x, int y) {
@@ -191,28 +177,13 @@ int PuppetsHandler::getClosestPuppetIndex(int x, int y) {
     int closestPuppetIndex = -1;
     
     for(int p = 0; p < puppets.size(); p++) {
-        if(Utils::isPointInsideMesh(puppets[p].meshDeformer.getDeformedMesh(), x, y)) {
+        if(Utils::isPointInsideMesh(puppets[p].getDeformedMesh(), x, y)) {
             closestPuppetIndex = p;
             break;
         }
     }
     
     return closestPuppetIndex;
-    
-}
-
-int PuppetsHandler::getClosestRecordingIndex(int x, int y) {
-    
-    int closestRecordingIndex = -1;
-    
-    for(int p = 0; p < recordedPuppets.size(); p++) {
-        if(Utils::isPointInsideMesh(recordedPuppets[p].getCurrentMesh(), x, y)) {
-            closestRecordingIndex = p;
-            break;
-        }
-    }
-    
-    return closestRecordingIndex;
     
 }
 
@@ -228,6 +199,19 @@ Puppet* PuppetsHandler::selectedPuppet() {
 bool PuppetsHandler::isAPuppetSelected() {
     
     return selectedPuppet() != NULL;
+    
+}
+
+bool PuppetsHandler::emptyVertexHoveredOver() {
+    
+    return hoveredVertexIndex != -1
+    && selectedVertexIndex != hoveredVertexIndex;
+    
+}
+bool PuppetsHandler::ezoneHoveredOver() {
+    
+    return selectedVertexIndex != -1
+    && selectedVertexIndex == hoveredVertexIndex;
     
 }
 
@@ -269,7 +253,6 @@ void PuppetsHandler::addPuppet(Puppet p) {
     selectedPuppetIndex = puppets.size()-1;
     
 }
-
 Puppet *PuppetsHandler::getPuppet(int i) {
     
     if(i < 0 || i >= puppets.size()) {
@@ -277,6 +260,13 @@ Puppet *PuppetsHandler::getPuppet(int i) {
     } else {
         return &puppets[i];
     }
+    
+}
+void PuppetsHandler::loadPuppet(string path) {
+    
+    Puppet loadedPuppet;
+    loadedPuppet.load(path);
+    addPuppet(loadedPuppet);
     
 }
 
@@ -354,10 +344,10 @@ void PuppetsHandler::clickMouseAt(int x, int y) {
 void PuppetsHandler::updateWhichVertexIsHoveredOver(int x, int y) {
     
     if(   selectedPuppet() != NULL
-       && selectedPuppet()->isBeingEdited
+       && selectedPuppet()->isInEditMode()
        && !enableLeapControls) {
         
-        hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->meshDeformer.getDeformedMesh(),
+        hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->getDeformedMesh(),
                                                     x-ofGetWidth()/2,
                                                     y-ofGetHeight()/2,
                                                     Puppet::MIN_SELECT_VERT_DIST);
@@ -409,7 +399,7 @@ void PuppetsHandler::setAnchorPointOnCurrentPuppet() {
     // set the selected ezone to be an anchor point
     selectedPuppet()->getExpressionZone(selectedVertexIndex)->isAnchorPoint = true;
     
-    selectedPuppet()->getExpressionZone(selectedVertexIndex)->userControlledDisplacement = selectedPuppet()->meshDeformer.getDeformedMesh().getVertex(selectedVertexIndex) - selectedPuppet()->mesh.getVertex(selectedVertexIndex);
+    selectedPuppet()->getExpressionZone(selectedVertexIndex)->userControlledDisplacement = selectedPuppet()->getDeformedMesh().getVertex(selectedVertexIndex) - selectedPuppet()->getMesh().getVertex(selectedVertexIndex);
     
 }
 void PuppetsHandler::exportCurrentPuppet() {
@@ -424,7 +414,7 @@ void PuppetsHandler::exportCurrentPuppet() {
 }
 void PuppetsHandler::editCurrentPuppet() {
     
-    selectedPuppet()->isBeingEdited = true;
+    selectedPuppet()->setEditMode(true);
     
 }
 void PuppetsHandler::removeCurrentPuppet() {
@@ -444,11 +434,6 @@ void PuppetsHandler::resetCurrentPuppet() {
     hoveredVertexIndex = -1;
     
 }
-void PuppetsHandler::exportCurrentPuppetRecordingAsMov() {
-    
-    //recordedPuppets[selectedRecordingIndex].exportAsMovie();
-    
-}
 void PuppetsHandler::clearAllPupets() {
     
     puppets.clear();
@@ -465,40 +450,5 @@ void PuppetsHandler::removeAllPuppets() {
     selectedPuppetIndex = -1;
     selectedVertexIndex = -1;
     hoveredVertexIndex = -1;
-    
-}
-void PuppetsHandler::togglePuppetRecording() {
-    
-    if(isAPuppetSelected() && !recordingPuppet) {
-        puppetRecorder.setup();
-        recordingPuppet = true;
-    } else {
-        recordedPuppets.push_back(puppetRecorder);
-        recordingPuppet = false;
-    }
-    
-}
-
-bool PuppetsHandler::emptyVertexHoveredOver() {
-    
-    return hoveredVertexIndex != -1
-        && selectedVertexIndex != hoveredVertexIndex;
-
-}
-bool PuppetsHandler::ezoneHoveredOver() {
-    
-    return selectedVertexIndex != -1
-        && selectedVertexIndex == hoveredVertexIndex;
-    
-}
-
-
-
-
-void PuppetsHandler::loadPuppet(string path) {
-    
-    Puppet loadedPuppet;
-    loadedPuppet.load(path);
-    addPuppet(loadedPuppet);
     
 }

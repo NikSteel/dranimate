@@ -4,7 +4,7 @@ void Puppet::load(string path) {
     
     palmControlsPuppet = 0;
     
-    isBeingEdited = false;
+    inEditMode = false;
     
     // load image
     image.loadImage(path + "/image.png");
@@ -165,6 +165,15 @@ void Puppet::setMesh(ofMesh m) {
     
 }
 
+ofMesh Puppet::getMesh() {
+    return mesh;
+}
+ofMesh Puppet::getDeformedMesh() {
+    
+    return meshDeformer.getDeformedMesh();
+    
+}
+
 void Puppet::addCenterpoint() {
 
     ofVec3f c = mesh.getCentroid();
@@ -205,7 +214,7 @@ void Puppet::update() {
         // add displacements to puppet control points
         for(int i = 0; i < expressionZones.size(); i++) {
             
-            if(expressionZones[i].parentEzone == -1 || isBeingEdited) {
+            if(expressionZones[i].parentEzone == -1 || inEditMode) {
                 // no parent, this ezone moves independently
                 meshDeformer.setControlPoint(expressionZones[i].meshIndex,
                                              mesh.getVertex(expressionZones[i].meshIndex)+
@@ -231,13 +240,11 @@ void Puppet::update() {
     
 }
 
-void Puppet::draw(bool isSelected, bool isBeingRecorded) {
+void Puppet::draw() {
     
     // draw the subdivided mesh textured with our image
     
-    if(isBeingRecorded) {
-        ofSetColor(255,155,155);
-    } else if(isSelected) {
+    if(inEditMode) {
         float flash = abs(sin(ofGetElapsedTimef()*3))*50+150;
         ofSetColor(255,255,255,flash);
     } else {
@@ -255,7 +262,7 @@ void Puppet::draw(bool isSelected, bool isBeingRecorded) {
     
     // draw the wireframe & control points as well
     
-    if(isSelected && !isBeingRecorded && isBeingEdited) {
+    if(inEditMode) {
         
         // draw wireframe
         glLineWidth(1.0);
@@ -434,7 +441,7 @@ void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
 
 void Puppet::recieveLeapData(LeapDataHandler *leap) {
     
-    if(leap->calibrated && !isBeingEdited) {
+    if(leap->calibrated && !inEditMode) {
     
         for(int i = 0; i < expressionZones.size(); i++) {
             
@@ -514,4 +521,15 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
         }
         
     }
+}
+
+void Puppet::setEditMode(bool beingEdited) {
+    
+    inEditMode = beingEdited;
+    
+}
+bool Puppet::isInEditMode() {
+    
+    return inEditMode;
+    
 }

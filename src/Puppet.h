@@ -28,16 +28,16 @@ public:
     void setImage(ofImage img);
     void setMesh(ofMesh m);
     
+    ofMesh getMesh();
+    ofMesh getDeformedMesh();
+    
     void addCenterpoint();
     
     void reset();
     void update();
-    void draw(bool isSelected, bool isBeingRecorded);
+    void draw();
     
     void resetPose();
-    
-    void regenerateSubdivisionMesh();
-    void updateMeshVertexDepths();
     
     void addExpressionZone(int index);
     void removeExpressionZone(int index);
@@ -47,7 +47,21 @@ public:
     void recieveOSCMessage(ofxOscMessage message, float value);
     void recieveLeapData(LeapDataHandler *leap);
     
+    void setEditMode(bool beingEdited);
+    bool isInEditMode();
+    
     const static int MIN_SELECT_VERT_DIST = 20;
+    
+private:
+    
+    ofImage image;
+    ofPolyline contour;
+    
+    ofxPuppet meshDeformer;
+    vector<ExpressionZone> expressionZones;
+    
+    bool inEditMode;
+    
     const static int MESH_SMOOTH_SUBDIVISIONS = 2;
     
     // mesh & puppet
@@ -60,19 +74,8 @@ public:
     
     int palmControlsPuppet;
     
-    // puppeteering
-    
-    ofxPuppet meshDeformer;
-    vector<ExpressionZone> expressionZones;
-    
-    // image
-    
-    ofImage image;
-    ofPolyline contour;
-    
-    // state
-    
-    bool isBeingEdited;
+    void regenerateSubdivisionMesh();
+    void updateMeshVertexDepths();
     
 };
 
