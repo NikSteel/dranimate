@@ -13,6 +13,7 @@ void PuppetsHandler::setup() {
     puppets.push_back(p);
     
 }
+
 void PuppetsHandler::update(LeapDataHandler *leap,
                             ofxOscReceiver *osc,
                             ofxClickDownMenu *cdmenu) {
@@ -54,6 +55,7 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     }
     
 }
+
 void PuppetsHandler::draw(LeapDataHandler *leap) {
     
     ofPushMatrix();
@@ -196,6 +198,7 @@ Puppet* PuppetsHandler::selectedPuppet() {
     }
     
 }
+
 bool PuppetsHandler::isAPuppetSelected() {
     
     return selectedPuppet() != NULL;
@@ -208,6 +211,7 @@ bool PuppetsHandler::emptyVertexHoveredOver() {
     && selectedVertexIndex != hoveredVertexIndex;
     
 }
+
 bool PuppetsHandler::ezoneHoveredOver() {
     
     return selectedVertexIndex != -1
@@ -253,6 +257,7 @@ void PuppetsHandler::addPuppet(Puppet p) {
     selectedPuppetIndex = puppets.size()-1;
     
 }
+
 Puppet *PuppetsHandler::getPuppet(int i) {
     
     if(i < 0 || i >= puppets.size()) {
@@ -262,6 +267,7 @@ Puppet *PuppetsHandler::getPuppet(int i) {
     }
     
 }
+
 void PuppetsHandler::loadPuppet(string path) {
     
     Puppet loadedPuppet;
@@ -355,6 +361,7 @@ void PuppetsHandler::updateWhichVertexIsHoveredOver(int x, int y) {
     }
     
 }
+
 void PuppetsHandler::addExpressionZoneToCurrentPuppet() {
     
     ExpressionZone* eZone = selectedPuppet()->getExpressionZone(hoveredVertexIndex);
@@ -366,11 +373,13 @@ void PuppetsHandler::addExpressionZoneToCurrentPuppet() {
     }
     
 }
+
 void PuppetsHandler::addLeapMappingToCurrentPuppet(int i) {
     
     selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = i;
     
 }
+
 void PuppetsHandler::addOSCMappingToCurrentPuppet() {
     
     if(selectedPuppet()->getExpressionZone(selectedVertexIndex) != NULL) {
@@ -382,18 +391,21 @@ void PuppetsHandler::addOSCMappingToCurrentPuppet() {
     }
     
 }
+
 void PuppetsHandler::addBoneToCurrentPuppet() {
     
     addingBone = true;
     boneRootVertexIndex = selectedVertexIndex;
     
 }
+
 void PuppetsHandler::removeEZoneFromCurrentPuppet() {
     
     selectedPuppet()->removeExpressionZone(selectedVertexIndex);
     selectedVertexIndex = -1;
     
 }
+
 void PuppetsHandler::setAnchorPointOnCurrentPuppet() {
     
     // set the selected ezone to be an anchor point
@@ -402,6 +414,7 @@ void PuppetsHandler::setAnchorPointOnCurrentPuppet() {
     selectedPuppet()->getExpressionZone(selectedVertexIndex)->userControlledDisplacement = selectedPuppet()->getDeformedMesh().getVertex(selectedVertexIndex) - selectedPuppet()->getMesh().getVertex(selectedVertexIndex);
     
 }
+
 void PuppetsHandler::exportCurrentPuppet() {
     
     ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
@@ -412,11 +425,13 @@ void PuppetsHandler::exportCurrentPuppet() {
     }
     
 }
+
 void PuppetsHandler::editCurrentPuppet() {
     
     selectedPuppet()->setEditMode(true);
     
 }
+
 void PuppetsHandler::removeCurrentPuppet() {
     
     puppets.erase(puppets.begin() + selectedPuppetIndex);
@@ -426,6 +441,7 @@ void PuppetsHandler::removeCurrentPuppet() {
     hoveredVertexIndex = -1;
     
 }
+
 void PuppetsHandler::resetCurrentPuppet() {
     
     selectedPuppet()->reset();
@@ -434,6 +450,7 @@ void PuppetsHandler::resetCurrentPuppet() {
     hoveredVertexIndex = -1;
     
 }
+
 void PuppetsHandler::clearAllPupets() {
     
     puppets.clear();
@@ -443,6 +460,7 @@ void PuppetsHandler::clearAllPupets() {
     hoveredVertexIndex = -1;
     
 }
+
 void PuppetsHandler::removeAllPuppets() {
     
     puppets.clear();

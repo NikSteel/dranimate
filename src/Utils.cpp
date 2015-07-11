@@ -1,8 +1,7 @@
 #include "Utils.h"
 
-//http://stackoverflow.com/questions/874134/find-if-string-endswith-another-string-in-c
-
 bool Utils::hasEnding (std::string const &fullString, std::string const &ending) {
+    //http://stackoverflow.com/questions/874134/find-if-string-endswith-another-string-in-c
     if (fullString.length() >= ending.length()) {
         return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
     } else {
@@ -23,15 +22,12 @@ bool Utils::filenameIsImage(std::string fn) {
     
 }
 
-//http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
-
-float Utils::sign(ofVec3f p1, ofVec3f p2, ofVec3f p3)
-{
+float Utils::sign(ofVec3f p1, ofVec3f p2, ofVec3f p3) {
+    //http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
     return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
 }
 
-bool Utils::PointInTriangle (ofVec3f pt, ofVec3f v1, ofVec3f v2, ofVec3f v3)
-{
+bool Utils::PointInTriangle (ofVec3f pt, ofVec3f v1, ofVec3f v2, ofVec3f v3) {
     bool b1, b2, b3;
     
     b1 = Utils::sign(pt, v1, v2) < 0.0f;

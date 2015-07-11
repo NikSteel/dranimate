@@ -11,7 +11,6 @@ void Puppet::load(string path) {
     
     // load mesh
     mesh.load(path + "/mesh.ply");
-    originalMesh.load(path + "/mesh.ply");
     meshDeformer.setup(mesh);
     regenerateSubdivisionMesh();
     
@@ -86,7 +85,7 @@ void Puppet::save(string path) {
     system(mkdirCommandString.c_str());
     
     // mesh
-    originalMesh.save(path + "/mesh.ply");
+    mesh.save(path + "/mesh.ply");
     
     // image
     image.saveImage(path + "/image.png");
@@ -158,7 +157,6 @@ void Puppet::setImage(ofImage img) {
 void Puppet::setMesh(ofMesh m) {
     
     mesh = m;
-    originalMesh = m;
     
     meshDeformer.setup(mesh);
     regenerateSubdivisionMesh();
@@ -168,6 +166,7 @@ void Puppet::setMesh(ofMesh m) {
 ofMesh Puppet::getMesh() {
     return mesh;
 }
+
 ofMesh Puppet::getDeformedMesh() {
     
     return meshDeformer.getDeformedMesh();
@@ -184,7 +183,6 @@ void Puppet::addCenterpoint() {
 void Puppet::reset() {
     
     removeAllExpressionZones();
-    setMesh(originalMesh);
     
 }
 
@@ -260,15 +258,11 @@ void Puppet::draw() {
     image.unbind();
     glDisable(GL_DEPTH_TEST);
     
-    // draw the wireframe & control points as well
-    
     if(inEditMode) {
         
         // draw wireframe
         glLineWidth(1.0);
-        //float flash = abs(sin(ofGetElapsedTimef()*2)*100)+100;
-        //ofSetColor(100,255,100,flash);
-        ofSetColor(ofColor::orangeRed);
+        ofSetColor(ofColor(30,200,255));
         meshDeformer.getDeformedMesh().drawWireframe();
         
         // draw control points
@@ -323,7 +317,6 @@ void Puppet::resetPose() {
     for(int i = 0; i < expressionZones.size(); i++) {
         expressionZones[i].userControlledDisplacement = ofVec2f(0,0);
     }
-    setMesh(originalMesh);
     
 }
 
@@ -528,6 +521,7 @@ void Puppet::setEditMode(bool beingEdited) {
     inEditMode = beingEdited;
     
 }
+
 bool Puppet::isInEditMode() {
     
     return inEditMode;

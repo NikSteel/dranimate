@@ -5,7 +5,6 @@
 
 #include "ofMain.h"
 #include "ofxLeapMotion.h"
-#include "ofxStrip.h"
 #include "ofxLeapGestures.h"
 
 #include "Utils.h"

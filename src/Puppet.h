@@ -13,7 +13,6 @@
 #include "ofxOscReceiver.h"
 
 #include "ExpressionZone.h"
-#include "OSCNamespace.h"
 #include "Utils.h"
 #include "LeapDataHandler.h"
 #include "Resources.h"
@@ -66,9 +65,8 @@ private:
     
     // mesh & puppet
     
-    ofMesh originalMesh;
     ofMesh mesh;
-    ofMesh undeformedSubdivided;
+    ofMesh undeformedSubdivided; //used for z-fighting fix
     ofMesh subdivided;
     ofxButterfly butterfly;
     

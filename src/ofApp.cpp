@@ -22,6 +22,7 @@ void ofApp::setup() {
     Resources::loadResources();
     
 }
+
 void ofApp::update() {
     
     // this is because of that strange hidden cursor bug... ugh (see the github issue)
@@ -53,6 +54,7 @@ void ofApp::update() {
     }
     
 }
+
 void ofApp::draw() {
     
     ofSetColor(255);
@@ -155,6 +157,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     }
     
 }
+
 void ofApp::mouseMoved(int x, int y) {
     
     if(clickDownMenu.phase == PHASE_WAIT) {
@@ -162,6 +165,7 @@ void ofApp::mouseMoved(int x, int y) {
     }
     
 }
+
 void ofApp::mouseDragged(int x, int y, int button) {
     
     
@@ -231,45 +235,41 @@ void ofApp::updateClickDownMenu() {
             clickDownMenu.RegisterMenu(" ");
             
         } else {
+        
+            if(puppetsHandler.emptyVertexHoveredOver()) {
+                
+                // a vertex is hovered over
+                clickDownMenu.RegisterMenu("add ezone");
+                clickDownMenu.RegisterMenu(" ");
+                
+            }
             
-            if(puppetsHandler.selectedPuppet()->isInEditMode()) {
+            if(puppetsHandler.ezoneHoveredOver()) {
                 
-                if(puppetsHandler.emptyVertexHoveredOver()) {
-                    
-                    // a vertex is hovered over
-                    clickDownMenu.RegisterMenu("add ezone");
-                    clickDownMenu.RegisterMenu(" ");
-                    
-                }
+                // a vertex is selected
                 
-                if(puppetsHandler.ezoneHoveredOver()) {
-                    
-                    // a vertex is selected
-                    
-                    vector<string> leapFingersBranch;
-                    leapFingersBranch.push_back("none");
-                    leapFingersBranch.push_back("");
-                    leapFingersBranch.push_back("thumb  (hand 1)");
-                    leapFingersBranch.push_back("index  (hand 1)");
-                    leapFingersBranch.push_back("middle (hand 1)");
-                    leapFingersBranch.push_back("ring   (hand 1)");
-                    leapFingersBranch.push_back("pinky  (hand 1)");
-                    leapFingersBranch.push_back("");
-                    leapFingersBranch.push_back("thumb  (hand 2)");
-                    leapFingersBranch.push_back("index  (hand 2)");
-                    leapFingersBranch.push_back("middle (hand 2)");
-                    leapFingersBranch.push_back("ring   (hand 2)");
-                    leapFingersBranch.push_back("pinky  (hand 2)");
-                    
-                    clickDownMenu.RegisterBranch("add leap mapping", &leapFingersBranch);
-                    clickDownMenu.RegisterMenu("add osc mapping");
-                    clickDownMenu.RegisterMenu("add bone");
-                    clickDownMenu.RegisterMenu("set anchor point");
-                    clickDownMenu.RegisterMenu("delete ezone");
-                    
-                    clickDownMenu.RegisterMenu(" ");
-                }
+                vector<string> leapFingersBranch;
+                leapFingersBranch.push_back("none");
+                leapFingersBranch.push_back("");
+                leapFingersBranch.push_back("thumb  (hand 1)");
+                leapFingersBranch.push_back("index  (hand 1)");
+                leapFingersBranch.push_back("middle (hand 1)");
+                leapFingersBranch.push_back("ring   (hand 1)");
+                leapFingersBranch.push_back("pinky  (hand 1)");
+                leapFingersBranch.push_back("");
+                leapFingersBranch.push_back("thumb  (hand 2)");
+                leapFingersBranch.push_back("index  (hand 2)");
+                leapFingersBranch.push_back("middle (hand 2)");
+                leapFingersBranch.push_back("ring   (hand 2)");
+                leapFingersBranch.push_back("pinky  (hand 2)");
                 
+                clickDownMenu.RegisterBranch("add leap mapping", &leapFingersBranch);
+                clickDownMenu.RegisterMenu("add osc mapping");
+                clickDownMenu.RegisterMenu("add bone");
+                clickDownMenu.RegisterMenu("set anchor point");
+                clickDownMenu.RegisterMenu("delete ezone");
+                
+                clickDownMenu.RegisterMenu(" ");
             }
             
             // a puppet is selected
@@ -290,6 +290,7 @@ void ofApp::updateClickDownMenu() {
         
     }
 }
+
 void ofApp::cmdEvent(ofxCDMEvent &ev){
     
     if (ev.message == "menu::load puppet") {

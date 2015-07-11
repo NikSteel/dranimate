@@ -12,11 +12,11 @@ public:
     void setup();
     void update();
     
-    ofVideoGrabber 		vidGrabber;
-    unsigned char * 	videoInverted;
-    ofTexture			videoTexture;
-    int 				camWidth;
-    int 				camHeight;
+    ofVideoGrabber vidGrabber;
+    unsigned char *videoInverted;
+    ofTexture videoTexture;
+    int camWidth;
+    int camHeight;
     
     ofImage image;
     

@@ -5,8 +5,16 @@
 #include <vector>
 
 #include "ofMain.h"
-#include "OSCNamespace.h"
 #include "LeapFingerController.h"
+
+class OSCNamespace {
+    
+public:
+    
+    std::string message;
+    std::string controlType;
+    
+};
 
 class ExpressionZone {
     
@@ -23,8 +31,6 @@ public:
     vector<int> childrenEzones;
     
     bool isAnchorPoint;
-    
-    ofVec2f physicsDisplacement;
     
 };
 
