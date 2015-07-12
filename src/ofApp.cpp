@@ -7,6 +7,7 @@ void ofApp::setup() {
     leapHandler.setup();
     oscReceiver.setup(8000);
     puppetsHandler.setup();
+    mesher.setup();
     
     // setup ui stuff
     
@@ -178,7 +179,7 @@ void ofApp::dragEvent(ofDragInfo info) {
         
         // image file to be used for puppet generation dragged into window
         
-        mesher.setup(false);
+        mesher.reset(false);
         mesher.setImage(info.files.at(0));
         
         state = NEW_PUPPET_CREATION;
@@ -308,7 +309,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         ofFileDialogResult openFileResult = ofSystemLoadDialog("Select an image:",true);
         
         if (openFileResult.bSuccess){
-            mesher.setup(false);
+            mesher.reset(false);
             mesher.setImage(openFileResult.getPath());
             
             state = NEW_PUPPET_CREATION;
@@ -317,7 +318,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     }
     if (ev.message == "menu::create puppet (live)") {
         
-        mesher.setup(true);
+        mesher.reset(true);
         state = NEW_PUPPET_CREATION;
         
     }

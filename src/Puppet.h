@@ -43,7 +43,7 @@ public:
     ExpressionZone* getExpressionZone(int index);
     
     void recieveOSCMessage(ofxOscMessage message, float value);
-    void recieveLeapData(LeapDataHandler *leap);
+    void recieveLeapData(LeapDataHandler *leap, bool isSelected);
     
     const static int MIN_SELECT_VERT_DIST = 20;
     

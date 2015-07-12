@@ -17,10 +17,12 @@ class MeshGenerator {
     
 public:
     
-    void setup(bool liveMode);
+    void setup();
     void update();
     void draw();
     void reset();
+    
+    void reset(bool liveMode);
     
     void setImage(ofImage img);
     void addExtraVertex(int x, int y);

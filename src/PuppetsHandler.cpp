@@ -33,9 +33,7 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     for(int i = 0; i < puppets.size(); i++) {
         
         // send new leap data to puppet
-        if(i != selectedPuppetIndex) {
-            puppets[i].recieveLeapData(leap);
-        }
+        puppets[i].recieveLeapData(leap, i == selectedPuppetIndex);
         
         // send new osc messages to puppet
         while(osc->hasWaitingMessages()) {

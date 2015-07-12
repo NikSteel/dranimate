@@ -1,6 +1,6 @@
 #include "MeshGenerator.h"
 
-void MeshGenerator::setup(bool liveMode) {
+void MeshGenerator::setup() {
     
     gui.setup();
     
@@ -16,15 +16,8 @@ void MeshGenerator::setup(bool liveMode) {
     gui.add(triangleAngleConstraint.setup("angle constraint", 14, 0, 28));
     gui.add(triangleSizeConstraint.setup("size constraint", -1, -1, 100));
     
-    meshGenerated = false;
-    contourLine.clear();
-    extraVerts.clear();
+    cam.setup();
     
-    if(liveMode) {
-        imageType = FROM_LIFE_FEED;
-    } else {
-        imageType = FROM_FILE;
-    }
     
 }
 
@@ -109,6 +102,20 @@ void MeshGenerator::draw() {
     ofPopMatrix();
     
     gui.draw();
+    
+}
+
+void MeshGenerator::reset(bool liveMode) {
+    
+    meshGenerated = false;
+    contourLine.clear();
+    extraVerts.clear();
+    
+    if(liveMode) {
+        imageType = FROM_LIFE_FEED;
+    } else {
+        imageType = FROM_FILE;
+    }
     
 }
 

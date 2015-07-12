@@ -379,7 +379,7 @@ void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
 
 }
 
-void Puppet::recieveLeapData(LeapDataHandler *leap) {
+void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
     
     int palmControlsPuppet = 1;
     
@@ -395,7 +395,7 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
         
     }
     
-    if(leap->calibrated) {
+    if(leap->calibrated && !isSelected) {
     
         for(int i = 0; i < expressionZones.size(); i++) {
             
