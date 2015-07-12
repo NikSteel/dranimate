@@ -33,7 +33,9 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     for(int i = 0; i < puppets.size(); i++) {
         
         // send new leap data to puppet
-        puppets[i].recieveLeapData(leap);
+        if(i != selectedPuppetIndex) {
+            puppets[i].recieveLeapData(leap);
+        }
         
         // send new osc messages to puppet
         while(osc->hasWaitingMessages()) {
@@ -44,13 +46,6 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         
         // update puppet
         puppets[i].update();
-        
-        // make sure the selected puppet is being edited (and no one else is)
-        if(i == selectedPuppetIndex) {
-            puppets[i].setEditMode(true);
-        } else {
-            puppets[i].setEditMode(false);
-        }
         
     }
     
@@ -67,7 +62,7 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
-        puppets[i].draw();
+        puppets[i].draw(i == selectedPuppetIndex);
         
     }
     
@@ -111,7 +106,6 @@ void PuppetsHandler::updateLeapUIControls(LeapDataHandler *leap,
     
     // update which vertex the leap is pointing to
     if(   selectedPuppet() != NULL
-       && selectedPuppet()->isInEditMode()
        && cdmenu->phase == PHASE_WAIT) {
         
         hoveredVertexIndex = Utils::getClosestIndex(
@@ -154,7 +148,6 @@ void PuppetsHandler::updateLeapUIControls(LeapDataHandler *leap,
         if(clickedPuppetIndex != -1) {
             
             selectedPuppetIndex = clickedPuppetIndex;
-            selectedPuppet()->setEditMode(true);
             
         }
         if(selectedPuppetIndex != -1 && clickedPuppetIndex == -1) {
@@ -350,7 +343,6 @@ void PuppetsHandler::clickMouseAt(int x, int y) {
 void PuppetsHandler::updateWhichVertexIsHoveredOver(int x, int y) {
     
     if(   selectedPuppet() != NULL
-       && selectedPuppet()->isInEditMode()
        && !enableLeapControls) {
         
         hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->getDeformedMesh(),
@@ -426,12 +418,6 @@ void PuppetsHandler::exportCurrentPuppet() {
     
 }
 
-void PuppetsHandler::editCurrentPuppet() {
-    
-    selectedPuppet()->setEditMode(true);
-    
-}
-
 void PuppetsHandler::removeCurrentPuppet() {
     
     puppets.erase(puppets.begin() + selectedPuppetIndex);
@@ -443,8 +429,6 @@ void PuppetsHandler::removeCurrentPuppet() {
 }
 
 void PuppetsHandler::resetCurrentPuppet() {
-    
-    selectedPuppet()->reset();
     
     selectedVertexIndex = -1;
     hoveredVertexIndex = -1;

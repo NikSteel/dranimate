@@ -4,7 +4,6 @@ void ofApp::setup() {
     
     // setup all of the different handlers
     
-    cam.setup();
     leapHandler.setup();
     oscReceiver.setup(8000);
     puppetsHandler.setup();
@@ -28,7 +27,6 @@ void ofApp::update() {
     // this is because of that strange hidden cursor bug... ugh (see the github issue)
     ofShowCursor();
     
-    // update which things show up on the click down menu
     updateClickDownMenu();
     
     switch(state) {
@@ -197,6 +195,8 @@ void ofApp::dragEvent(ofDragInfo info) {
 }
 
 void ofApp::updateClickDownMenu() {
+    
+    // update which things show up on the click down menu
     
     // reset everything
     clickDownMenu.UnRegisterMenu("load puppet");

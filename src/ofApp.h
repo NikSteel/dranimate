@@ -42,16 +42,11 @@ public:
     void cmdEvent(ofxCDMEvent &ev);
     void updateClickDownMenu();
     
-// all the handlers and stuff
-    
     MeshGenerator mesher;
     PuppetsHandler puppetsHandler;
-    LeapDataHandler leapHandler;
     ofxClickDownMenu clickDownMenu;
-    ImageFromCamera cam;
+    LeapDataHandler leapHandler;
     ofxOscReceiver oscReceiver;
-    
-    // UI & State
     
     enum State {
         NEW_PUPPET_CREATION,

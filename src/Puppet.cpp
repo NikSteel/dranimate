@@ -2,10 +2,6 @@
 
 void Puppet::load(string path) {
     
-    palmControlsPuppet = 0;
-    
-    inEditMode = false;
-    
     // load image
     image.loadImage(path + "/image.png");
     
@@ -148,61 +144,7 @@ void Puppet::save(string path) {
     
 }
 
-void Puppet::setImage(ofImage img) {
-    
-    image = img;
-    
-}
-
-void Puppet::setMesh(ofMesh m) {
-    
-    mesh = m;
-    
-    meshDeformer.setup(mesh);
-    regenerateSubdivisionMesh();
-    
-}
-
-ofMesh Puppet::getMesh() {
-    return mesh;
-}
-
-ofMesh Puppet::getDeformedMesh() {
-    
-    return meshDeformer.getDeformedMesh();
-    
-}
-
-void Puppet::addCenterpoint() {
-
-    ofVec3f c = mesh.getCentroid();
-    addExpressionZone(Utils::getClosestIndex(mesh, c.x,c.y, INT_MAX));
-    
-}
-
-void Puppet::reset() {
-    
-    removeAllExpressionZones();
-    
-}
-
 void Puppet::update() {
-    
-    // update which palm controls this puppet
-    
-    palmControlsPuppet = 1;
-    
-    for(int i = 0; i < expressionZones.size(); i++) {
-        
-        int fid = expressionZones[i].leapFingerID;
-        
-        // if there exists an expression zone controlled by the right hand,
-        // make the right palm control the overall position of the puppet.
-        if(fid != -1 && fid < 5) {
-            palmControlsPuppet = 0;
-        }
-        
-    }
     
     // do ofxPuppet puppeteering stuff (if there is more than one point;
     // as rigid as possible freaks out with onely one control point.)
@@ -212,7 +154,7 @@ void Puppet::update() {
         // add displacements to puppet control points
         for(int i = 0; i < expressionZones.size(); i++) {
             
-            if(expressionZones[i].parentEzone == -1 || inEditMode) {
+            if(expressionZones[i].parentEzone == -1) {
                 // no parent, this ezone moves independently
                 meshDeformer.setControlPoint(expressionZones[i].meshIndex,
                                              mesh.getVertex(expressionZones[i].meshIndex)+
@@ -225,7 +167,7 @@ void Puppet::update() {
             }
             
         }
-    
+        
         meshDeformer.update();
         
     }
@@ -238,11 +180,11 @@ void Puppet::update() {
     
 }
 
-void Puppet::draw() {
+void Puppet::draw(bool isSelectedPuppet) {
     
     // draw the subdivided mesh textured with our image
     
-    if(inEditMode) {
+    if(isSelectedPuppet) {
         float flash = abs(sin(ofGetElapsedTimef()*3))*50+150;
         ofSetColor(255,255,255,flash);
     } else {
@@ -254,11 +196,11 @@ void Puppet::draw() {
     
     image.bind();
     glEnable(GL_DEPTH_TEST);
-        subdivided.drawFaces();
+    subdivided.drawFaces();
     image.unbind();
     glDisable(GL_DEPTH_TEST);
     
-    if(inEditMode) {
+    if(isSelectedPuppet) {
         
         // draw wireframe
         glLineWidth(1.0);
@@ -312,37 +254,42 @@ void Puppet::draw() {
     
 }
 
+void Puppet::setImage(ofImage img) {
+    
+    image = img;
+    
+}
+
+void Puppet::setMesh(ofMesh m) {
+    
+    mesh = m;
+    
+    meshDeformer.setup(mesh);
+    regenerateSubdivisionMesh();
+    
+}
+
+ofMesh Puppet::getMesh() {
+    return mesh;
+}
+
+ofMesh Puppet::getDeformedMesh() {
+    
+    return meshDeformer.getDeformedMesh();
+    
+}
+
+void Puppet::addCenterpoint() {
+
+    ofVec3f c = mesh.getCentroid();
+    addExpressionZone(Utils::getClosestIndex(mesh, c.x,c.y, INT_MAX));
+    
+}
+
 void Puppet::resetPose() {
     
     for(int i = 0; i < expressionZones.size(); i++) {
         expressionZones[i].userControlledDisplacement = ofVec2f(0,0);
-    }
-    
-}
-
-void Puppet::regenerateSubdivisionMesh() {
-    
-    butterfly.topology_start(mesh);
-    
-    for(int i = 0; i < MESH_SMOOTH_SUBDIVISIONS; i++) {
-        butterfly.topology_subdivide_boundary();
-    }
-    
-    subdivided = butterfly.topology_end();
-    
-    undeformedSubdivided = subdivided;
-    
-}
-
-void Puppet::updateMeshVertexDepths() {
-    
-    for(int i = 0; i < subdivided.getVertices().size(); i++) {
-        
-        ofVec3f v = subdivided.getVertex(i);
-        ofVec3f udsv = undeformedSubdivided.getVertex(i);
-        v.z = -(udsv.x*0.01);
-        subdivided.setVertex(i, v);
-        
     }
     
 }
@@ -434,7 +381,21 @@ void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
 
 void Puppet::recieveLeapData(LeapDataHandler *leap) {
     
-    if(leap->calibrated && !inEditMode) {
+    int palmControlsPuppet = 1;
+    
+    for(int i = 0; i < expressionZones.size(); i++) {
+        
+        int fid = expressionZones[i].leapFingerID;
+        
+        // if there exists an expression zone controlled by the right hand,
+        // make the right palm control the overall position of the puppet.
+        if(fid != -1 && fid < 5) {
+            palmControlsPuppet = 0;
+        }
+        
+    }
+    
+    if(leap->calibrated) {
     
         for(int i = 0; i < expressionZones.size(); i++) {
             
@@ -516,14 +477,29 @@ void Puppet::recieveLeapData(LeapDataHandler *leap) {
     }
 }
 
-void Puppet::setEditMode(bool beingEdited) {
+void Puppet::regenerateSubdivisionMesh() {
     
-    inEditMode = beingEdited;
+    butterfly.topology_start(mesh);
+    
+    for(int i = 0; i < MESH_SMOOTH_SUBDIVISIONS; i++) {
+        butterfly.topology_subdivide_boundary();
+    }
+    
+    subdivided = butterfly.topology_end();
+    
+    undeformedSubdivided = subdivided;
     
 }
 
-bool Puppet::isInEditMode() {
+void Puppet::updateMeshVertexDepths() {
     
-    return inEditMode;
+    for(int i = 0; i < subdivided.getVertices().size(); i++) {
+        
+        ofVec3f v = subdivided.getVertex(i);
+        ofVec3f udsv = undeformedSubdivided.getVertex(i);
+        v.z = -(udsv.x*0.01);
+        subdivided.setVertex(i, v);
+        
+    }
     
 }

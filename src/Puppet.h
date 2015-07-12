@@ -24,6 +24,9 @@ public:
     void load(string path);
     void save(string path);
     
+    void update();
+    void draw(bool isSelectedPuppet);
+    
     void setImage(ofImage img);
     void setMesh(ofMesh m);
     
@@ -31,10 +34,6 @@ public:
     ofMesh getDeformedMesh();
     
     void addCenterpoint();
-    
-    void reset();
-    void update();
-    void draw();
     
     void resetPose();
     
@@ -46,9 +45,6 @@ public:
     void recieveOSCMessage(ofxOscMessage message, float value);
     void recieveLeapData(LeapDataHandler *leap);
     
-    void setEditMode(bool beingEdited);
-    bool isInEditMode();
-    
     const static int MIN_SELECT_VERT_DIST = 20;
     
 private:
@@ -59,8 +55,6 @@ private:
     ofxPuppet meshDeformer;
     vector<ExpressionZone> expressionZones;
     
-    bool inEditMode;
-    
     const static int MESH_SMOOTH_SUBDIVISIONS = 2;
     
     // mesh & puppet
@@ -69,8 +63,6 @@ private:
     ofMesh undeformedSubdivided; //used for z-fighting fix
     ofMesh subdivided;
     ofxButterfly butterfly;
-    
-    int palmControlsPuppet;
     
     void regenerateSubdivisionMesh();
     void updateMeshVertexDepths();

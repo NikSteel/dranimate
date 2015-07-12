@@ -66,7 +66,6 @@ public:
     void removeEZoneFromCurrentPuppet();
     void setAnchorPointOnCurrentPuppet();
     void exportCurrentPuppet();
-    void editCurrentPuppet();
     void removeCurrentPuppet();
     void resetCurrentPuppet();
     void clearAllPupets();
