@@ -22,7 +22,6 @@ void ofApp::setup() {
     Resources::loadResources();
     
 }
-
 void ofApp::update() {
     
     // this is because of that strange hidden cursor bug... ugh (see the github issue)
@@ -53,7 +52,6 @@ void ofApp::update() {
     }
     
 }
-
 void ofApp::draw() {
     
     ofBackground(0,0,0);
@@ -174,7 +172,6 @@ void ofApp::mousePressed(int x, int y, int button) {
     }
     
 }
-
 void ofApp::mouseMoved(int x, int y) {
     
     if(clickDownMenu.phase == PHASE_WAIT) {
@@ -182,7 +179,6 @@ void ofApp::mouseMoved(int x, int y) {
     }
     
 }
-
 void ofApp::mouseDragged(int x, int y, int button) {
     
     if(puppetsHandler.isAPuppetSelected()) {
@@ -237,7 +233,7 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("delete puppet");
     clickDownMenu.UnRegisterMenu("reset puppet");
     clickDownMenu.UnRegisterMenu(" ");
-    clickDownMenu.UnRegisterMenu("new stage");
+    clickDownMenu.UnRegisterMenu("new scene");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("preview mesh");
     clickDownMenu.UnRegisterMenu("generate mesh and create puppet");
@@ -255,7 +251,7 @@ void ofApp::updateClickDownMenu() {
             clickDownMenu.RegisterMenu("create puppet");
             clickDownMenu.RegisterMenu("create puppet (live)");
             clickDownMenu.RegisterMenu(" ");
-            clickDownMenu.RegisterMenu("new stage");
+            clickDownMenu.RegisterMenu("new scene");
             clickDownMenu.RegisterMenu(" ");
             
         } else {
@@ -314,7 +310,6 @@ void ofApp::updateClickDownMenu() {
         
     }
 }
-
 void ofApp::cmdEvent(ofxCDMEvent &ev){
 
     if (ev.message == "menu::load puppet") {
@@ -431,7 +426,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         
     }
     
-    if (ev.message == "menu::new stage") {
+    if (ev.message == "menu::new scene") {
         
         puppetsHandler.clearAllPupets();
         

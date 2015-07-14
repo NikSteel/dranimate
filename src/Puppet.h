@@ -21,13 +21,15 @@ class CachedFrame {
     
 public:
     
-    CachedFrame(ofMesh m, ofVec3f p){
+    CachedFrame(ofMesh m, ofVec3f p,float r){
         mesh = m;
         position = p;
+        rotation = r;
     };
     
     ofMesh mesh;
     ofVec3f position;
+    float rotation;
     
 };
 
@@ -39,8 +41,8 @@ public:
     const static int MESH_SMOOTH_SUBDIVISIONS = 2;
     
     void load(string path);
-    void loadCachedFrames(string path);
     void save(string path);
+    void loadCachedFrames(string path);
     void saveCachedFrames(string path);
     
     void update();
@@ -52,10 +54,9 @@ public:
     
     ofMesh getMesh();
     ofMesh getDeformedMesh();
-    
     ofImage getImage();
-    
     ofVec3f getPosition();
+    float getRotation();
     
     void addCenterpoint();
     
@@ -73,7 +74,7 @@ public:
     void makeRecording();
     
     void clearCachedFrames();
-    void addFrame(ofMesh mesh, ofVec3f position);
+    void addFrame(ofMesh mesh, ofVec3f position, float rot);
     
     bool isControllable();
     
@@ -87,6 +88,7 @@ public:
 private:
     
     ofVec3f position;
+    float rotation;
     
     ofImage image;
     
@@ -99,9 +101,10 @@ private:
     vector<ExpressionZone> expressionZones;
     
     void updateMeshDeformation();
-    void nextFrame();
     void regenerateSubdivisionMesh();
     void updateMeshVertexDepths();
+    
+        void nextFrame();
     
     void drawAsControllable(bool isSelected, bool isBeingRecorded);
     void drawAsRecording(bool isSelected);

@@ -15,7 +15,6 @@ void ImageFromCamera::setup() {
     image.allocate(camWidth, camHeight, OF_IMAGE_COLOR);
     
 }
-
 void ImageFromCamera::update() {
     
     vidGrabber.update();

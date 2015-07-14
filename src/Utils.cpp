@@ -8,7 +8,6 @@ bool Utils::hasEnding (std::string const &fullString, std::string const &ending)
         return false;
     }
 }
-
 bool Utils::filenameIsImage(std::string fn) {
     
     return  Utils::hasEnding(fn, ".png")  ||
@@ -91,7 +90,6 @@ void Utils::drawControls(string s) {
     ofDrawBitmapString(s, ofGetWidth()-290, 30);
     
 }
-
 void Utils::drawWarning(string s) {
     
     /*
@@ -106,7 +104,6 @@ void Utils::drawWarning(string s) {
     ofDrawBitmapString(s, 51, 50);
     
 }
-
 void Utils::drawState(string s) {
     
     /*
@@ -151,7 +148,6 @@ std::vector<int> Utils::getFacesConnectedToVertex(ofMesh mesh, int i) {
     return results;
     
 }
-
 bool Utils::facesOnlyShareOneVertex(ofMeshFace faceA, ofMeshFace faceB) {
     
     int vertexShareCount = 0;

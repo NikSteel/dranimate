@@ -23,7 +23,6 @@ void MeshGenerator::setup() {
     
     
 }
-
 void MeshGenerator::update() {
     
     // if we're using a live feed image, update the image
@@ -36,7 +35,6 @@ void MeshGenerator::update() {
     findImageContours();
     
 }
-
 void MeshGenerator::draw() {
     
     Utils::drawGrid();
@@ -162,7 +160,6 @@ void MeshGenerator::setImage(ofImage img) {
     }
     
 }
-
 void MeshGenerator::addExtraVertex(int x, int y) {
     
     int nx = x - (ofGetWidth()/2  - cvImage.width/2);
@@ -256,7 +253,6 @@ ofImage MeshGenerator::getImage() {
     return image;
     
 }
-
 ofMesh MeshGenerator::getMesh() {
     
     return mesh;

@@ -35,6 +35,8 @@ public:
     void clickMouseAt(int x, int y);
     
     void updateWhichVertexIsHoveredOver(int x, int y);
+    bool emptyVertexHoveredOver();
+    bool ezoneHoveredOver();
     
     void addExpressionZoneToCurrentPuppet();
     void addLeapMappingToCurrentPuppet(int i);
@@ -45,12 +47,11 @@ public:
     void exportCurrentPuppet();
     void removeCurrentPuppet();
     void resetCurrentPuppet();
+    
     void clearAllPupets();
     void removeAllPuppets();
-    void togglePuppetRecording();
     
-    bool emptyVertexHoveredOver();
-    bool ezoneHoveredOver();
+    void togglePuppetRecording();
     
 private:
     

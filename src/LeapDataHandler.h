@@ -13,9 +13,13 @@ class LeapDataHandler : public ofxLeapMotion {
     
 private:
     
+    void recieveNewData();
+    
     vector<ofVec3f> palmPositions;
     vector<ofVec3f> calibratedPalmPositions;
     vector<ofVec3f> palmVelocities;
+    
+    vector<float> palmRotations;
     
     vector<ofVec3f> fingersPositions;
     vector<ofVec3f> fingersCalibration;
@@ -37,13 +41,13 @@ public:
     void draw(bool drawCalibration);
     
     void calibrate();
-    void recieveNewData();
     
     ofVec3f getFingerPosition(int i);
     ofVec3f getCalibratedFingerPosition(int i);
     ofVec3f getFingerScreenPosition(int i);
     ofVec3f getCalibratedPalmPosition(int i);
     ofVec3f getFingerVelocity(int i);
+    float getPalmRotation(int i);
     
     int getHandCount();
     
@@ -52,8 +56,6 @@ public:
     bool fingerFlicked(int i);
     
     void swapHandControls();
-    
-    float handRotation;
     
     int calibrationTimer;
     int calibrationTimerLength = 60*3;

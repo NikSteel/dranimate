@@ -17,7 +17,6 @@ void PuppetsHandler::setup() {
     recording = false;
     
 }
-
 void PuppetsHandler::update(LeapDataHandler *leap,
                             ofxOscReceiver *osc,
                             ofxClickDownMenu *cdmenu) {
@@ -56,12 +55,11 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     // record puppets
     if(recording && puppets.size() > 0) {
         
-        newRecording.addFrame(puppets[0].getDeformedMesh(), puppets[0].getPosition());
+        newRecording.addFrame(puppets[0].getDeformedMesh(), puppets[0].getPosition(), puppets[0].getRotation());
         
     }
     
 }
-
 void PuppetsHandler::draw(LeapDataHandler *leap) {
     
     ofPushMatrix();
@@ -113,99 +111,10 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
     
 }
 
-int PuppetsHandler::getClosestPuppetIndex(int x, int y) {
-    
-    int closestPuppetIndex = -1;
-    
-    for(int p = 0; p < puppets.size(); p++) {
-        
-        if(puppets[p].isPointInside(x,y)) {
-            closestPuppetIndex = p;
-            break;
-        }
-        
-    }
-    
-    return closestPuppetIndex;
-    
-}
-
-Puppet* PuppetsHandler::selectedPuppet() {
-    
-    if(selectedPuppetIndex == -1) {
-        return NULL;
-    } else {
-        return &puppets[selectedPuppetIndex];
-    }
-    
-}
-
-bool PuppetsHandler::isAPuppetSelected() {
-    
-    return selectedPuppet() != NULL;
-    
-}
-
-bool PuppetsHandler::emptyVertexHoveredOver() {
-    
-    return hoveredVertexIndex != -1
-    && selectedVertexIndex != hoveredVertexIndex;
-    
-}
-
-bool PuppetsHandler::ezoneHoveredOver() {
-    
-    return selectedVertexIndex != -1
-    && selectedVertexIndex == hoveredVertexIndex;
-    
-}
-
-string PuppetsHandler::getSelectedVertexInfo() {
-    
-    string vertInfo = "";
-    
-    if(selectedPuppet() != NULL && selectedVertexIndex != -1) {
-        
-        vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
-        
-        ExpressionZone* eZone = selectedPuppet()->getExpressionZone(selectedVertexIndex);
-        
-        if(eZone != NULL) {
-            
-            if(eZone->oscNamespaces.size() > 0) vertInfo += "OSC namespaces:\n";
-            for(int i = 0; i < eZone->oscNamespaces.size(); i++) {
-                vertInfo += "    message:     " + eZone->oscNamespaces[i].message     + ":\n";
-                vertInfo += "    controlType: " + eZone->oscNamespaces[i].controlType + ":\n";
-            }
-            
-            if(eZone->leapFingerID != -1) {
-                vertInfo += "    fingerID: " + ofToString(eZone->leapFingerID) + ":\n";
-            }
-            
-        } else {
-            vertInfo += "Selected vertex has no expression zone.";
-        }
-        
-    }
-    
-    return vertInfo;
-    
-}
-
 void PuppetsHandler::addPuppet(Puppet p) {
     
     puppets.push_back(p);
     selectedPuppetIndex = puppets.size()-1;
-    
-}
-
-Puppet *PuppetsHandler::getPuppet(int i) {
-    
-    if(i < 0 || i >= puppets.size()) {
-        return NULL;
-    } else {
-        return &puppets[i];
-    }
     
 }
 
@@ -216,7 +125,6 @@ void PuppetsHandler::loadPuppet(string path) {
     addPuppet(loadedPuppet);
     
 }
-
 void PuppetsHandler::loadRecording(string path) {
     
     Puppet loadedPuppet;
@@ -260,7 +168,6 @@ void PuppetsHandler::loadScene() {
     }
     
 }
-
 void PuppetsHandler::exportScene() {
     
     ofFileDialogResult saveFileResult = ofSystemSaveDialog("newscene", "Select location to export scene:");
@@ -291,6 +198,53 @@ void PuppetsHandler::exportScene() {
         info.save(path + "/info.xml");
         
     }
+    
+}
+
+Puppet* PuppetsHandler::selectedPuppet() {
+    
+    if(selectedPuppetIndex == -1) {
+        return NULL;
+    } else {
+        return &puppets[selectedPuppetIndex];
+    }
+    
+}
+bool PuppetsHandler::isAPuppetSelected() {
+    
+    return selectedPuppet() != NULL;
+    
+}
+
+string PuppetsHandler::getSelectedVertexInfo() {
+    
+    string vertInfo = "";
+    
+    if(selectedPuppet() != NULL && selectedVertexIndex != -1) {
+        
+        vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
+        
+        ExpressionZone* eZone = selectedPuppet()->getExpressionZone(selectedVertexIndex);
+        
+        if(eZone != NULL) {
+            
+            if(eZone->oscNamespaces.size() > 0) vertInfo += "OSC namespaces:\n";
+            for(int i = 0; i < eZone->oscNamespaces.size(); i++) {
+                vertInfo += "    message:     " + eZone->oscNamespaces[i].message     + ":\n";
+                vertInfo += "    controlType: " + eZone->oscNamespaces[i].controlType + ":\n";
+            }
+            
+            if(eZone->leapFingerID != -1) {
+                vertInfo += "    fingerID: " + ofToString(eZone->leapFingerID) + ":\n";
+            }
+            
+        } else {
+            vertInfo += "Selected vertex has no expression zone.";
+        }
+        
+    }
+    
+    return vertInfo;
     
 }
 
@@ -380,6 +334,19 @@ void PuppetsHandler::updateWhichVertexIsHoveredOver(int x, int y) {
     }
     
 }
+bool PuppetsHandler::emptyVertexHoveredOver() {
+    
+    return hoveredVertexIndex != -1
+    && selectedVertexIndex != hoveredVertexIndex;
+    
+}
+bool PuppetsHandler::ezoneHoveredOver() {
+    
+    return selectedVertexIndex != -1
+    && selectedVertexIndex == hoveredVertexIndex;
+    
+}
+
 
 void PuppetsHandler::addExpressionZoneToCurrentPuppet() {
     
@@ -392,13 +359,11 @@ void PuppetsHandler::addExpressionZoneToCurrentPuppet() {
     }
     
 }
-
 void PuppetsHandler::addLeapMappingToCurrentPuppet(int i) {
     
     selectedPuppet()->getExpressionZone(selectedVertexIndex)->leapFingerID = i;
     
 }
-
 void PuppetsHandler::addOSCMappingToCurrentPuppet() {
     
     if(selectedPuppet()->getExpressionZone(selectedVertexIndex) != NULL) {
@@ -410,21 +375,18 @@ void PuppetsHandler::addOSCMappingToCurrentPuppet() {
     }
     
 }
-
 void PuppetsHandler::addBoneToCurrentPuppet() {
     
     addingBone = true;
     boneRootVertexIndex = selectedVertexIndex;
     
 }
-
 void PuppetsHandler::removeEZoneFromCurrentPuppet() {
     
     selectedPuppet()->removeExpressionZone(selectedVertexIndex);
     selectedVertexIndex = -1;
     
 }
-
 void PuppetsHandler::setAnchorPointOnCurrentPuppet() {
     
     // set the selected ezone to be an anchor point
@@ -433,7 +395,6 @@ void PuppetsHandler::setAnchorPointOnCurrentPuppet() {
     selectedPuppet()->getExpressionZone(selectedVertexIndex)->userControlledDisplacement = selectedPuppet()->getDeformedMesh().getVertex(selectedVertexIndex) - selectedPuppet()->getMesh().getVertex(selectedVertexIndex);
     
 }
-
 void PuppetsHandler::exportCurrentPuppet() {
     
     ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
@@ -449,7 +410,6 @@ void PuppetsHandler::exportCurrentPuppet() {
     }
     
 }
-
 void PuppetsHandler::removeCurrentPuppet() {
     
     puppets.erase(puppets.begin() + selectedPuppetIndex);
@@ -459,7 +419,6 @@ void PuppetsHandler::removeCurrentPuppet() {
     hoveredVertexIndex = -1;
     
 }
-
 void PuppetsHandler::resetCurrentPuppet() {
     
     selectedVertexIndex = -1;
@@ -476,7 +435,6 @@ void PuppetsHandler::clearAllPupets() {
     hoveredVertexIndex = -1;
     
 }
-
 void PuppetsHandler::removeAllPuppets() {
     
     puppets.clear();
@@ -506,13 +464,33 @@ void PuppetsHandler::togglePuppetRecording() {
     
 }
 
-void exportScene() {
+// private methods
+
+Puppet *PuppetsHandler::getPuppet(int i) {
     
-    
+    if(i < 0 || i >= puppets.size()) {
+        return NULL;
+    } else {
+        return &puppets[i];
+    }
     
 }
-
-// private methods
+int PuppetsHandler::getClosestPuppetIndex(int x, int y) {
+    
+    int closestPuppetIndex = -1;
+    
+    for(int p = 0; p < puppets.size(); p++) {
+        
+        if(puppets[p].isPointInside(x,y)) {
+            closestPuppetIndex = p;
+            break;
+        }
+        
+    }
+    
+    return closestPuppetIndex;
+    
+}
 
 void PuppetsHandler::updateLeapUIControls(LeapDataHandler *leap,
                                           ofxClickDownMenu *cdmenu) {

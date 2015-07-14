@@ -20,7 +20,6 @@ public:
     void setup();
     void update();
     void draw();
-    void reset();
     
     void reset(bool liveMode);
     
@@ -37,6 +36,8 @@ private:
     const static int IMAGE_BASE_SIZE = 800;
     
     void findImageContours();
+    
+    bool isMeshBroken();
     
     ofMesh mesh;
     
@@ -64,8 +65,6 @@ private:
     ofxSlider<int> contourResampleAmt;
     ofxSlider<int> triangleAngleConstraint;
     ofxSlider<int> triangleSizeConstraint;
-    
-    bool isMeshBroken();
     
     bool meshGenerated;
     

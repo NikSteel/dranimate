@@ -77,44 +77,6 @@ void Puppet::load(string path) {
     }
     
 }
-
-void Puppet::loadCachedFrames(string path) {
-    
-    mode = RECORDED;
-    
-    currentFrame = 0;
-    playingForwards = true;
-    
-    image.loadImage(path+"/image.png");
-    
-    ofxXmlSettings info;
-    if(info.loadFile(path + "/info.xml")) {
-        
-        int nFrames = info.getNumTags("frame");
-        for(int i = 0; i < nFrames; i++) {
-            
-            info.pushTag("frame", i);
-            float x = info.getValue("x", 0.0);
-            float y = info.getValue("y", 0.0);
-            float z = info.getValue("z", 0.0);
-            info.popTag();
-            
-            ofMesh mesh;
-            mesh.load(path + "/frame" + ofToString(i) + ".ply");
-            
-            cachedFrames.push_back(CachedFrame(mesh, ofVec3f(x,y,z)));
-            
-        }
-        
-    }
-    
-    float x = info.getValue("x", 0.0);
-    float y = info.getValue("y", 0.0);
-    float z = info.getValue("z", 0.0);
-    position = ofVec3f(x,y,z);
-    
-}
-
 void Puppet::save(string path) {
     
     // the folder itself
@@ -184,7 +146,43 @@ void Puppet::save(string path) {
     ofLog() << "puppet saved to  " << path << "!";
     
 }
-
+void Puppet::loadCachedFrames(string path) {
+    
+    mode = RECORDED;
+    
+    currentFrame = 0;
+    playingForwards = true;
+    
+    image.loadImage(path+"/image.png");
+    
+    ofxXmlSettings info;
+    if(info.loadFile(path + "/info.xml")) {
+        
+        int nFrames = info.getNumTags("frame");
+        for(int i = 0; i < nFrames; i++) {
+            
+            info.pushTag("frame", i);
+            float x = info.getValue("x", 0.0);
+            float y = info.getValue("y", 0.0);
+            float z = info.getValue("z", 0.0);
+            float r = info.getValue("r", 0.0);
+            info.popTag();
+            
+            ofMesh mesh;
+            mesh.load(path + "/frame" + ofToString(i) + ".ply");
+            
+            cachedFrames.push_back(CachedFrame(mesh, ofVec3f(x,y,z), r));
+            
+        }
+        
+    }
+    
+    float x = info.getValue("x", 0.0);
+    float y = info.getValue("y", 0.0);
+    float z = info.getValue("z", 0.0);
+    position = ofVec3f(x,y,z);
+    
+}
 void Puppet::saveCachedFrames(string path) {
     
     // make a new dir for the recording
@@ -196,6 +194,7 @@ void Puppet::saveCachedFrames(string path) {
     info.addValue("x", position.x);
     info.addValue("y", position.y);
     info.addValue("z", position.z);
+    info.addValue("r", rotation);
     
     for(int i = 0; i < cachedFrames.size(); i++) {
         
@@ -204,6 +203,7 @@ void Puppet::saveCachedFrames(string path) {
         info.addValue("x", cachedFrames[i].position.x);
         info.addValue("y", cachedFrames[i].position.y);
         info.addValue("z", cachedFrames[i].position.z);
+        info.addValue("r", cachedFrames[i].rotation);
         info.popTag();
         
         cachedFrames[i].mesh.save(path + "/frame" + ofToString(i) + ".ply");
@@ -234,7 +234,6 @@ void Puppet::update() {
     }
     
 }
-
 void Puppet::draw(bool isSelectedPuppet, bool isBeingRecorded) {
     
     if(isControllable()) {
@@ -249,12 +248,17 @@ void Puppet::draw(bool isSelectedPuppet, bool isBeingRecorded) {
     
 }
 
+void Puppet::setPosition(int x, int y) {
+    
+    position.x = x;
+    position.y = y;
+    
+}
 void Puppet::setImage(ofImage img) {
     
     image = img;
     
 }
-
 void Puppet::setMesh(ofMesh m) {
     
     mesh = m;
@@ -267,27 +271,22 @@ void Puppet::setMesh(ofMesh m) {
 ofMesh Puppet::getMesh() {
     return mesh;
 }
-
 ofMesh Puppet::getDeformedMesh() {
     
     return meshDeformer.getDeformedMesh();
     
 }
-
 ofImage Puppet::getImage() {
     return image;
 }
-
-void Puppet::setPosition(int x, int y) {
-    
-    position.x = x;
-    position.y = y;
-    
-}
-
 ofVec3f Puppet::getPosition() {
     
     return position;
+    
+}
+float Puppet::getRotation() {
+    
+    return rotation;
     
 }
 
@@ -319,7 +318,6 @@ void Puppet::addExpressionZone(int meshIndex) {
     expressionZones.push_back(newExpressionZone);
     
 }
-
 void Puppet::removeExpressionZone(int meshIndex) {
     
     // remove the control point from the puppeteer
@@ -334,14 +332,12 @@ void Puppet::removeExpressionZone(int meshIndex) {
     }
     
 }
-
 void Puppet::removeAllExpressionZones() {
     
     for(int i = 0; i < meshDeformer.getDeformedMesh().getVertices().size(); i++) {
         removeExpressionZone(i);
     }
 }
-
 ExpressionZone* Puppet::getExpressionZone(int meshIndex) {
     
     for(int i = 0; i < expressionZones.size(); i++) {
@@ -390,7 +386,6 @@ void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
     }
 
 }
-
 void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
     
     int palmControlsPuppet = 1;
@@ -411,6 +406,8 @@ void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
         
         ofVec3f calibratedPalm = leap->getCalibratedPalmPosition(palmControlsPuppet);
         position = ofVec3f(calibratedPalm.x,-calibratedPalm.y);
+        
+        rotation = leap->getPalmRotation(palmControlsPuppet)*-45;
     
         for(int i = 0; i < expressionZones.size(); i++) {
             
@@ -478,6 +475,7 @@ void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
         // this returns the puppet to it's original pose.
         
         position = ofVec3f(0,0);
+        rotation = 0;
         
         for(int i = 0; i < expressionZones.size(); i++) {
             
@@ -497,22 +495,20 @@ void Puppet::clearCachedFrames() {
     cachedFrames.clear();
     
 }
+void Puppet::addFrame(ofMesh mesh, ofVec3f position, float rot) {
+    
+    cachedFrames.push_back(CachedFrame(mesh,position,rot));
+    
+}
 
 void Puppet::makeControllable() {
     
     mode = CONTROLLABLE;
     
 }
-
 void Puppet::makeRecording() {
     
     mode = RECORDED;
-    
-}
-
-void Puppet::addFrame(ofMesh mesh, ofVec3f position) {
-    
-    cachedFrames.push_back(CachedFrame(mesh,position));
     
 }
 
@@ -543,7 +539,7 @@ bool Puppet::isPointInside(int x, int y) {
 // private methods
 
 void Puppet::updateMeshDeformation() {
-    
+
     // do ofxPuppet puppeteering stuff (if there is more than one point;
     // as rigid as possible freaks out with onely one control point.)
     
@@ -572,6 +568,34 @@ void Puppet::updateMeshDeformation() {
     
     // attach the subdivided mesh to the mesh deformed by the puppet
     butterfly.fixMesh(meshDeformer.getDeformedMesh(), subdivided);
+
+}
+void Puppet::regenerateSubdivisionMesh() {
+    
+    butterfly.topology_start(mesh);
+    
+    for(int i = 0; i < MESH_SMOOTH_SUBDIVISIONS; i++) {
+        butterfly.topology_subdivide_boundary();
+    }
+    
+    subdivided = butterfly.topology_end();
+    
+    undeformedSubdivided = subdivided;
+    
+}
+void Puppet::updateMeshVertexDepths() {
+    
+    for(int i = 0; i < subdivided.getVertices().size(); i++) {
+        
+        ofVec3f v = subdivided.getVertex(i);
+        ofVec3f udsv = undeformedSubdivided.getVertex(i);
+        ofVec3f c = undeformedSubdivided.getCentroid();
+        
+        v.z = (udsv.distance(c)*0.01);
+        
+        subdivided.setVertex(i, v);
+        
+    }
     
 }
 
@@ -599,38 +623,12 @@ void Puppet::nextFrame() {
     
 }
 
-void Puppet::regenerateSubdivisionMesh() {
-    
-    butterfly.topology_start(mesh);
-    
-    for(int i = 0; i < MESH_SMOOTH_SUBDIVISIONS; i++) {
-        butterfly.topology_subdivide_boundary();
-    }
-    
-    subdivided = butterfly.topology_end();
-    
-    undeformedSubdivided = subdivided;
-    
-}
-
-void Puppet::updateMeshVertexDepths() {
-    
-    for(int i = 0; i < subdivided.getVertices().size(); i++) {
-        
-        ofVec3f v = subdivided.getVertex(i);
-        ofVec3f udsv = undeformedSubdivided.getVertex(i);
-        v.z = -(udsv.x*0.01);
-        subdivided.setVertex(i, v);
-        
-    }
-    
-}
-
 void Puppet::drawAsControllable(bool isSelected, bool isBeingRecorded) {
     
     // draw the subdivided mesh textured with our image
     
     ofPushMatrix();
+    ofRotate(rotation, 0, 0, 1);
     ofTranslate(position.x, position.y);
     
     if(isBeingRecorded) {
@@ -702,11 +700,11 @@ void Puppet::drawAsControllable(bool isSelected, bool isBeingRecorded) {
     ofPopMatrix();
     
 }
-
 void Puppet::drawAsRecording(bool isSelected) {
     
     ofPushMatrix();
     ofVec3f p = cachedFrames[currentFrame].position + position;
+    ofRotate(cachedFrames[currentFrame].rotation, 0, 0, 1);
     ofTranslate(p.x,p.y);
     
     ofSetColor(255,255,255);
