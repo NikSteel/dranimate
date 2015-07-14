@@ -7,7 +7,7 @@
 #include "ofMain.h"
 #include "Puppet.h"
 
-class PuppetRecorder {
+class RecordedPuppet {
     
 public:
     

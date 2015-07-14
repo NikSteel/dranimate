@@ -15,12 +15,11 @@
 #include "ofxLeapGestures.h"
 
 #include "Puppet.h"
+#include "RecordedPuppet.h"
 #include "PuppetsHandler.h"
 #include "MeshGenerator.h"
-#include "PuppetRecorder.h"
 #include "LeapDataHandler.h"
 #include "Utils.h"
-#include "ImageFromCamera.h"
 #include "Resources.h"
 
 class ofApp : public ofBaseApp {

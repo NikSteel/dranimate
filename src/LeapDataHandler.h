@@ -59,8 +59,6 @@ public:
     int calibrationTimerLength = 60*3;
     bool calibrated;
     
-    bool renderHands;
-    
     int pointingFinger = 5;
     int puppetFinger = 0;
     

@@ -1,5 +1,7 @@
 #include "MeshGenerator.h"
 
+// public methods
+
 void MeshGenerator::setup() {
     
     gui.setup();
@@ -7,10 +9,11 @@ void MeshGenerator::setup() {
     gui.add(rotation.setup("rotation", 0, 0, 3));
     gui.add(flipHorizontal.setup("flip horizontally", false));
     gui.add(flipVertical.setup("flip vertically", false));
+    gui.add(invertImage.setup("invert image", false));
     
     gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
     gui.add(useAdaptiveThreshold.setup("use adaptive threshold", false));
-    gui.add(invertImage.setup("invert image", true));
+    gui.add(invertThresholdImage.setup("invert threshold image", true));
     
     gui.add(contourResampleAmt.setup("contour resample amt", 15, 15, 60));
     gui.add(triangleAngleConstraint.setup("angle constraint", 14, 0, 28));
@@ -119,42 +122,19 @@ void MeshGenerator::reset(bool liveMode) {
     
 }
 
-void MeshGenerator::findImageContours() {
+void MeshGenerator::setImage(ofImage img) {
     
-    // create an image with brightness as red channel
-    ofImage lumiImg = noAlphaImage;
-    for(int x = 0; x < lumiImg.width; x++) {
-        for(int y = 0; y < lumiImg.height; y++) {
-            ofColor c = lumiImg.getColor(x,y);
-            c.r = (c.r + c.g + c.b) / 3;
-            lumiImg.setColor(x, y, c);
+    if(invertImage) {
+        for(int x = 0; x < img.width; x++) {
+            for(int y = 0; y < img.height; y++) {
+                ofColor c = img.getColor(x, y);
+                c.r = 255 - c.r;
+                c.g = 255 - c.g;
+                c.b = 255 - c.b;
+                img.setColor(x, y, c);
+            }
         }
     }
-    
-    // threshold image
-    cvImage.setFromPixels(lumiImg.getPixelsRef().getChannel(0));
-    
-    if(useAdaptiveThreshold) {
-        cvImage.adaptiveThreshold(imageThreshold);
-    } else {
-        cvImage.threshold(imageThreshold);
-    }
-    
-    if(invertImage) cvImage.invert();
-    
-    // find contours from thresholded image
-    
-    contourFinder.setMinArea(1000);
-    contourFinder.setMaxArea(640*640);
-    //contourFinder.setFindHoles(true);
-    contourFinder.setSortBySize(true);
-    
-    //contourFinder.setThreshold(100);
-    contourFinder.findContours(ofxCv::toCv(cvImage));
-    
-}
-
-void MeshGenerator::setImage(ofImage img) {
     
     // resize the image if it's from a file (because some image files are really large ofc)
     if(imageType == FROM_FILE) {
@@ -190,44 +170,6 @@ void MeshGenerator::addExtraVertex(int x, int y) {
     
     //temporarily disabled
     //extraVerts.push_back(ofPoint(nx,ny));
-    
-}
-
-bool MeshGenerator::isMeshBroken() {
-    
-    bool isBroken = false;
-    
-    // find loosely connected faces
-    // i.e., if two triangles are connected by one point.
-    // (this causes ofxPuppet to freak out.)
-    
-    for(int i = 0; i < mesh.getVertices().size(); i++) {
-        
-        vector<int> connectedFaces = Utils::getFacesConnectedToVertex(mesh,i);
-        
-        /*
-         ofLog() << i;
-         for(int f = 0; f < connectedFaces.size(); f++) {
-         ofLog() << "     " << connectedFaces[f];
-         }
-         */
-        
-        if(connectedFaces.size() == 2) {
-            
-            ofMeshFace face1 = mesh.getUniqueFaces()[connectedFaces[0]];
-            ofMeshFace face2 = mesh.getUniqueFaces()[connectedFaces[1]];
-            
-            if(Utils::facesOnlyShareOneVertex(face1,face2)) {
-                isBroken = true;
-                ofLog() << "loose vertex at " << i;
-            }
-            
-            
-        }
-        
-    }
-    
-    return isBroken;
     
 }
 
@@ -318,5 +260,80 @@ ofImage MeshGenerator::getImage() {
 ofMesh MeshGenerator::getMesh() {
     
     return mesh;
+    
+}
+
+// private methods
+
+void MeshGenerator::findImageContours() {
+    
+    // create an image with brightness as red channel
+    ofImage lumiImg = noAlphaImage;
+    for(int x = 0; x < lumiImg.width; x++) {
+        for(int y = 0; y < lumiImg.height; y++) {
+            ofColor c = lumiImg.getColor(x,y);
+            c.r = (c.r + c.g + c.b) / 3;
+            lumiImg.setColor(x, y, c);
+        }
+    }
+    
+    // threshold image
+    cvImage.setFromPixels(lumiImg.getPixelsRef().getChannel(0));
+    
+    if(useAdaptiveThreshold) {
+        cvImage.adaptiveThreshold(imageThreshold);
+    } else {
+        cvImage.threshold(imageThreshold);
+    }
+    
+    if(invertThresholdImage) cvImage.invert();
+    
+    // find contours from thresholded image
+    
+    contourFinder.setMinArea(1000);
+    contourFinder.setMaxArea(640*640);
+    //contourFinder.setFindHoles(true);
+    contourFinder.setSortBySize(true);
+    
+    //contourFinder.setThreshold(100);
+    contourFinder.findContours(ofxCv::toCv(cvImage));
+    
+}
+
+bool MeshGenerator::isMeshBroken() {
+    
+    bool isBroken = false;
+    
+    // find loosely connected faces
+    // i.e., if two triangles are connected by one point.
+    // (this causes ofxPuppet to freak out.)
+    
+    for(int i = 0; i < mesh.getVertices().size(); i++) {
+        
+        vector<int> connectedFaces = Utils::getFacesConnectedToVertex(mesh,i);
+        
+        /*
+         ofLog() << i;
+         for(int f = 0; f < connectedFaces.size(); f++) {
+         ofLog() << "     " << connectedFaces[f];
+         }
+         */
+        
+        if(connectedFaces.size() == 2) {
+            
+            ofMeshFace face1 = mesh.getUniqueFaces()[connectedFaces[0]];
+            ofMeshFace face2 = mesh.getUniqueFaces()[connectedFaces[1]];
+            
+            if(Utils::facesOnlyShareOneVertex(face1,face2)) {
+                isBroken = true;
+                ofLog() << "loose vertex at " << i;
+            }
+            
+            
+        }
+        
+    }
+    
+    return isBroken;
     
 }

@@ -1,6 +1,10 @@
 #include "Puppet.h"
 
+// public methods
+
 void Puppet::load(string path) {
+    
+    mode = CONTROLLABLE;
     
     // load image
     image.loadImage(path + "/image.png");
@@ -74,6 +78,22 @@ void Puppet::load(string path) {
     
 }
 
+void Puppet::loadCachedFrames(string path) {
+    
+    ofxXmlSettings info;
+    if(info.loadFile(path + "/info")) {
+        
+        int frameCount = info.getValue("frameCount", -1);
+        for(int i = 0; i < frameCount; i++) {
+            ofMesh mesh;
+            mesh.load(path + "/frame"+ofToString(i)+".ply");
+            //cachedFrames.push_back(mesh);
+        }
+        
+    }
+    
+}
+
 void Puppet::save(string path) {
     
     // the folder itself
@@ -111,7 +131,7 @@ void Puppet::save(string path) {
         }
         
         // save leap finger control mapping
-    
+        
         expressionZonesXML.addValue("fingerID", expressionZones[i].leapFingerID);
         
         // save bones
@@ -144,111 +164,52 @@ void Puppet::save(string path) {
     
 }
 
-void Puppet::update() {
+void Puppet::saveCachedFrames(string path) {
     
-    // do ofxPuppet puppeteering stuff (if there is more than one point;
-    // as rigid as possible freaks out with onely one control point.)
+    // make a new dir for the recording
+    string mkdirCommandString = "mkdir " + path;
+    system(mkdirCommandString.c_str());
     
-    if(expressionZones.size() > 1) {
-        
-        // add displacements to puppet control points
-        for(int i = 0; i < expressionZones.size(); i++) {
-            
-            if(expressionZones[i].parentEzone == -1) {
-                // no parent, this ezone moves independently
-                meshDeformer.setControlPoint(expressionZones[i].meshIndex,
-                                             mesh.getVertex(expressionZones[i].meshIndex)+
-                                             expressionZones[i].userControlledDisplacement);
-            } else {
-                meshDeformer.setControlPoint(expressionZones[i].meshIndex,
-                                             mesh.getVertex(expressionZones[i].parentEzone)+
-                                             getExpressionZone(expressionZones[i].parentEzone)->userControlledDisplacement+
-                                             expressionZones[i].userControlledDisplacement);
-            }
-            
-        }
-        
-        meshDeformer.update();
-        
+    for(int i = 0; i < cachedFrames.size(); i++) {
+        cachedFrames[i].mesh.save(path + "/frame" + ofToString(i) + ".ply");
     }
     
-    // attach the subdivided mesh to the mesh deformed by the puppet
-    butterfly.fixMesh(meshDeformer.getDeformedMesh(), subdivided);
+    image.saveImage(path + "/image.png");
     
-    // update mesh vertex depths (so that we avoid z-fighting issues)
-    updateMeshVertexDepths();
+    ofxXmlSettings info;
+    info.addValue("frameCount", (int)cachedFrames.size());
+    info.save(path + "/info.xml");
+    
+    ofLog() << "recording saved to " << path;
     
 }
 
-void Puppet::draw(bool isSelectedPuppet) {
+void Puppet::update() {
     
-    // draw the subdivided mesh textured with our image
+    if(isControllable()) {
     
-    if(isSelectedPuppet) {
-        float flash = abs(sin(ofGetElapsedTimef()*3))*50+150;
-        ofSetColor(255,255,255,flash);
+        updateMeshDeformation();
+        
+        // update mesh vertex depths (so that we avoid z-fighting issues)
+        updateMeshVertexDepths();
+    
     } else {
-        ofSetColor(255,255,255);
+        
+        nextFrame();
+        
     }
     
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Puppet::draw(bool isSelectedPuppet, bool isBeingRecorded) {
     
-    image.bind();
-    glEnable(GL_DEPTH_TEST);
-    subdivided.drawFaces();
-    image.unbind();
-    glDisable(GL_DEPTH_TEST);
-    
-    if(isSelectedPuppet) {
+    if(isControllable()) {
         
-        // draw wireframe
-        glLineWidth(1.0);
-        ofSetColor(ofColor(30,200,255));
-        meshDeformer.getDeformedMesh().drawWireframe();
+        drawAsControllable(isSelectedPuppet, isBeingRecorded);
         
-        // draw control points
-        for(int i = 0; i < expressionZones.size(); i++) {
-            ofVec3f v = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].meshIndex);
-            
-            if(expressionZones[i].isAnchorPoint) {
-                
-                ofSetColor(255, 0, 255);
-                ofCircle(v, 7);
-                
-            } else if(expressionZones[i].leapFingerID != -1) {
-                
-                ofSetColor(ofColor::orangeRed);
-                ofCircle(v, 10);
-                
-                ofSetColor(255, 255, 0);
-                ofCircle(v, 7);
-                
-                string s = ofToString(expressionZones[i].leapFingerID);
-                ofSetColor(0, 0, 0);
-                ofDrawBitmapString(s, v.x-4, v.y+5);
-                
-            } else {
-                
-                ofSetColor(255, 255, 0);
-                ofCircle(v, 7);
-                
-            }
-            
-            // draw bones
-            if(expressionZones[i].parentEzone != -1) {
-                ofVec3f fromVertex = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].meshIndex);
-                ofVec3f toVertex = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].parentEzone);
-                
-                ofSetColor(255, 255, 0);
-                ofSetLineWidth(2);
-                ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
-                ofSetLineWidth(1);
-            }
-        }
+    } else {
         
-        // draw contour
-        //contour.draw();
+        drawAsRecording(isSelectedPuppet);
         
     }
     
@@ -276,6 +237,23 @@ ofMesh Puppet::getMesh() {
 ofMesh Puppet::getDeformedMesh() {
     
     return meshDeformer.getDeformedMesh();
+    
+}
+
+ofImage Puppet::getImage() {
+    return image;
+}
+
+void Puppet::setPosition(int x, int y) {
+    
+    position.x = x;
+    position.y = y;
+    
+}
+
+ofVec3f Puppet::getPosition() {
+    
+    return position;
     
 }
 
@@ -396,6 +374,9 @@ void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
     }
     
     if(leap->calibrated && !isSelected) {
+        
+        ofVec3f calibratedPalm = leap->getCalibratedPalmPosition(palmControlsPuppet);
+        position = ofVec3f(calibratedPalm.x,-calibratedPalm.y);
     
         for(int i = 0; i < expressionZones.size(); i++) {
             
@@ -403,7 +384,7 @@ void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
             
             if(ezone->isAnchorPoint) {
               
-                // ezone doesn't move
+                // ezone doesn't move because it's an anchor point
                 
             } else if(ezone->leapFingerID != -1) {
             
@@ -418,12 +399,10 @@ void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
             } else {
                 
                 // this ezone has no finger mapping.
-                // so just set the displacement to the palm position
+                // so just set the displacement to zero
                 
-                ofVec3f calibratedPalm = leap->getCalibratedPalmPosition(palmControlsPuppet);
-                
-                ezone->userControlledDisplacement.x = calibratedPalm.x;
-                ezone->userControlledDisplacement.y = -calibratedPalm.y;
+                ezone->userControlledDisplacement.x = 0;
+                ezone->userControlledDisplacement.y = 0;
                 
             }
             
@@ -464,6 +443,8 @@ void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
         // so return all the ezones to their original positions.
         // this returns the puppet to it's original pose.
         
+        position = ofVec3f(0,0);
+        
         for(int i = 0; i < expressionZones.size(); i++) {
             
             ExpressionZone *ezone = &expressionZones[i];
@@ -475,6 +456,116 @@ void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
         }
         
     }
+}
+
+void Puppet::clearCachedFrames() {
+    
+    cachedFrames.clear();
+    
+}
+
+void Puppet::makeControllable() {
+    
+    mode = CONTROLLABLE;
+    
+}
+
+void Puppet::makeRecording() {
+    
+    mode = RECORDED;
+    
+}
+
+void Puppet::addFrame(ofMesh mesh, ofVec3f position) {
+    
+    CachedFrame frame;
+    frame.mesh = mesh;
+    frame.position = position;
+    cachedFrames.push_back(frame);
+    
+}
+
+bool Puppet::isControllable() {
+    
+    return mode == CONTROLLABLE;
+    
+}
+
+bool Puppet::isPointInside(int x, int y) {
+    
+    if(isControllable()) {
+        
+        return Utils::isPointInsideMesh(getDeformedMesh(),
+                                        x-getPosition().x,
+                                        y-getPosition().y);
+        
+    } else {
+        
+        return Utils::isPointInsideMesh(cachedFrames[currentFrame].mesh,
+                                        x - getPosition().x - cachedFrames[currentFrame].position.x,
+                                        y - getPosition().y - cachedFrames[currentFrame].position.y);
+        
+    }
+    
+}
+
+// private methods
+
+void Puppet::updateMeshDeformation() {
+    
+    // do ofxPuppet puppeteering stuff (if there is more than one point;
+    // as rigid as possible freaks out with onely one control point.)
+    
+    if(expressionZones.size() > 1) {
+        
+        // add displacements to puppet control points
+        for(int i = 0; i < expressionZones.size(); i++) {
+            
+            if(expressionZones[i].parentEzone == -1) {
+                // no parent, this ezone moves independently
+                meshDeformer.setControlPoint(expressionZones[i].meshIndex,
+                                             mesh.getVertex(expressionZones[i].meshIndex)+
+                                             expressionZones[i].userControlledDisplacement);
+            } else {
+                meshDeformer.setControlPoint(expressionZones[i].meshIndex,
+                                             mesh.getVertex(expressionZones[i].parentEzone)+
+                                             getExpressionZone(expressionZones[i].parentEzone)->userControlledDisplacement+
+                                             expressionZones[i].userControlledDisplacement);
+            }
+            
+        }
+        
+        meshDeformer.update();
+        
+    }
+    
+    // attach the subdivided mesh to the mesh deformed by the puppet
+    butterfly.fixMesh(meshDeformer.getDeformedMesh(), subdivided);
+    
+}
+
+void Puppet::nextFrame() {
+    
+    if(playingForwards) {
+        
+        currentFrame++;
+        
+        if(currentFrame >= cachedFrames.size()) {
+            playingForwards = false;
+            currentFrame = cachedFrames.size()-1;
+        }
+        
+    } else {
+        
+        currentFrame--;
+        
+        if(currentFrame < 0) {
+            playingForwards = true;
+            currentFrame = 0;
+        }
+        
+    }
+    
 }
 
 void Puppet::regenerateSubdivisionMesh() {
@@ -503,3 +594,101 @@ void Puppet::updateMeshVertexDepths() {
     }
     
 }
+
+void Puppet::drawAsControllable(bool isSelected, bool isBeingRecorded) {
+    
+    // draw the subdivided mesh textured with our image
+    
+    ofPushMatrix();
+    ofTranslate(position.x, position.y);
+    
+    if(isBeingRecorded) {
+        ofSetColor(255,0,0);
+    } else if(isSelected) {
+        float flash = abs(sin(ofGetElapsedTimef()*3))*50+150;
+        ofSetColor(255,255,255,flash);
+    } else {
+        ofSetColor(255,255,255);
+    }
+    
+    glEnable(GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    image.bind();
+    glEnable(GL_DEPTH_TEST);
+    subdivided.drawFaces();
+    image.unbind();
+    glDisable(GL_DEPTH_TEST);
+    
+    if(isSelected) {
+        
+        // draw wireframe
+        glLineWidth(1.0);
+        ofSetColor(ofColor(30,200,255));
+        meshDeformer.getDeformedMesh().drawWireframe();
+        
+        // draw control points
+        for(int i = 0; i < expressionZones.size(); i++) {
+            ofVec3f v = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].meshIndex);
+            
+            if(expressionZones[i].isAnchorPoint) {
+                
+                ofSetColor(255, 0, 255);
+                ofCircle(v, 7);
+                
+            } else if(expressionZones[i].leapFingerID != -1) {
+                
+                ofSetColor(ofColor::orangeRed);
+                ofCircle(v, 10);
+                
+                ofSetColor(255, 255, 0);
+                ofCircle(v, 7);
+                
+                string s = ofToString(expressionZones[i].leapFingerID);
+                ofSetColor(0, 0, 0);
+                ofDrawBitmapString(s, v.x-4, v.y+5);
+                
+            } else {
+                
+                ofSetColor(255, 255, 0);
+                ofCircle(v, 7);
+                
+            }
+            
+            // draw bones
+            if(expressionZones[i].parentEzone != -1) {
+                ofVec3f fromVertex = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].meshIndex);
+                ofVec3f toVertex = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].parentEzone);
+                
+                ofSetColor(255, 255, 0);
+                ofSetLineWidth(2);
+                ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
+                ofSetLineWidth(1);
+            }
+        }
+    }
+    
+    ofPopMatrix();
+    
+}
+
+void Puppet::drawAsRecording(bool isSelected) {
+    
+    ofPushMatrix();
+    ofVec3f p = cachedFrames[currentFrame].position + position;
+    ofTranslate(p.x,p.y);
+    
+    ofSetColor(255,255,255);
+    image.bind();
+    cachedFrames[currentFrame].mesh.drawFaces();
+    
+    if(isSelected) {
+        image.unbind();
+        ofSetColor(ofColor(30,200,255));
+        cachedFrames[currentFrame].mesh.drawWireframe();
+    }
+    
+    ofPopMatrix();
+    
+}
+

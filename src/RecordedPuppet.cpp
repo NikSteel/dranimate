@@ -1,6 +1,6 @@
-#include "PuppetRecorder.h"
+#include "RecordedPuppet.h"
 
-void PuppetRecorder::setup() {
+void RecordedPuppet::setup() {
     
     // reset everything
     imageLoaded = false;
@@ -13,8 +13,7 @@ void PuppetRecorder::setup() {
     
 }
 
-
-void PuppetRecorder::recordPuppetFrame(Puppet *puppet) {
+void RecordedPuppet::recordPuppetFrame(Puppet *puppet) {
     
     // if we haven't copied the puppet base image over, get it now
     if(!imageLoaded) {
@@ -26,7 +25,7 @@ void PuppetRecorder::recordPuppetFrame(Puppet *puppet) {
     
 }
 
-void PuppetRecorder::nextFrame() {
+void RecordedPuppet::nextFrame() {
     
     if(playingForwards) {
     
@@ -50,7 +49,7 @@ void PuppetRecorder::nextFrame() {
     
 }
 
-void PuppetRecorder::save(string path) {
+void RecordedPuppet::save(string path) {
     
     // make a new dir for the recording
     string mkdirCommandString = "mkdir " + path;
@@ -66,7 +65,7 @@ void PuppetRecorder::save(string path) {
     
 }
 
-void PuppetRecorder::exportAsMovie() {
+void RecordedPuppet::exportAsMovie() {
     
     string movieName = ofGetTimestampString();
     
@@ -99,31 +98,31 @@ void PuppetRecorder::exportAsMovie() {
     
 }
 
-void PuppetRecorder::load(string path) {
+void RecordedPuppet::load(string path) {
     
     // todo
     
 }
 
-bool PuppetRecorder::isEmpty() {
+bool RecordedPuppet::isEmpty() {
     
     return animationFrames.size() == 0;
     
 }
 
-ofMesh PuppetRecorder::getCurrentMesh() {
+ofMesh RecordedPuppet::getCurrentMesh() {
     
     return animationFrames[currentFrame];
     
 }
 
-void PuppetRecorder::update() {
+void RecordedPuppet::update() {
     
     if(!isPaused) nextFrame();
     
 }
 
-void PuppetRecorder::draw() {
+void RecordedPuppet::draw() {
     
     if(!isEmpty()) {
         

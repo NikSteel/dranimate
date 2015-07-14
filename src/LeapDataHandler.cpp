@@ -24,8 +24,6 @@ void LeapDataHandler::setup() {
     
     cam.setOrientation(ofPoint(-20, 0, 0));
     
-    renderHands = true;
-    
     leapGestures.setup();
     leapGestures.setClassifyMode();
     
@@ -115,9 +113,9 @@ void LeapDataHandler::recieveNewData() {
             // get fingers positions
             for(int i = 0; i < 5; i++) {
                 
-                fingersPositions[i+handIndex*5] = ofVec3f(hand.fingers[i].pos.x,
-                                                          hand.fingers[i].pos.y,
-                                                          hand.fingers[i].pos.z);
+                fingersPositions[i+handIndex*5] = ofVec3f(hand.fingers[i].pos.x-hand.handPos.x,
+                                                          hand.fingers[i].pos.y-hand.handPos.y,
+                                                          hand.fingers[i].pos.z-hand.handPos.z);
                 
                 fingersVelocities[i+handIndex*5] =ofVec3f(hand.fingers[i].vel.x,
                                                           hand.fingers[i].vel.y,
@@ -150,7 +148,7 @@ void LeapDataHandler::draw(bool drawCalibration) {
         Utils::drawWarning("Leap not calibrated! Press 'c' to calibrate");
     }
     
-    if(renderHands && getLeapHands().size() > 0) {
+    if(getLeapHands().size() == 2) {
         
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_NORMALIZE);

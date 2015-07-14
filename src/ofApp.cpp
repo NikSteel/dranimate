@@ -56,8 +56,7 @@ void ofApp::update() {
 
 void ofApp::draw() {
     
-    ofSetColor(255);
-    ofBackground(255,255,255);
+    ofBackground(0,0,0);
     
     switch(state) {
             
@@ -107,6 +106,11 @@ void ofApp::keyReleased(int key) {
                 state = LEAP_CALIBRATION;
             }
             
+            // (temp) fast calibrate
+            if(key == 'f') {
+                leapHandler.calibrate(); 
+            }
+            
             // swap pointing hand and puppeteering hand
             if(key == OF_KEY_TAB) {
                 leapHandler.swapHandControls();
@@ -139,8 +143,14 @@ void ofApp::keyReleased(int key) {
         ofToggleFullscreen();
     }
     
+    // toggle recording
     if(key == 'r') {
-        //puppetsHandler.togglePuppetRecording();
+        puppetsHandler.togglePuppetRecording();
+    }
+    
+    // delete selected puppet
+    if(key == OF_KEY_BACKSPACE) {
+        puppetsHandler.removeCurrentPuppet();
     }
     
 }
@@ -167,7 +177,10 @@ void ofApp::mouseMoved(int x, int y) {
 
 void ofApp::mouseDragged(int x, int y, int button) {
     
-    
+    if(puppetsHandler.isAPuppetSelected()) {
+        puppetsHandler.selectedPuppet()->setPosition(x-ofGetWidth() /2,
+                                                     y-ofGetHeight()/2);
+    }
     
 }
 
@@ -414,6 +427,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         mesher.generateMesh();
         
         Puppet newPuppet;
+        newPuppet.makeControllable();
         newPuppet.setImage(mesher.getImage());
         newPuppet.setMesh(mesher.getMesh());
         newPuppet.addCenterpoint();

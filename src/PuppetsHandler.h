@@ -3,42 +3,13 @@
 
 #include <stdio.h>
 
-#include "Puppet.h"
-#include "PuppetRecorder.h"
-#include "LeapDataHandler.h"
 #include "ofxOscReceiver.h"
 #include "ofxClickDownMenu.h"
 
+#include "Puppet.h"
+#include "LeapDataHandler.h"
+
 class PuppetsHandler {
-    
-private:
-    
-    vector<Puppet> puppets;
-    
-    Puppet *getPuppet(int i);
-    int getClosestPuppetIndex(int x, int y);
-    int getClosestRecordingIndex(int x, int y);
-    
-    // ui & state
-    
-    void updateLeapUIControls(LeapDataHandler *leap,
-                              ofxClickDownMenu *cdmenu);
-    
-    bool addingBone = false;
-    int boneRootVertexIndex;
-    
-    int hoveredVertexIndex;
-    int selectedVertexIndex;
-    int selectedPuppetIndex;
-    
-    bool enableLeapControls;
-    int leapClickAgainTimer;
-    
-    enum CurrentUIControlType {
-        LEAP,
-        MOUSE
-    };
-    CurrentUIControlType currentUIControlType;
     
 public:
     
@@ -70,11 +41,45 @@ public:
     void resetCurrentPuppet();
     void clearAllPupets();
     void removeAllPuppets();
+    void togglePuppetRecording();
     
     bool emptyVertexHoveredOver();
     bool ezoneHoveredOver();
     
     void loadPuppet(string path);
+    
+    void exportStage();
+    
+private:
+    
+    vector<Puppet> puppets;
+    
+    Puppet *getPuppet(int i);
+    int getClosestPuppetIndex(int x, int y);
+    
+    // ui & state
+    
+    void updateLeapUIControls(LeapDataHandler *leap,
+                              ofxClickDownMenu *cdmenu);
+    
+    bool addingBone = false;
+    int boneRootVertexIndex;
+    
+    int hoveredVertexIndex;
+    int selectedVertexIndex;
+    int selectedPuppetIndex;
+    
+    bool enableLeapControls;
+    int leapClickAgainTimer;
+    
+    enum CurrentUIControlType {
+        LEAP,
+        MOUSE
+    };
+    CurrentUIControlType currentUIControlType;
+    
+    Puppet newRecording;
+    bool recording;
     
 };
 

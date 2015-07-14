@@ -172,6 +172,8 @@ bool Utils::facesOnlyShareOneVertex(ofMeshFace faceA, ofMeshFace faceB) {
 
 void Utils::drawGrid() {
     
+    ofSetColor(255,255,255);
+    
     int nHorizontalDraws = ofGetWidth() / Resources::grid.width;
     int nVerticalDraws   = ofGetHeight() / Resources::grid.height;
     

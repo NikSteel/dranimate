@@ -1,5 +1,7 @@
 #include "PuppetsHandler.h"
 
+// public methods
+
 void PuppetsHandler::setup() {
     
     hoveredVertexIndex = -1;
@@ -11,6 +13,8 @@ void PuppetsHandler::setup() {
     Puppet p;
     p.load("puppets/demo-killing-ashkeboos");
     puppets.push_back(p);
+    
+    recording = false;
     
 }
 
@@ -32,18 +36,27 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     
     for(int i = 0; i < puppets.size(); i++) {
         
-        // send new leap data to puppet
-        puppets[i].recieveLeapData(leap, i == selectedPuppetIndex);
-        
-        // send new osc messages to puppet
-        while(osc->hasWaitingMessages()) {
-            ofxOscMessage m;
-            osc->getNextMessage(&m);
-            puppets[i].recieveOSCMessage(m, m.getArgAsFloat(0));
+        if(puppets[i].isControllable()) {
+            // send new leap data to puppet
+            puppets[i].recieveLeapData(leap, i == selectedPuppetIndex);
+            
+            // send new osc messages to puppet
+            while(osc->hasWaitingMessages()) {
+                ofxOscMessage m;
+                osc->getNextMessage(&m);
+                puppets[i].recieveOSCMessage(m, m.getArgAsFloat(0));
+            }
         }
         
         // update puppet
         puppets[i].update();
+        
+    }
+    
+    // record puppets
+    if(recording && puppets.size() > 0) {
+        
+        newRecording.addFrame(puppets[0].getDeformedMesh(), puppets[0].getPosition());
         
     }
     
@@ -60,7 +73,8 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
-        puppets[i].draw(i == selectedPuppetIndex);
+        bool isSelected = i == selectedPuppetIndex;
+        puppets[i].draw(isSelected,recording);
         
     }
     
@@ -99,81 +113,17 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
     
 }
 
-void PuppetsHandler::updateLeapUIControls(LeapDataHandler *leap,
-                                          ofxClickDownMenu *cdmenu) {
-    
-    // update which vertex the leap is pointing to
-    if(   selectedPuppet() != NULL
-       && cdmenu->phase == PHASE_WAIT) {
-        
-        hoveredVertexIndex = Utils::getClosestIndex(
-                                                    selectedPuppet()->getDeformedMesh(),
-                                                    leap->getFingerScreenPosition(leap->pointingFinger+1).x,
-                                                    leap->getFingerScreenPosition(leap->pointingFinger+1).y,
-                                                    Puppet::MIN_SELECT_VERT_DIST);
-        
-    }
-    
-    for(int i = leap->puppetFinger; i < leap->puppetFinger+5; i++) {
-        
-        if(   leap->renderHands
-           && leap->fingerFlicked(i)
-           && selectedPuppet() != NULL
-           && hoveredVertexIndex != -1
-           && leapClickAgainTimer == 0){
-            
-            if(selectedPuppet()->getExpressionZone(hoveredVertexIndex) == NULL) {
-                selectedPuppet()->addExpressionZone(hoveredVertexIndex);
-            }
-            selectedPuppet()->getExpressionZone(hoveredVertexIndex)->leapFingerID = i;
-            
-            // autobone (disabled for now...)
-            //selectedPuppet()->getExpressionZone(hoveredVertexIndex)->parentEzone = selectedPuppet()->expressionZones[0].meshIndex;
-            
-            leapClickAgainTimer = 20;
-            
-        }
-        
-    }
-    
-    // leap interface (flick a puppet with left index finger to toggle edit mode)
-    if(leap->renderHands && leap->fingerFlicked(leap->pointingFinger+1) && leapClickAgainTimer == 0) {
-        
-        int clickedPuppetIndex = getClosestPuppetIndex(
-                                                       leap->getFingerScreenPosition(leap->pointingFinger+1).x,
-                                                       leap->getFingerScreenPosition(leap->pointingFinger+1).y);
-        
-        if(clickedPuppetIndex != -1) {
-            
-            selectedPuppetIndex = clickedPuppetIndex;
-            
-        }
-        if(selectedPuppetIndex != -1 && clickedPuppetIndex == -1) {
-            
-            selectedPuppetIndex = -1;
-            hoveredVertexIndex = -1;
-            selectedVertexIndex = -1;
-            
-        }
-        
-        leapClickAgainTimer = 20;
-        
-    }
-    if(leapClickAgainTimer > 0) {
-        leapClickAgainTimer--;
-    }
-    
-}
-
 int PuppetsHandler::getClosestPuppetIndex(int x, int y) {
     
     int closestPuppetIndex = -1;
     
     for(int p = 0; p < puppets.size(); p++) {
-        if(Utils::isPointInsideMesh(puppets[p].getDeformedMesh(), x, y)) {
+        
+        if(puppets[p].isPointInside(x,y)) {
             closestPuppetIndex = p;
             break;
         }
+        
     }
     
     return closestPuppetIndex;
@@ -269,7 +219,6 @@ void PuppetsHandler::loadPuppet(string path) {
 
 void PuppetsHandler::clickMouseAt(int x, int y) {
     
-    
     int clickedPuppetIndex = getClosestPuppetIndex(x-ofGetWidth() /2,
                                                    y-ofGetHeight()/2);
     
@@ -341,12 +290,15 @@ void PuppetsHandler::clickMouseAt(int x, int y) {
 void PuppetsHandler::updateWhichVertexIsHoveredOver(int x, int y) {
     
     if(   selectedPuppet() != NULL
+       && selectedPuppet()->isControllable()
        && !enableLeapControls) {
         
-        hoveredVertexIndex = Utils::getClosestIndex(selectedPuppet()->getDeformedMesh(),
-                                                    x-ofGetWidth()/2,
-                                                    y-ofGetHeight()/2,
-                                                    Puppet::MIN_SELECT_VERT_DIST);
+        hoveredVertexIndex = Utils::getClosestIndex(
+            selectedPuppet()->getDeformedMesh(),
+            x-ofGetWidth()/2  + selectedPuppet()->getPosition().x,
+            y-ofGetHeight()/2 + selectedPuppet()->getPosition().y,
+            Puppet::MIN_SELECT_VERT_DIST
+        );
         
     }
     
@@ -411,7 +363,12 @@ void PuppetsHandler::exportCurrentPuppet() {
     
     if (saveFileResult.bSuccess){
         string path = saveFileResult.getPath();
-        selectedPuppet()->save(path);
+        
+        if(selectedPuppet()->isControllable()) {
+            selectedPuppet()->save(path);
+        } else {
+            selectedPuppet()->saveCachedFrames(path);
+        }
     }
     
 }
@@ -450,5 +407,97 @@ void PuppetsHandler::removeAllPuppets() {
     selectedPuppetIndex = -1;
     selectedVertexIndex = -1;
     hoveredVertexIndex = -1;
+    
+}
+
+void PuppetsHandler::togglePuppetRecording() {
+    
+    if(!recording && puppets.size() > 0) {
+        
+        recording = true;
+        
+        newRecording.setImage(puppets[0].getImage());
+        newRecording.clearCachedFrames();
+        newRecording.makeRecording();
+        
+    } else {
+        
+        puppets.push_back(newRecording);
+        recording = false;
+        
+    }
+    
+}
+
+void exportScene() {
+    
+    
+    
+}
+
+// private methods
+
+void PuppetsHandler::updateLeapUIControls(LeapDataHandler *leap,
+                                          ofxClickDownMenu *cdmenu) {
+    
+    // update which vertex the leap is pointing to
+    if(   selectedPuppet() != NULL
+       && cdmenu->phase == PHASE_WAIT) {
+        
+        hoveredVertexIndex = Utils::getClosestIndex(
+                                                    selectedPuppet()->getDeformedMesh(),
+                                                    leap->getFingerScreenPosition(leap->pointingFinger+1).x,
+                                                    leap->getFingerScreenPosition(leap->pointingFinger+1).y,
+                                                    Puppet::MIN_SELECT_VERT_DIST);
+        
+    }
+    
+    for(int i = leap->puppetFinger; i < leap->puppetFinger+5; i++) {
+        
+        if(   leap->fingerFlicked(i)
+           && selectedPuppet() != NULL
+           && hoveredVertexIndex != -1
+           && leapClickAgainTimer == 0){
+            
+            if(selectedPuppet()->getExpressionZone(hoveredVertexIndex) == NULL) {
+                selectedPuppet()->addExpressionZone(hoveredVertexIndex);
+            }
+            selectedPuppet()->getExpressionZone(hoveredVertexIndex)->leapFingerID = i;
+            
+            // autobone (disabled for now...)
+            //selectedPuppet()->getExpressionZone(hoveredVertexIndex)->parentEzone = selectedPuppet()->expressionZones[0].meshIndex;
+            
+            leapClickAgainTimer = 20;
+            
+        }
+        
+    }
+    
+    // leap interface (flick a puppet with left index finger to toggle edit mode)
+    if(leap->fingerFlicked(leap->pointingFinger+1) && leapClickAgainTimer == 0) {
+        
+        int clickedPuppetIndex = getClosestPuppetIndex(
+                                                       leap->getFingerScreenPosition(leap->pointingFinger+1).x,
+                                                       leap->getFingerScreenPosition(leap->pointingFinger+1).y);
+        
+        if(clickedPuppetIndex != -1) {
+            
+            selectedPuppetIndex = clickedPuppetIndex;
+            
+        }
+        if(selectedPuppetIndex != -1 && clickedPuppetIndex == -1) {
+            
+            selectedPuppetIndex = -1;
+            hoveredVertexIndex = -1;
+            selectedVertexIndex = -1;
+            
+        }
+        
+        leapClickAgainTimer = 20;
+        
+    }
+    if(leapClickAgainTimer > 0) {
+        leapClickAgainTimer--;
+    }
     
 }

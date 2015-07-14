@@ -14,7 +14,7 @@
          contextName = "ofxLeapMotion::getSimpleHands():ofxLeapMotion.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "hands.size()">
+               value = "hands[0].fingers()">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
