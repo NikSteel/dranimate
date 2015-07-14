@@ -21,6 +21,11 @@ class CachedFrame {
     
 public:
     
+    CachedFrame(ofMesh m, ofVec3f p){
+        mesh = m;
+        position = p;
+    };
+    
     ofMesh mesh;
     ofVec3f position;
     

@@ -1,0 +1,8 @@
+<puppet>
+    <puppetdir>puppet0</puppetdir>
+    <isControllable>1</isControllable>
+</puppet>
+<puppet>
+    <puppetdir>puppet1</puppetdir>
+    <isControllable>0</isControllable>
+</puppet>

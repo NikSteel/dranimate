@@ -217,6 +217,83 @@ void PuppetsHandler::loadPuppet(string path) {
     
 }
 
+void PuppetsHandler::loadRecording(string path) {
+    
+    Puppet loadedPuppet;
+    loadedPuppet.loadCachedFrames(path);
+    addPuppet(loadedPuppet);
+    
+}
+
+void PuppetsHandler::loadScene() {
+    
+    puppets.clear();
+    
+    ofFileDialogResult openFileResult = ofSystemLoadDialog("Select a scene directory:",true);
+    
+    if (openFileResult.bSuccess){
+        
+        string path = openFileResult.getPath();
+        
+        ofxXmlSettings info;
+        if(info.loadFile(path + "/info.xml")) {
+        
+            int nPuppets = info.getNumTags("puppet");
+            for(int i = 0; i < nPuppets; i++) {
+                
+                info.pushTag("puppet", i);
+                
+                bool isControllable = info.getValue("isControllable", -1);
+                string puppetDirPath = info.getValue("puppetdir", "");
+                
+                if(isControllable) {
+                    loadPuppet(path+"/"+puppetDirPath);
+                } else {
+                    loadRecording(path+"/"+puppetDirPath);
+                }
+                
+                info.popTag();
+                
+            }
+        
+        }
+    }
+    
+}
+
+void PuppetsHandler::exportScene() {
+    
+    ofFileDialogResult saveFileResult = ofSystemSaveDialog("newscene", "Select location to export scene:");
+    
+    if (saveFileResult.bSuccess){
+       
+        string path = saveFileResult.getPath();
+        
+        string mkdirCommandString = "mkdir " + path;
+        system(mkdirCommandString.c_str());
+        
+        ofxXmlSettings info;
+        for(int i = 0; i < puppets.size(); i++) {
+            
+            info.addTag("puppet");
+            info.pushTag("puppet",i);
+            info.addValue("puppetdir", "puppet"+ofToString(i));
+            info.addValue("isControllable", puppets[i].isControllable());
+            info.popTag();
+            
+            if(puppets[i].isControllable()) {
+                puppets[i].save(path + "/puppet" + ofToString(i));
+            } else {
+                puppets[i].saveCachedFrames(path + "/puppet" + ofToString(i));
+            }
+            
+        }
+        info.save(path + "/info.xml");
+        
+    }
+    
+}
+
 void PuppetsHandler::clickMouseAt(int x, int y) {
     
     int clickedPuppetIndex = getClosestPuppetIndex(x-ofGetWidth() /2,

@@ -44,7 +44,6 @@
 		28C0B56B7639C171DC107F0A /* WmlVector2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34BDB747F94F8F2068A33C3F /* WmlVector2.cpp */; };
 		311DF864378748129984EA1D /* Kalman.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77A1A692522820F935B58762 /* Kalman.cpp */; };
 		3847599660811290257E6264 /* WmlMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5CA28E7F5D965AB2AB9E84B /* WmlMath.cpp */; };
-		41561F341B27A28A009E51BA /* RecordedPuppet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41561F321B27A28A009E51BA /* RecordedPuppet.cpp */; };
 		42E666654C926D5DEE52BA88 /* WmlExtTriangleUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B72E1A9F00944D3039BD5F75 /* WmlExtTriangleUtils.cpp */; };
 		45CC483A999BF1065A6B926C /* Distance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9DBD717072C35D324E101669 /* Distance.cpp */; };
 		483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78D67A00EB899FAC09430597 /* ofxLabel.cpp */; };
@@ -354,8 +353,6 @@
 		3D684FA8C199BEB47ABD48F5 /* face.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = face.hpp; path = ../../../addons/ofxButterfly/libs/butterfly/face.hpp; sourceTree = SOURCE_ROOT; };
 		402C8F4015542356D362AC88 /* Calibration.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = Calibration.cpp; path = ../../../addons/ofxCv/libs/ofxCv/src/Calibration.cpp; sourceTree = SOURCE_ROOT; };
 		411B454210BFF4972B782F85 /* cube.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cube.hpp; path = ../../../addons/ofxButterfly/libs/butterfly/cube.hpp; sourceTree = SOURCE_ROOT; };
-		41561F321B27A28A009E51BA /* RecordedPuppet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecordedPuppet.cpp; sourceTree = "<group>"; };
-		41561F331B27A28A009E51BA /* RecordedPuppet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordedPuppet.h; sourceTree = "<group>"; };
 		452417865E4BFB10C9CBF8A2 /* internal.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = internal.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/internal.hpp; sourceTree = SOURCE_ROOT; };
 		4524C0ED0C2DD3E085CE3350 /* ObjectFinder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ObjectFinder.h; path = ../../../addons/ofxCv/libs/ofxCv/include/ofxCv/ObjectFinder.h; sourceTree = SOURCE_ROOT; };
 		45410DD818BB205166E67E89 /* any.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = any.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/any.h; sourceTree = SOURCE_ROOT; };
@@ -2456,8 +2453,6 @@
 				DFE9FE751B444A3D0040EF11 /* PuppetsHandler.h */,
 				2006E5651B16625000F1CCA7 /* Puppet.cpp */,
 				2006E5661B16625000F1CCA7 /* Puppet.h */,
-				41561F321B27A28A009E51BA /* RecordedPuppet.cpp */,
-				41561F331B27A28A009E51BA /* RecordedPuppet.h */,
 				2006E55C1B16625000F1CCA7 /* ExpressionZone.cpp */,
 				2006E55D1B16625000F1CCA7 /* ExpressionZone.h */,
 				DF54E8801B334C0800D19A12 /* LeapDataHandler.cpp */,
@@ -2790,7 +2785,6 @@
 				DF0D8B471B4B40B300310672 /* MovingAverageFilter.cpp in Sources */,
 				DF0D8B081B4B40B300310672 /* MinDist.cpp in Sources */,
 				26E235A9AC932B60BDC13FE7 /* WmlVector3.cpp in Sources */,
-				41561F341B27A28A009E51BA /* RecordedPuppet.cpp in Sources */,
 				D6A4A8EAF84D136E7139B1F0 /* WmlVector4.cpp in Sources */,
 				DF0D8B461B4B40B300310672 /* MedianFilter.cpp in Sources */,
 				DF0D8B231B4B40B300310672 /* PreProcessing.cpp in Sources */,

@@ -107,8 +107,8 @@ void ofApp::keyReleased(int key) {
             }
             
             // (temp) fast calibrate
-            if(key == 'f') {
-                leapHandler.calibrate(); 
+            if(key == 'l') {
+                leapHandler.calibrate();
             }
             
             // swap pointing hand and puppeteering hand
@@ -151,6 +151,14 @@ void ofApp::keyReleased(int key) {
     // delete selected puppet
     if(key == OF_KEY_BACKSPACE) {
         puppetsHandler.removeCurrentPuppet();
+    }
+    
+    // save/load scenes
+    if(key == 115) {
+        puppetsHandler.exportScene();
+    }
+    if(key == 111) {
+        puppetsHandler.loadScene();
     }
     
 }
@@ -214,6 +222,7 @@ void ofApp::updateClickDownMenu() {
     
     // reset everything
     clickDownMenu.UnRegisterMenu("load puppet");
+    clickDownMenu.UnRegisterMenu("load recording");
     clickDownMenu.UnRegisterMenu("create puppet");
     clickDownMenu.UnRegisterMenu("create puppet (live)");
     clickDownMenu.UnRegisterMenu(" ");
@@ -242,6 +251,7 @@ void ofApp::updateClickDownMenu() {
             
             // no puppet is selected
             clickDownMenu.RegisterMenu("load puppet");
+            clickDownMenu.RegisterMenu("load recording");
             clickDownMenu.RegisterMenu("create puppet");
             clickDownMenu.RegisterMenu("create puppet (live)");
             clickDownMenu.RegisterMenu(" ");
@@ -306,13 +316,23 @@ void ofApp::updateClickDownMenu() {
 }
 
 void ofApp::cmdEvent(ofxCDMEvent &ev){
-    
+
     if (ev.message == "menu::load puppet") {
         
         ofFileDialogResult openFileResult = ofSystemLoadDialog("Select a puppet directory:",true);
         
         if (openFileResult.bSuccess){
             puppetsHandler.loadPuppet(openFileResult.getPath());
+            state = PUPPET_STAGE;
+        }
+        
+    }
+    if (ev.message == "menu::load recording") {
+        
+        ofFileDialogResult openFileResult = ofSystemLoadDialog("Select a puppet directory:",true);
+        
+        if (openFileResult.bSuccess){
+            puppetsHandler.loadRecording(openFileResult.getPath());
             state = PUPPET_STAGE;
         }
         

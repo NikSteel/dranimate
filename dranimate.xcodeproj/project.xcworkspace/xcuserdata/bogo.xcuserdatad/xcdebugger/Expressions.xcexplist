@@ -42,5 +42,13 @@
             </PersistentString>
          </PersistentStrings>
       </ContextState>
+      <ContextState
+         contextName = "Puppet::drawAsRecording(bool):Puppet.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentFrame;">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
    </ContextStates>
 </VariablesViewState>

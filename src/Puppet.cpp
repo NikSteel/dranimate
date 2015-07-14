@@ -80,17 +80,38 @@ void Puppet::load(string path) {
 
 void Puppet::loadCachedFrames(string path) {
     
+    mode = RECORDED;
+    
+    currentFrame = 0;
+    playingForwards = true;
+    
+    image.loadImage(path+"/image.png");
+    
     ofxXmlSettings info;
-    if(info.loadFile(path + "/info")) {
+    if(info.loadFile(path + "/info.xml")) {
         
-        int frameCount = info.getValue("frameCount", -1);
-        for(int i = 0; i < frameCount; i++) {
+        int nFrames = info.getNumTags("frame");
+        for(int i = 0; i < nFrames; i++) {
+            
+            info.pushTag("frame", i);
+            float x = info.getValue("x", 0.0);
+            float y = info.getValue("y", 0.0);
+            float z = info.getValue("z", 0.0);
+            info.popTag();
+            
             ofMesh mesh;
-            mesh.load(path + "/frame"+ofToString(i)+".ply");
-            //cachedFrames.push_back(mesh);
+            mesh.load(path + "/frame" + ofToString(i) + ".ply");
+            
+            cachedFrames.push_back(CachedFrame(mesh, ofVec3f(x,y,z)));
+            
         }
         
     }
+    
+    float x = info.getValue("x", 0.0);
+    float y = info.getValue("y", 0.0);
+    float z = info.getValue("z", 0.0);
+    position = ofVec3f(x,y,z);
     
 }
 
@@ -170,14 +191,27 @@ void Puppet::saveCachedFrames(string path) {
     string mkdirCommandString = "mkdir " + path;
     system(mkdirCommandString.c_str());
     
+    ofxXmlSettings info;
+    
+    info.addValue("x", position.x);
+    info.addValue("y", position.y);
+    info.addValue("z", position.z);
+    
     for(int i = 0; i < cachedFrames.size(); i++) {
+        
+        info.addTag("frame");
+        info.pushTag("frame",i);
+        info.addValue("x", cachedFrames[i].position.x);
+        info.addValue("y", cachedFrames[i].position.y);
+        info.addValue("z", cachedFrames[i].position.z);
+        info.popTag();
+        
         cachedFrames[i].mesh.save(path + "/frame" + ofToString(i) + ".ply");
+        
     }
     
     image.saveImage(path + "/image.png");
     
-    ofxXmlSettings info;
-    info.addValue("frameCount", (int)cachedFrames.size());
     info.save(path + "/info.xml");
     
     ofLog() << "recording saved to " << path;
@@ -478,10 +512,7 @@ void Puppet::makeRecording() {
 
 void Puppet::addFrame(ofMesh mesh, ofVec3f position) {
     
-    CachedFrame frame;
-    frame.mesh = mesh;
-    frame.position = position;
-    cachedFrames.push_back(frame);
+    cachedFrames.push_back(CachedFrame(mesh,position));
     
 }
 
@@ -681,12 +712,14 @@ void Puppet::drawAsRecording(bool isSelected) {
     ofSetColor(255,255,255);
     image.bind();
     cachedFrames[currentFrame].mesh.drawFaces();
+    image.unbind();
     
     if(isSelected) {
-        image.unbind();
         ofSetColor(ofColor(30,200,255));
         cachedFrames[currentFrame].mesh.drawWireframe();
     }
+    
+    ofSetColor(255,255,255);
     
     ofPopMatrix();
     

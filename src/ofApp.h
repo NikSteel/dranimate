@@ -15,7 +15,6 @@
 #include "ofxLeapGestures.h"
 
 #include "Puppet.h"
-#include "RecordedPuppet.h"
 #include "PuppetsHandler.h"
 #include "MeshGenerator.h"
 #include "LeapDataHandler.h"

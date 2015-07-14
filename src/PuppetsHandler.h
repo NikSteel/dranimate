@@ -21,6 +21,12 @@ public:
     
     void addPuppet(Puppet p);
     
+    void loadPuppet(string path);
+    void loadRecording(string path);
+    
+    void exportScene();
+    void loadScene();
+    
     Puppet *selectedPuppet();
     bool isAPuppetSelected();
     
@@ -45,10 +51,6 @@ public:
     
     bool emptyVertexHoveredOver();
     bool ezoneHoveredOver();
-    
-    void loadPuppet(string path);
-    
-    void exportStage();
     
 private:
     
