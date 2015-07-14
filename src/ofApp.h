@@ -13,6 +13,7 @@
 #include "ofxLeapMotion.h"
 #include "ofxClickDownMenu.h"
 #include "ofxLeapGestures.h"
+#include "ofxSyphon.h"
 
 #include "Puppet.h"
 #include "PuppetsHandler.h"
