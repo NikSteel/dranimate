@@ -50,8 +50,7 @@ public:
     enum State {
         NEW_PUPPET_CREATION,
         PUPPET_STAGE,
-        LEAP_CALIBRATION,
-        SETTINGS
+        LEAP_CALIBRATION
     };
     State state;
     

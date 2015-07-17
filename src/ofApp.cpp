@@ -49,10 +49,6 @@ void ofApp::update() {
             leapHandler.update();
             break;
             
-        case SETTINGS:
-            settings.update();
-            break;
-            
     }
     
 }
@@ -83,12 +79,6 @@ void ofApp::draw() {
         case LEAP_CALIBRATION:
             
             leapHandler.draw(true);
-            
-            break;
-            
-        case SETTINGS:
-            
-            settings.gui.draw();
             
             break;
             
@@ -170,19 +160,6 @@ void ofApp::keyReleased(int key) {
     // delete selected puppet
     if(key == OF_KEY_BACKSPACE) {
         puppetsHandler.removeCurrentPuppet();
-    }
-    
-    // go to settings land
-    if(key == ' ') {
-        
-        if(state == SETTINGS) {
-            settings.saveSettingsXML();
-            state = PUPPET_STAGE;
-        } else {
-            //settings.loadSettingsXML();
-            state = SETTINGS;
-        }
-        
     }
     
     // save/load scenes
