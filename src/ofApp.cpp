@@ -2,7 +2,7 @@
 
 void ofApp::setup() {
     
-    // setup all of the different handlers
+    // setup all of the different things
     
     leapHandler.setup();
     oscReceiver.setup(8000);
@@ -49,10 +49,16 @@ void ofApp::update() {
             leapHandler.update();
             break;
             
+        case SETTINGS:
+            settings.update();
+            break;
+            
     }
     
 }
 void ofApp::draw() {
+    
+    puppetsHandler.publishSyphonOutput();
     
     ofBackground(0,0,0);
     
@@ -67,6 +73,7 @@ void ofApp::draw() {
         } case PUPPET_STAGE: {
             
             puppetsHandler.draw(&leapHandler);
+            
             leapHandler.draw(false);
             
             break;
@@ -79,13 +86,22 @@ void ofApp::draw() {
             
             break;
             
+        case SETTINGS:
+            
+            settings.gui.draw();
+            
+            break;
+            
     }
     
     clickDownMenu.draw();
     
+    ofSetColor(255,255,255);
+    ofDrawBitmapString(ofToString(puppetsHandler.getActiveLayer()), ofGetWidth()-100, 100);
+    
     // temporary until mouse hiding bug is fixed
-    ofSetColor(0, 155, 0);
-    ofCircle(mouseX, mouseY, 4);
+    ofSetColor(0, 255, 0);
+    ofCircle(mouseX, mouseY, 6);
     
 }
 
@@ -112,6 +128,11 @@ void ofApp::keyReleased(int key) {
             // swap pointing hand and puppeteering hand
             if(key == OF_KEY_TAB) {
                 leapHandler.swapHandControls();
+            }
+            
+            // layer switching
+            if(key >= 49 && key <= 57) {
+                puppetsHandler.setActiveLayer(key-48);
             }
             
             break;
@@ -149,6 +170,19 @@ void ofApp::keyReleased(int key) {
     // delete selected puppet
     if(key == OF_KEY_BACKSPACE) {
         puppetsHandler.removeCurrentPuppet();
+    }
+    
+    // go to settings land
+    if(key == ' ') {
+        
+        if(state == SETTINGS) {
+            settings.saveSettingsXML();
+            state = PUPPET_STAGE;
+        } else {
+            //settings.loadSettingsXML();
+            state = SETTINGS;
+        }
+        
     }
     
     // save/load scenes
@@ -310,7 +344,7 @@ void ofApp::updateClickDownMenu() {
         
     }
 }
-void ofApp::cmdEvent(ofxCDMEvent &ev){
+void ofApp::cmdEvent(ofxCDMEvent &ev) {
 
     if (ev.message == "menu::load puppet") {
         
@@ -440,6 +474,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
     // finalize mesh and create a new puppet from that mesh
     if (ev.message == "menu::generate mesh and create puppet") {
         mesher.generateMesh();
+        mesher.saveXMLSettings();
         
         Puppet newPuppet;
         newPuppet.makeControllable();
@@ -456,5 +491,5 @@ void ofApp::cmdEvent(ofxCDMEvent &ev){
         state = PUPPET_STAGE;
         
     }
-    
+
 }

@@ -9,6 +9,7 @@
 #include "ofxCv.h"
 #include "ofxTriangleMesh.h"
 #include "ofxGui.h"
+#include "ofxXmlSettings.h"
 
 #include "Utils.h"
 #include "ImageFromCamera.h"
@@ -27,6 +28,8 @@ public:
     void addExtraVertex(int x, int y);
     
     void generateMesh();
+    
+    void saveXMLSettings();
     
     ofImage getImage();
     ofMesh getMesh();

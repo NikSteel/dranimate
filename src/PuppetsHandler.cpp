@@ -8,13 +8,23 @@ void PuppetsHandler::setup() {
     selectedVertexIndex = -1;
     selectedPuppetIndex = -1;
     
+    activeLayer = 1;
+    
     leapClickAgainTimer = 0;
     
     Puppet p;
     p.load("puppets/demo-killing-ashkeboos");
-    puppets.push_back(p);
+    addPuppet(p);
     
     recording = false;
+    
+    ofxXmlSettings settings; settings.load("settings/launch.xml");
+    numLayers = settings.getValue("numLayers", 0);
+    
+    layerOutputSyphonServers.resize(numLayers+1);
+    for(int i = 1; i <= numLayers; i++) {
+        layerOutputSyphonServers[i].setName("Dranimate Layer "+ofToString(i));
+    }
     
 }
 void PuppetsHandler::update(LeapDataHandler *leap,
@@ -53,9 +63,11 @@ void PuppetsHandler::update(LeapDataHandler *leap,
     }
     
     // record puppets
-    if(recording && puppets.size() > 0) {
+    if(recording) {
         
-        newRecording.addFrame(puppets[0].getDeformedMesh(), puppets[0].getPosition(), puppets[0].getRotation());
+        newRecording.addFrame(puppets[recordingPuppetIndex].getDeformedMesh(),
+                              puppets[recordingPuppetIndex].getPosition(),
+                              puppets[recordingPuppetIndex].getRotation());
         
     }
     
@@ -66,13 +78,16 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
     ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
     
     // draw puppets
+    
+    glEnable(GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     for(int i = 0; i < puppets.size(); i++) {
         
-        glEnable(GL_BLEND);
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        bool isSelected = i == selectedPuppetIndex;
-        puppets[i].draw(isSelected,recording);
+        if(activeLayer == puppets[i].getLayer()) {
+            bool isSelected = i == selectedPuppetIndex;
+            puppets[i].draw(isSelected,recording);
+        }
         
     }
     
@@ -111,10 +126,38 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
     
 }
 
+void PuppetsHandler::publishSyphonOutput() {
+    
+    ofPushMatrix();
+    ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+    
+    for(int layer = 1; layer <= numLayers; layer++) {
+        
+        ofBackground(0,0,0,0);
+        
+        // draw puppets
+        
+        glEnable(GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+        for(int i = 0; i < puppets.size(); i++) {
+            if(layer == puppets[i].getLayer()) {
+                puppets[i].draw(false,false);
+            }
+        }
+        
+        layerOutputSyphonServers[layer].publishScreen();
+        
+    }
+    
+    ofPopMatrix();
+    
+}
+
 void PuppetsHandler::addPuppet(Puppet p) {
     
+    p.setLayer(activeLayer);
     puppets.push_back(p);
-    selectedPuppetIndex = puppets.size()-1;
     
 }
 
@@ -267,16 +310,11 @@ void PuppetsHandler::clickMouseAt(int x, int y) {
             
         } else {
             
-            // put the newly selected puppet at the back of the list
-            // (this makes it so it draws last, putting it in front of the others.)
-            Puppet movedPuppet = puppets[clickedPuppetIndex];
-            puppets.erase(puppets.begin() + clickedPuppetIndex);
-            puppets.push_back(movedPuppet);
-            
-            // update what's actually selected
-            hoveredVertexIndex = -1;
-            selectedPuppetIndex = puppets.size()-1;
-            selectedVertexIndex = -1;
+            if(puppets[clickedPuppetIndex].getLayer() == activeLayer) {
+                hoveredVertexIndex = -1;
+                selectedPuppetIndex = clickedPuppetIndex;
+                selectedVertexIndex = -1;
+            }
             
         }
         
@@ -328,7 +366,7 @@ void PuppetsHandler::updateWhichVertexIsHoveredOver(int x, int y) {
             selectedPuppet()->getDeformedMesh(),
             x-ofGetWidth()/2  + selectedPuppet()->getPosition().x,
             y-ofGetHeight()/2 + selectedPuppet()->getPosition().y,
-            Puppet::MIN_SELECT_VERT_DIST
+            20
         );
         
     }
@@ -346,7 +384,6 @@ bool PuppetsHandler::ezoneHoveredOver() {
     && selectedVertexIndex == hoveredVertexIndex;
     
 }
-
 
 void PuppetsHandler::addExpressionZoneToCurrentPuppet() {
     
@@ -451,17 +488,41 @@ void PuppetsHandler::togglePuppetRecording() {
         
         recording = true;
         
-        newRecording.setImage(puppets[0].getImage());
+        for(int i = 0; i < puppets.size(); i++) {
+            if(puppets[i].isControllable()) {
+                recordingPuppetIndex = i;
+            }
+        }
+         
+        newRecording.setImage(puppets[recordingPuppetIndex].getImage());
         newRecording.clearCachedFrames();
         newRecording.makeRecording();
         
     } else {
         
-        puppets.push_back(newRecording);
+        addPuppet(newRecording);
         recording = false;
         
     }
     
+}
+
+void PuppetsHandler::setActiveLayer(int l) {
+    
+    activeLayer = l;
+    
+    if(isAPuppetSelected()) {
+        selectedPuppet()->setLayer(activeLayer);
+    }
+    
+}
+int PuppetsHandler::getActiveLayer() {
+    
+    return activeLayer;
+    
+}
+int PuppetsHandler::getNumLayers() {
+    return numLayers;
 }
 
 // private methods
@@ -503,7 +564,7 @@ void PuppetsHandler::updateLeapUIControls(LeapDataHandler *leap,
                                                     selectedPuppet()->getDeformedMesh(),
                                                     leap->getFingerScreenPosition(leap->pointingFinger+1).x,
                                                     leap->getFingerScreenPosition(leap->pointingFinger+1).y,
-                                                    Puppet::MIN_SELECT_VERT_DIST);
+                                                    20);
         
     }
     

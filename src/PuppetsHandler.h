@@ -5,6 +5,8 @@
 
 #include "ofxOscReceiver.h"
 #include "ofxClickDownMenu.h"
+#include "ofxSyphon.h"
+#include "ofxXmlSettings.h"
 
 #include "Puppet.h"
 #include "LeapDataHandler.h"
@@ -18,6 +20,8 @@ public:
                 ofxOscReceiver *osc,
                 ofxClickDownMenu *cdmenu);
     void draw(LeapDataHandler *leap);
+    
+    void publishSyphonOutput();
     
     void addPuppet(Puppet p);
     
@@ -53,6 +57,10 @@ public:
     
     void togglePuppetRecording();
     
+    void setActiveLayer(int l);
+    int getActiveLayer();
+    int getNumLayers();
+    
 private:
     
     vector<Puppet> puppets;
@@ -72,6 +80,8 @@ private:
     int selectedVertexIndex;
     int selectedPuppetIndex;
     
+    int recordingPuppetIndex;
+    
     bool enableLeapControls;
     int leapClickAgainTimer;
     
@@ -83,6 +93,11 @@ private:
     
     Puppet newRecording;
     bool recording;
+    
+    int numLayers;
+    int activeLayer;
+    
+    vector<ofxSyphonServer> layerOutputSyphonServers;
     
 };
 

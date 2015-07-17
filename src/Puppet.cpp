@@ -290,6 +290,13 @@ float Puppet::getRotation() {
     
 }
 
+void Puppet::setLayer(int l) {
+    layer = l;
+}
+int Puppet::getLayer() {
+    return layer;
+}
+
 void Puppet::addCenterpoint() {
 
     ofVec3f c = mesh.getCentroid();
@@ -574,7 +581,7 @@ void Puppet::regenerateSubdivisionMesh() {
     
     butterfly.topology_start(mesh);
     
-    for(int i = 0; i < MESH_SMOOTH_SUBDIVISIONS; i++) {
+    for(int i = 0; i < 2; i++) {
         butterfly.topology_subdivide_boundary();
     }
     

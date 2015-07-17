@@ -4,6 +4,10 @@
 
 void MeshGenerator::setup() {
     
+    cam.setup();
+    
+    // setup gui
+    
     gui.setup();
     
     gui.add(rotation.setup("rotation", 0, 0, 3));
@@ -11,15 +15,30 @@ void MeshGenerator::setup() {
     gui.add(flipVertical.setup("flip vertically", false));
     gui.add(invertImage.setup("invert image", false));
     
-    gui.add(imageThreshold.setup("image threshold", 254, 0, 255));
+    gui.add(imageThreshold.setup("image threshold", 0, 0, 255));
     gui.add(useAdaptiveThreshold.setup("use adaptive threshold", false));
-    gui.add(invertThresholdImage.setup("invert threshold image", true));
+    gui.add(invertThresholdImage.setup("invert threshold image", false));
     
-    gui.add(contourResampleAmt.setup("contour resample amt", 15, 15, 60));
-    gui.add(triangleAngleConstraint.setup("angle constraint", 14, 0, 28));
+    gui.add(contourResampleAmt.setup("contour resample amt", 0, 15, 60));
+    gui.add(triangleAngleConstraint.setup("angle constraint", 0, 0, 28));
     gui.add(triangleSizeConstraint.setup("size constraint", -1, -1, 100));
     
-    cam.setup();
+    // load default values from settings xml
+    
+    ofxXmlSettings settings; settings.load("settings/meshgen.xml");
+    
+    rotation = settings.getValue("rotation", 0);
+    flipHorizontal = settings.getValue("flipHorizontal", false);
+    flipVertical = settings.getValue("flipVertical", false);
+    invertImage = settings.getValue("invertImage", false);
+    
+    imageThreshold = settings.getValue("imageThreshold", 0);
+    useAdaptiveThreshold = settings.getValue("useAdaptiveThreshold", false);
+    invertThresholdImage = settings.getValue("invertThresholdImage", false);
+    
+    contourResampleAmt = settings.getValue("contourResampleAmt", 0);
+    triangleAngleConstraint = settings.getValue("triangleAngleConstraint", 0);
+    triangleSizeConstraint = settings.getValue("triangleSizeConstraint", 0);
     
     
 }
@@ -181,7 +200,7 @@ void MeshGenerator::generateMesh() {
         contourLine.addVertex(contour[i].x,contour[i].y);
     }
     
-    // use that polyline to generate a mesh with ofxTriangleMesh !!
+    // use that polyline to generate a mesh with ofxTriangleMesh
     // (code from ofxTriangleMesh example)
     
     if (contourLine.size() > 2){
@@ -245,6 +264,27 @@ void MeshGenerator::generateMesh() {
     // (this causes ofxPuppet to disappear or even crash)
     
     //todo
+    
+}
+
+void MeshGenerator::saveXMLSettings() {
+    
+    ofxXmlSettings settings;
+    
+    settings.setValue("rotation", rotation);
+    settings.setValue("flipHorizontal", flipHorizontal);
+    settings.setValue("flipVertical", flipVertical);
+    settings.setValue("invertImage", invertImage);
+    
+    settings.setValue("imageThreshold", imageThreshold);
+    settings.setValue("useAdaptiveThreshold", useAdaptiveThreshold);
+    settings.setValue("invertThresholdImage", invertThresholdImage);
+    
+    settings.setValue("contourResampleAmt", contourResampleAmt);
+    settings.setValue("triangleAngleConstraint", triangleAngleConstraint);
+    settings.setValue("triangleSizeConstraint", triangleSizeConstraint);
+    
+    settings.save("settings/meshgen.xml");
     
 }
 

@@ -2,14 +2,15 @@
 
 void ImageFromCamera::setup() {
     
-    camWidth 		= 1024;	// try to grab at this size.
-    camHeight 		= 768;
+    ofxXmlSettings settings; settings.load("settings/launch.xml");
     
-    vidGrabber.setDeviceID(0);
-    vidGrabber.setDesiredFrameRate(60);
+    camWidth = settings.getValue("cameraCaptureWidth", 0);
+    camHeight = settings.getValue("cameraCaptureHeight", 0);
+    
+    vidGrabber.setDeviceID(settings.getValue("cameraDeviceID", 0));
+    vidGrabber.setDesiredFrameRate(settings.getValue("cameraCaptureFramerate", 0));
     vidGrabber.initGrabber(camWidth,camHeight);
     
-    videoInverted = new unsigned char[camWidth*camHeight*3];
     videoTexture.allocate(camWidth,camHeight, GL_RGB);
     
     image.allocate(camWidth, camHeight, OF_IMAGE_COLOR);
@@ -20,12 +21,8 @@ void ImageFromCamera::update() {
     vidGrabber.update();
     
     if (vidGrabber.isFrameNew()){
-        int totalPixels = camWidth*camHeight*3;
         unsigned char * pixels = vidGrabber.getPixels();
-        for (int i = 0; i < totalPixels; i++){
-            videoInverted[i] = pixels[i];
-        }
-        videoTexture.loadData(videoInverted, camWidth,camHeight, GL_RGB);
+        videoTexture.loadData(pixels, camWidth,camHeight, GL_RGB);
         
         image.setFromPixels(vidGrabber.getPixelsRef());
         

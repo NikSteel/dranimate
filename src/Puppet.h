@@ -37,9 +37,6 @@ class Puppet {
     
 public:
     
-    const static int MIN_SELECT_VERT_DIST = 20;
-    const static int MESH_SMOOTH_SUBDIVISIONS = 2;
-    
     void load(string path);
     void save(string path);
     void loadCachedFrames(string path);
@@ -57,6 +54,9 @@ public:
     ofImage getImage();
     ofVec3f getPosition();
     float getRotation();
+    
+    void setLayer(int l);
+    int getLayer();
     
     void addCenterpoint();
     
@@ -104,7 +104,7 @@ private:
     void regenerateSubdivisionMesh();
     void updateMeshVertexDepths();
     
-        void nextFrame();
+    void nextFrame();
     
     void drawAsControllable(bool isSelected, bool isBeingRecorded);
     void drawAsRecording(bool isSelected);
@@ -114,6 +114,8 @@ private:
     bool playingForwards;
     
     PuppetMode mode;
+    
+    int layer;
     
 };
 

@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "ofMain.h"
+#include "ofxXmlSettings.h"
 
 class ImageFromCamera {
     
@@ -13,7 +14,7 @@ public:
     void update();
     
     ofVideoGrabber vidGrabber;
-    unsigned char *videoInverted;
+    unsigned char *videoPixels;
     ofTexture videoTexture;
     int camWidth;
     int camHeight;

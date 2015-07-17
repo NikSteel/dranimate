@@ -13,8 +13,8 @@
 #include "ofxLeapMotion.h"
 #include "ofxClickDownMenu.h"
 #include "ofxLeapGestures.h"
-#include "ofxSyphon.h"
 
+#include "Settings.h"
 #include "Puppet.h"
 #include "PuppetsHandler.h"
 #include "MeshGenerator.h"
@@ -50,7 +50,8 @@ public:
     enum State {
         NEW_PUPPET_CREATION,
         PUPPET_STAGE,
-        LEAP_CALIBRATION
+        LEAP_CALIBRATION,
+        SETTINGS
     };
     State state;
     

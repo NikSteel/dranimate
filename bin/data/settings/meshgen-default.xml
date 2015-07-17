@@ -1,0 +1,10 @@
+<rotation>0</rotation>
+<flipHorizontal>false</flipHorizontal>
+<flipVertical>false</flipVertical>
+<invertImage>false</invertImage>
+<imageThreshold>254</imageThreshold>
+<useAdaptiveThreshold>false</useAdaptiveThreshold>
+<invertThresholdImage>true</invertThresholdImage>
+<contourResampleAmt>15</contourResampleAmt>
+<triangleAngleConstraint>14</triangleAngleConstraint>
+<triangleSizeConstraint>-1</triangleSizeConstraint>
