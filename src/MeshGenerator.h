@@ -13,6 +13,7 @@
 
 #include "Utils.h"
 #include "ImageFromCamera.h"
+#include "Global.h"
 
 class MeshGenerator {
     
@@ -78,6 +79,8 @@ private:
         FROM_LIFE_FEED
     };
     ImageType imageType;
+    
+    ofImage grid;
     
 };
 

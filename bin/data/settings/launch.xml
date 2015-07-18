@@ -1,5 +1,7 @@
 <numLayers>4</numLayers>
 
+<OSCRecieverPort>8000</OSCRecieverPort>
+
 <cameraDeviceID>0</cameraDeviceID>
 <cameraCaptureWidth>1024</cameraCaptureWidth>
 <cameraCaptureHeight>768</cameraCaptureHeight>

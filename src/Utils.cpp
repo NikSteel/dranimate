@@ -166,17 +166,17 @@ bool Utils::facesOnlyShareOneVertex(ofMeshFace faceA, ofMeshFace faceB) {
     
 }
 
-void Utils::drawGrid() {
+void Utils::drawGrid(ofImage grid) {
     
     ofSetColor(255,255,255);
     
-    int nHorizontalDraws = ofGetWidth() / Resources::grid.width;
-    int nVerticalDraws   = ofGetHeight() / Resources::grid.height;
+    int nHorizontalDraws = ofGetWidth() / grid.width;
+    int nVerticalDraws   = ofGetHeight() / grid.height;
     
     for(int x = 0; x <= nHorizontalDraws; x++) {
         for(int y = 0; y <= nVerticalDraws; y++) {
             
-            Resources::grid.draw(x*Resources::grid.width,y*Resources::grid.height);
+            grid.draw(x*grid.width,y*grid.height);
             
         }
     }

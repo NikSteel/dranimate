@@ -5,6 +5,7 @@
 
 #include "ofMain.h"
 #include "ofxXmlSettings.h"
+#include "Global.h"
 
 class ImageFromCamera {
     

@@ -2,7 +2,7 @@
 
 void ImageFromCamera::setup() {
     
-    ofxXmlSettings settings; settings.load("settings/launch.xml");
+    ofxXmlSettings settings; settings.load(LAUNCH_SETTINGS_PATH);
     
     camWidth = settings.getValue("cameraCaptureWidth", 0);
     camHeight = settings.getValue("cameraCaptureHeight", 0);

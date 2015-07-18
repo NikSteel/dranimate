@@ -4,7 +4,6 @@
 #include <iostream>
 #include "ofVec3f.h"
 #include "ofMain.h"
-#include "Resources.h"
 
 class Utils {
     
@@ -29,7 +28,7 @@ public:
     static std::vector<int> getFacesConnectedToVertex(ofMesh mesh, int i);
     static bool facesOnlyShareOneVertex(ofMeshFace face1, ofMeshFace face2);
     
-    static void drawGrid();
+    static void drawGrid(ofImage grid);
     
 };
 

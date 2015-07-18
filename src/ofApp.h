@@ -14,13 +14,12 @@
 #include "ofxClickDownMenu.h"
 #include "ofxLeapGestures.h"
 
-#include "Settings.h"
 #include "Puppet.h"
 #include "PuppetsHandler.h"
 #include "MeshGenerator.h"
 #include "LeapDataHandler.h"
 #include "Utils.h"
-#include "Resources.h"
+#include "Global.h"
 
 class ofApp : public ofBaseApp {
     

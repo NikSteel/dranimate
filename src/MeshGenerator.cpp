@@ -6,6 +6,8 @@ void MeshGenerator::setup() {
     
     cam.setup();
     
+    grid.loadImage("resources/grid.png");
+    
     // setup gui
     
     gui.setup();
@@ -25,7 +27,7 @@ void MeshGenerator::setup() {
     
     // load default values from settings xml
     
-    ofxXmlSettings settings; settings.load("settings/meshgen.xml");
+    ofxXmlSettings settings; settings.load(MESHGEN_SETTINGS_PATH);
     
     rotation = settings.getValue("rotation", 0);
     flipHorizontal = settings.getValue("flipHorizontal", false);
@@ -56,7 +58,7 @@ void MeshGenerator::update() {
 }
 void MeshGenerator::draw() {
     
-    Utils::drawGrid();
+    Utils::drawGrid(grid);
     
     // draw image
     
@@ -65,16 +67,16 @@ void MeshGenerator::draw() {
                 ofGetHeight()/2);
     
     if(!meshGenerated) {
-        ofSetColor(255,255,255,255);
+        ofSetColor(255,255,255);
     } else {
-        ofSetColor(100,100,100,255);
+        ofSetColor(100,100,100);
     }
     noAlphaImage.draw(-noAlphaImage.width/2,-noAlphaImage.height/2);
     
     // draw mesh
     
     if(meshGenerated) {
-        ofSetColor(0, 255, 0);
+        ofSetColor(WIREFRAME_COLOR);
         mesh.drawWireframe();
     }
     
@@ -97,18 +99,18 @@ void MeshGenerator::draw() {
         ofPushStyle();
         ofNoFill();
         
-        ofSetLineWidth(5);
+        ofSetLineWidth(CONTOUR_LINE_WIDTH);
         
         int nPolylines = (int)contourFinder.getPolylines().size();
         
         // largest contour
-        ofSetColor(255, 0, 0);
+        ofSetColor(CONTOUR_COLOR);
         if(nPolylines > 0) {
             contourFinder.getPolyline(0).draw();
         }
         
         // other contours
-        ofSetColor(155, 100, 100);
+        ofSetColor(UNUSED_CONTOUR_COLOR);
         for(int i = 1; i < nPolylines; i++) {
             contourFinder.getPolyline(i).draw();
         }
@@ -213,7 +215,7 @@ void MeshGenerator::generateMesh() {
         // resample
         lineRespaced = lineRespaced.getResampledBySpacing(contourResampleAmt);
         
-        // I want to make sure the first point and the last point are not the same, since triangle is unhappy:
+        // make sure the first point and the last point are not the same, since triangle is unhappy
         lineRespaced.getVertices().erase(lineRespaced.getVertices().begin());
         
         for(int i = 0; i < extraVerts.size(); i++) {
@@ -284,7 +286,7 @@ void MeshGenerator::saveXMLSettings() {
     settings.setValue("triangleAngleConstraint", triangleAngleConstraint);
     settings.setValue("triangleSizeConstraint", triangleSizeConstraint);
     
-    settings.save("settings/meshgen.xml");
+    settings.save(MESHGEN_SETTINGS_PATH);
     
 }
 

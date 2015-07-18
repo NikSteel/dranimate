@@ -21,14 +21,18 @@ void LeapDataHandler::setup() {
     calibrated = false;
     calibrationTimer = 0;
     
+    leapGestures.setup();
+    leapGestures.setClassifyMode();
     
-    l1.setPosition(200, 300, 50);
-    l2.setPosition(-200, -200, 50);
+    light1.setPosition(200, 300, 50);
+    light2.setPosition(-200, -200, 50);
     
     cam.setOrientation(ofPoint(-20, 0, 0));
     
-    leapGestures.setup();
-    leapGestures.setClassifyMode();
+    font.loadFont("resources/AppleSDGothicNeo-Medium.otf",
+                  54, true, true);
+    font.setLineHeight(14.0f);
+    font.setLetterSpacing(1.035);
     
 }
 void LeapDataHandler::update() {
@@ -52,7 +56,7 @@ void LeapDataHandler::draw(bool drawCalibration) {
         Utils::drawWarning("Leap not calibrated! Press 'c' to calibrate");
     }
     
-    if(getLeapHands().size() == 2) {
+    if(getLeapHands().size() == 2 || drawCalibration) {
         
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_NORMALIZE);
@@ -60,13 +64,13 @@ void LeapDataHandler::draw(bool drawCalibration) {
         cam.begin();
         
         ofEnableLighting();
-        l1.enable();
-        l2.enable();
+        light1.enable();
+        light2.enable();
         
-        m1.begin();
-        m1.setShininess(0.6);
+        material.begin();
+        material.setShininess(0.6);
         
-        l2.disable();
+        light2.disable();
         
         vector<ofxLeapMotionSimpleHand> simpleHands = getSimpleHands();
         
@@ -169,7 +173,7 @@ void LeapDataHandler::draw(bool drawCalibration) {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_NORMALIZE);
         
-        m1.end();
+        material.end();
         cam.end();
         
         
@@ -180,7 +184,7 @@ void LeapDataHandler::draw(bool drawCalibration) {
             if(calibrationTimer != 0) {
                 string timeLeftString = ofToString(calibrationSecondsLeft());
                 ofSetColor(0,0,0);
-                Resources::verdana54.drawString(timeLeftString, ofGetWidth()/2, ofGetHeight()/2);
+                font.drawString(timeLeftString, ofGetWidth()/2, ofGetHeight()/2);
             }
             
         }

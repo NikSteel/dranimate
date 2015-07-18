@@ -75,7 +75,6 @@
 		D6A4A8EAF84D136E7139B1F0 /* WmlVector4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52ADCD05F29713A7103C0859 /* WmlVector4.cpp */; };
 		D71539AF406640D0D108A702 /* WmlLinearSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CF53464B98B59DEEDD6FA /* WmlLinearSystem.cpp */; };
 		DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D347FB65D19015303863922A /* Wrappers.cpp */; };
-		DF02C7C21B3B00A500AD4020 /* Resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF02C7C01B3B00A500AD4020 /* Resources.cpp */; };
 		DF0D8AF21B4B40B300310672 /* ofxLeapGestures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0D89B11B4B40B300310672 /* ofxLeapGestures.cpp */; };
 		DF0D8AF31B4B40B300310672 /* BeckonPrimitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0D89B41B4B40B300310672 /* BeckonPrimitive.cpp */; };
 		DF0D8AF41B4B40B300310672 /* AdaBoost.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0D89B81B4B40B300310672 /* AdaBoost.cpp */; };
@@ -197,7 +196,6 @@
 		DFE6FC6F1B55C8710073379F /* Syphon.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = DFE6FC671B55C8710073379F /* Syphon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DFE6FC701B55C8710073379F /* SyphonNameboundClient.m in Sources */ = {isa = PBXBuildFile; fileRef = DFE6FC6A1B55C8710073379F /* SyphonNameboundClient.m */; };
 		DFE6FC711B55CA050073379F /* Syphon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFE6FC671B55C8710073379F /* Syphon.framework */; };
-		DFE6FC831B584EDC0073379F /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE6FC811B584EDC0073379F /* Settings.cpp */; };
 		DFE9FE761B444A3D0040EF11 /* PuppetsHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE9FE741B444A3D0040EF11 /* PuppetsHandler.cpp */; };
 		E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A16CBF2E8CFE43AF54FE6F5 /* ofxCvHaarFinder.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
@@ -495,8 +493,6 @@
 		DB8653D6433E14BF06F3EFAF /* cvwimage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvwimage.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cvwimage.h; sourceTree = SOURCE_ROOT; };
 		DCB56F4E9F44E31D571BC9C4 /* index_testing.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = index_testing.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/index_testing.h; sourceTree = SOURCE_ROOT; };
 		DEA2EDC0AFD59176FDEDC222 /* ofxCvShortImage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvShortImage.h; path = ../../../addons/ofxOpenCv/src/ofxCvShortImage.h; sourceTree = SOURCE_ROOT; };
-		DF02C7C01B3B00A500AD4020 /* Resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resources.cpp; sourceTree = "<group>"; };
-		DF02C7C11B3B00A500AD4020 /* Resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resources.h; sourceTree = "<group>"; };
 		DF0D89B11B4B40B300310672 /* ofxLeapGestures.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxLeapGestures.cpp; sourceTree = "<group>"; };
 		DF0D89B21B4B40B300310672 /* ofxLeapGestures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxLeapGestures.h; sourceTree = "<group>"; };
 		DF0D89B41B4B40B300310672 /* BeckonPrimitive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BeckonPrimitive.cpp; sourceTree = "<group>"; };
@@ -778,8 +774,7 @@
 		DFE6FC671B55C8710073379F /* Syphon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Syphon.framework; sourceTree = "<group>"; };
 		DFE6FC691B55C8710073379F /* SyphonNameboundClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SyphonNameboundClient.h; sourceTree = "<group>"; };
 		DFE6FC6A1B55C8710073379F /* SyphonNameboundClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SyphonNameboundClient.m; sourceTree = "<group>"; };
-		DFE6FC811B584EDC0073379F /* Settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Settings.cpp; sourceTree = "<group>"; };
-		DFE6FC821B584EDC0073379F /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
+		DFE6FC851B5ACD6F0073379F /* Global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		DFE9FE741B444A3D0040EF11 /* PuppetsHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PuppetsHandler.cpp; sourceTree = "<group>"; };
 		DFE9FE751B444A3D0040EF11 /* PuppetsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PuppetsHandler.h; sourceTree = "<group>"; };
 		E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPanel.cpp; path = ../../../addons/ofxGui/src/ofxPanel.cpp; sourceTree = SOURCE_ROOT; };
@@ -2552,10 +2547,7 @@
 				DF54E87E1B334BB300D19A12 /* ImageFromCamera.h */,
 				200DCBBE1B233A95002EA7A3 /* Utils.cpp */,
 				200DCBBF1B233A95002EA7A3 /* Utils.h */,
-				DF02C7C01B3B00A500AD4020 /* Resources.cpp */,
-				DF02C7C11B3B00A500AD4020 /* Resources.h */,
-				DFE6FC811B584EDC0073379F /* Settings.cpp */,
-				DFE6FC821B584EDC0073379F /* Settings.h */,
+				DFE6FC851B5ACD6F0073379F /* Global.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -2713,7 +2705,6 @@
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
 				DF0D8B101B4B40B300310672 /* ClusterTree.cpp in Sources */,
 				DF0D8B201B4B40B300310672 /* GRTBase.cpp in Sources */,
-				DFE6FC831B584EDC0073379F /* Settings.cpp in Sources */,
 				DF0D8B181B4B40B300310672 /* PrincipalComponentAnalysis.cpp in Sources */,
 				DFE9FE761B444A3D0040EF11 /* PuppetsHandler.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
@@ -2775,7 +2766,6 @@
 				F0D4B323F3C5DEAF5EF07A14 /* mesh.cpp in Sources */,
 				B6840996567E78436F7ECFAB /* ETF.cpp in Sources */,
 				DF0D8B3A1B4B40B300310672 /* GRTBot.cpp in Sources */,
-				DF02C7C21B3B00A500AD4020 /* Resources.cpp in Sources */,
 				200DCBC01B233A95002EA7A3 /* Utils.cpp in Sources */,
 				DF0D8AFE1B4B40B300310672 /* DecisionTreeThresholdNode.cpp in Sources */,
 				F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */,

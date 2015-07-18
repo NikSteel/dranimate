@@ -2,10 +2,12 @@
 
 void ofApp::setup() {
     
+    ofxXmlSettings settings; settings.load(LAUNCH_SETTINGS_PATH);
+    
     // setup all of the different things
     
     leapHandler.setup();
-    oscReceiver.setup(8000);
+    oscReceiver.setup(settings.getValue("OSCRecieverPort",OSC_DEFAULT_PORT));
     puppetsHandler.setup();
     mesher.setup();
     
@@ -16,10 +18,6 @@ void ofApp::setup() {
     clickDownMenu.OnlyRightClick = true;
     clickDownMenu.menu_name = "menu";
     ofAddListener(ofxCDMEvent::MenuPressed, this, &ofApp::cmdEvent);
-    
-    // load resources
-    
-    Resources::loadResources();
     
 }
 void ofApp::update() {
@@ -32,17 +30,12 @@ void ofApp::update() {
     switch(state) {
         
         case NEW_PUPPET_CREATION:
-            
             mesher.update();
-            
             break;
             
         case PUPPET_STAGE:
-            
             leapHandler.update();
-            
             puppetsHandler.update(&leapHandler, &oscReceiver, &clickDownMenu);
-            
             break;
             
         case LEAP_CALIBRATION:
@@ -56,38 +49,26 @@ void ofApp::draw() {
     
     puppetsHandler.publishSyphonOutput();
     
-    ofBackground(0,0,0);
+    ofBackground(BG_BRIGHTNESS);
     
     switch(state) {
             
-        case NEW_PUPPET_CREATION: {
-        
+        case NEW_PUPPET_CREATION:
             mesher.draw();
-            
             break;
         
-        } case PUPPET_STAGE: {
-            
+        case PUPPET_STAGE:
             puppetsHandler.draw(&leapHandler);
-            
             leapHandler.draw(false);
-            
             break;
-            
-        }
             
         case LEAP_CALIBRATION:
-            
             leapHandler.draw(true);
-            
             break;
             
     }
     
     clickDownMenu.draw();
-    
-    ofSetColor(255,255,255);
-    ofDrawBitmapString(ofToString(puppetsHandler.getActiveLayer()), ofGetWidth()-100, 100);
     
     // temporary until mouse hiding bug is fixed
     ofSetColor(0, 255, 0);
@@ -108,11 +89,6 @@ void ofApp::keyReleased(int key) {
             // switch to leap calibration mode
             if(key == 'c') {
                 state = LEAP_CALIBRATION;
-            }
-            
-            // (temp) fast calibrate
-            if(key == 'l') {
-                leapHandler.calibrate();
             }
             
             // swap pointing hand and puppeteering hand
@@ -160,14 +136,6 @@ void ofApp::keyReleased(int key) {
     // delete selected puppet
     if(key == OF_KEY_BACKSPACE) {
         puppetsHandler.removeCurrentPuppet();
-    }
-    
-    // save/load scenes
-    if(key == 115) {
-        puppetsHandler.exportScene();
-    }
-    if(key == 111) {
-        puppetsHandler.loadScene();
     }
     
 }
@@ -245,6 +213,8 @@ void ofApp::updateClickDownMenu() {
     clickDownMenu.UnRegisterMenu("reset puppet");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("new scene");
+    clickDownMenu.UnRegisterMenu("load scene");
+    clickDownMenu.UnRegisterMenu("save scene");
     clickDownMenu.UnRegisterMenu(" ");
     clickDownMenu.UnRegisterMenu("preview mesh");
     clickDownMenu.UnRegisterMenu("generate mesh and create puppet");
@@ -263,6 +233,8 @@ void ofApp::updateClickDownMenu() {
             clickDownMenu.RegisterMenu("create puppet (live)");
             clickDownMenu.RegisterMenu(" ");
             clickDownMenu.RegisterMenu("new scene");
+            clickDownMenu.RegisterMenu("load scene");
+            clickDownMenu.RegisterMenu("save scene");
             clickDownMenu.RegisterMenu(" ");
             
         } else {
@@ -356,16 +328,12 @@ void ofApp::cmdEvent(ofxCDMEvent &ev) {
         
     }
     if (ev.message == "menu::create puppet (live)") {
-        
         mesher.reset(true);
         state = NEW_PUPPET_CREATION;
-        
     }
     
     if (ev.message == "menu::add ezone") {
-        
         puppetsHandler.addExpressionZoneToCurrentPuppet();
-        
     }
     if (ev.message == "menu::add leap mapping::none") {
         puppetsHandler.addLeapMappingToCurrentPuppet(-1);
@@ -401,54 +369,45 @@ void ofApp::cmdEvent(ofxCDMEvent &ev) {
         puppetsHandler.addLeapMappingToCurrentPuppet(9);
     }
     if (ev.message == "menu::add osc mapping") {
-        
         puppetsHandler.addOSCMappingToCurrentPuppet();
-        
     }
     if (ev.message == "menu::add bone") {
-        
         puppetsHandler.addBoneToCurrentPuppet();
-        
     }
     if (ev.message == "menu::set anchor point") {
-        
         puppetsHandler.setAnchorPointOnCurrentPuppet();
-        
     }
     if (ev.message == "menu::delete ezone") {
-        
         puppetsHandler.removeEZoneFromCurrentPuppet();
-        
     }
     
     if (ev.message == "menu::export puppet") {
-        
         puppetsHandler.exportCurrentPuppet();
-        
     }
     if (ev.message == "menu::delete puppet") {
-        
         puppetsHandler.removeCurrentPuppet();
-        
     }
+    
     if (ev.message == "menu::reset puppet") {
-        
         puppetsHandler.resetCurrentPuppet();
-        
     }
     
     if (ev.message == "menu::new scene") {
-        
         puppetsHandler.clearAllPupets();
-        
     }
     
-    // preview mesh
+    if (ev.message == "menu::save scene") {
+        puppetsHandler.exportScene();
+    }
+    
+    if (ev.message == "menu::load scene") {
+        puppetsHandler.loadScene();
+    }
+    
     if (ev.message == "menu::preview mesh") {
         mesher.generateMesh();
     }
     
-    // finalize mesh and create a new puppet from that mesh
     if (ev.message == "menu::generate mesh and create puppet") {
         mesher.generateMesh();
         mesher.saveXMLSettings();
@@ -464,9 +423,7 @@ void ofApp::cmdEvent(ofxCDMEvent &ev) {
     }
     
     if (ev.message == "menu::back to stage") {
-        
         state = PUPPET_STAGE;
-        
     }
 
 }

@@ -15,7 +15,6 @@ void Puppet::load(string path) {
     regenerateSubdivisionMesh();
     
     // load control points and their osc and leap mappings
-    
     ofxXmlSettings expressionZones;
     if(expressionZones.loadFile(path + "/expressionZones.xml")) {
         
@@ -157,7 +156,6 @@ void Puppet::loadCachedFrames(string path) {
     
     ofxXmlSettings info;
     if(info.loadFile(path + "/info.xml")) {
-        
         int nFrames = info.getNumTags("frame");
         for(int i = 0; i < nFrames; i++) {
             
@@ -221,29 +219,19 @@ void Puppet::saveCachedFrames(string path) {
 void Puppet::update() {
     
     if(isControllable()) {
-    
         updateMeshDeformation();
-        
-        // update mesh vertex depths (so that we avoid z-fighting issues)
         updateMeshVertexDepths();
-    
     } else {
-        
         nextFrame();
-        
     }
     
 }
 void Puppet::draw(bool isSelectedPuppet, bool isBeingRecorded) {
     
     if(isControllable()) {
-        
         drawAsControllable(isSelectedPuppet, isBeingRecorded);
-        
     } else {
-        
         drawAsRecording(isSelectedPuppet);
-        
     }
     
 }
@@ -581,7 +569,7 @@ void Puppet::regenerateSubdivisionMesh() {
     
     butterfly.topology_start(mesh);
     
-    for(int i = 0; i < 2; i++) {
+    for(int i = 0; i < NUM_BUTTERFLY_SUBDIVISIONS; i++) {
         butterfly.topology_subdivide_boundary();
     }
     
@@ -591,6 +579,8 @@ void Puppet::regenerateSubdivisionMesh() {
     
 }
 void Puppet::updateMeshVertexDepths() {
+    
+    // update mesh vertex depths (so that we avoid z-fighting issues)
     
     for(int i = 0; i < subdivided.getVertices().size(); i++) {
         
@@ -639,7 +629,7 @@ void Puppet::drawAsControllable(bool isSelected, bool isBeingRecorded) {
     ofTranslate(position.x, position.y);
     
     if(isBeingRecorded) {
-        ofSetColor(255,0,0);
+        ofSetColor(RECORDING_COLOR);
     } else if(isSelected) {
         float flash = abs(sin(ofGetElapsedTimef()*3))*50+150;
         ofSetColor(255,255,255,flash);
@@ -660,7 +650,7 @@ void Puppet::drawAsControllable(bool isSelected, bool isBeingRecorded) {
         
         // draw wireframe
         glLineWidth(1.0);
-        ofSetColor(ofColor(30,200,255));
+        ofSetColor(WIREFRAME_COLOR);
         meshDeformer.getDeformedMesh().drawWireframe();
         
         // draw control points
@@ -669,16 +659,16 @@ void Puppet::drawAsControllable(bool isSelected, bool isBeingRecorded) {
             
             if(expressionZones[i].isAnchorPoint) {
                 
-                ofSetColor(255, 0, 255);
-                ofCircle(v, 7);
+                ofSetColor(EZONE_COLOR);
+                ofCircle(v, EZONE_RADIUS);
                 
             } else if(expressionZones[i].leapFingerID != -1) {
                 
-                ofSetColor(ofColor::orangeRed);
-                ofCircle(v, 10);
+                ofSetColor(EZONE_BORDER_COLOR);
+                ofCircle(v, EZONE_BORDER_RADIUS);
                 
-                ofSetColor(255, 255, 0);
-                ofCircle(v, 7);
+                ofSetColor(EZONE_COLOR);
+                ofCircle(v, EZONE_RADIUS);
                 
                 string s = ofToString(expressionZones[i].leapFingerID);
                 ofSetColor(0, 0, 0);
@@ -686,8 +676,8 @@ void Puppet::drawAsControllable(bool isSelected, bool isBeingRecorded) {
                 
             } else {
                 
-                ofSetColor(255, 255, 0);
-                ofCircle(v, 7);
+                ofSetColor(EZONE_COLOR);
+                ofCircle(v, EZONE_RADIUS);
                 
             }
             
@@ -696,8 +686,8 @@ void Puppet::drawAsControllable(bool isSelected, bool isBeingRecorded) {
                 ofVec3f fromVertex = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].meshIndex);
                 ofVec3f toVertex = meshDeformer.getDeformedMesh().getVertex(expressionZones[i].parentEzone);
                 
-                ofSetColor(255, 255, 0);
-                ofSetLineWidth(2);
+                ofSetColor(BONE_COLOR);
+                ofSetLineWidth(BONE_LINE_WIDTH);
                 ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
                 ofSetLineWidth(1);
             }
@@ -720,7 +710,7 @@ void Puppet::drawAsRecording(bool isSelected) {
     image.unbind();
     
     if(isSelected) {
-        ofSetColor(ofColor(30,200,255));
+        ofSetColor(WIREFRAME_COLOR);
         cachedFrames[currentFrame].mesh.drawWireframe();
     }
     

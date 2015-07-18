@@ -10,6 +10,7 @@
 
 #include "Puppet.h"
 #include "LeapDataHandler.h"
+#include "Global.h"
 
 class PuppetsHandler {
     
@@ -68,10 +69,10 @@ private:
     Puppet *getPuppet(int i);
     int getClosestPuppetIndex(int x, int y);
     
-    // ui & state
-    
     void updateLeapUIControls(LeapDataHandler *leap,
                               ofxClickDownMenu *cdmenu);
+    
+    ofImage hand;
     
     bool addingBone = false;
     int boneRootVertexIndex;
@@ -79,16 +80,12 @@ private:
     int hoveredVertexIndex;
     int selectedVertexIndex;
     int selectedPuppetIndex;
-    
     int recordingPuppetIndex;
     
     bool enableLeapControls;
     int leapClickAgainTimer;
     
-    enum CurrentUIControlType {
-        LEAP,
-        MOUSE
-    };
+    enum CurrentUIControlType { LEAP, MOUSE };
     CurrentUIControlType currentUIControlType;
     
     Puppet newRecording;

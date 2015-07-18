@@ -15,7 +15,7 @@
 #include "ExpressionZone.h"
 #include "Utils.h"
 #include "LeapDataHandler.h"
-#include "Resources.h"
+#include "Global.h"
 
 class CachedFrame {
     

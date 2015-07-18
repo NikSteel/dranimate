@@ -30,9 +30,9 @@ private:
     
     ofFbo handFbo;
     ofEasyCam cam;
-    ofLight l1;
-    ofLight l2;
-    ofMaterial m1;
+    ofLight light1;
+    ofLight light2;
+    ofMaterial material;
     
 public:
     
@@ -65,6 +65,8 @@ public:
     int puppetFinger = 0;
     
     ofxLeapGestures leapGestures;
+    
+    ofTrueTypeFont font;
     
 };
 

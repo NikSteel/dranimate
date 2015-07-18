@@ -12,19 +12,23 @@ void PuppetsHandler::setup() {
     
     leapClickAgainTimer = 0;
     
-    Puppet p;
-    p.load("puppets/demo-killing-ashkeboos");
-    addPuppet(p);
+    if(LOAD_DEMO_PUPPET) {
+        Puppet p;
+        p.load(DEMO_PUPPET_PATH);
+        addPuppet(p);
+    }
     
     recording = false;
     
-    ofxXmlSettings settings; settings.load("settings/launch.xml");
+    ofxXmlSettings settings; settings.load(LAUNCH_SETTINGS_PATH);
     numLayers = settings.getValue("numLayers", 0);
     
     layerOutputSyphonServers.resize(numLayers+1);
     for(int i = 1; i <= numLayers; i++) {
-        layerOutputSyphonServers[i].setName("Dranimate Layer "+ofToString(i));
+        layerOutputSyphonServers[i].setName(LAYER_SYPHON_SERVER_NAME+ofToString(i));
     }
+    
+    hand.loadImage("resources/hand.png");
     
 }
 void PuppetsHandler::update(LeapDataHandler *leap,
@@ -83,32 +87,28 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     for(int i = 0; i < puppets.size(); i++) {
-        
         if(activeLayer == puppets[i].getLayer()) {
             bool isSelected = i == selectedPuppetIndex;
             puppets[i].draw(isSelected,recording);
         }
-        
     }
     
     // draw currently selected vertex info
     if(selectedPuppet() != NULL && selectedVertexIndex != -1) {
-        float blinkAlpha = 150+sin(ofGetElapsedTimef()*10)*100;
-        ofSetColor(ofColor(255,0,100,blinkAlpha));
-        ofCircle(selectedPuppet()->getDeformedMesh().getVertex(selectedVertexIndex), 8);
+        ofColor blinkColor = SELECTED_VERTEX_COLOR;
+        blinkColor.a = 150+sin(ofGetElapsedTimef()*10)*100;
+        ofSetColor(blinkColor);
+        ofCircle(selectedPuppet()->getDeformedMesh().getVertex(selectedVertexIndex), SELECTED_VERTEX_RADIUS);
     }
-    
-    ofSetColor(ofColor(0,200,255));
-    ofDrawBitmapString(getSelectedVertexInfo(), ofGetWidth()-350, 160);
     
     // highlight the vertex that the mouse is hovered over
     if(hoveredVertexIndex != -1) {
         
-        ofSetColor(ofColor(255,0,0,100));
-        ofCircle(selectedPuppet()->getDeformedMesh().getVertex(hoveredVertexIndex), 10);
+        ofSetColor(HOVERED_VERTEX_BORDER_COLOR);
+        ofCircle(selectedPuppet()->getDeformedMesh().getVertex(hoveredVertexIndex), VERTEX_BORDER_RADIUS);
         
-        ofSetColor(ofColor(255,0,0,100));
-        ofCircle(selectedPuppet()->getDeformedMesh().getVertex(hoveredVertexIndex), 5);
+        ofSetColor(HOVERED_VERTEX_COLOR);
+        ofCircle(selectedPuppet()->getDeformedMesh().getVertex(hoveredVertexIndex), VERTEX_RADIUS);
     }
     
     // draw bones
@@ -116,10 +116,25 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
         ofVec3f fromVertex = selectedPuppet()->getDeformedMesh().getVertex(boneRootVertexIndex);
         ofVec3f toVertex = selectedPuppet()->getDeformedMesh().getVertex(hoveredVertexIndex);
         
-        ofSetColor(255, 255, 0);
-        ofSetLineWidth(3);
+        ofSetColor(BONE_COLOR);
+        ofSetLineWidth(BONE_LINE_WIDTH);
         ofLine(fromVertex.x, fromVertex.y, toVertex.x, toVertex.y);
         ofSetLineWidth(1);
+    }
+    
+    ofPopMatrix();
+    
+    // draw layer previews
+    ofSetColor(255,255,255);
+    ofDrawBitmapString(ofToString(getActiveLayer()), ofGetWidth()-100, 100);
+    
+    ofPushMatrix();
+    ofScale(0.1, 0.1);
+    
+    for(int i = 0; i < puppets.size(); i++) {
+        if(activeLayer == puppets[i].getLayer()) {
+            puppets[i].draw(false,false);
+        }
     }
     
     ofPopMatrix();
@@ -196,12 +211,15 @@ void PuppetsHandler::loadScene() {
                 
                 bool isControllable = info.getValue("isControllable", -1);
                 string puppetDirPath = info.getValue("puppetdir", "");
+                int layer = info.getValue("layer", 1);
                 
                 if(isControllable) {
                     loadPuppet(path+"/"+puppetDirPath);
                 } else {
                     loadRecording(path+"/"+puppetDirPath);
                 }
+                
+                puppets[puppets.size()-1].setLayer(layer);
                 
                 info.popTag();
                 
@@ -213,7 +231,7 @@ void PuppetsHandler::loadScene() {
 }
 void PuppetsHandler::exportScene() {
     
-    ofFileDialogResult saveFileResult = ofSystemSaveDialog("newscene", "Select location to export scene:");
+    ofFileDialogResult saveFileResult = ofSystemSaveDialog(DEFAULT_SCENE_NAME, "Select location to export scene:");
     
     if (saveFileResult.bSuccess){
        
@@ -229,6 +247,7 @@ void PuppetsHandler::exportScene() {
             info.pushTag("puppet",i);
             info.addValue("puppetdir", "puppet"+ofToString(i));
             info.addValue("isControllable", puppets[i].isControllable());
+            info.addValue("layer", puppets[i].getLayer());
             info.popTag();
             
             if(puppets[i].isControllable()) {
@@ -256,38 +275,6 @@ Puppet* PuppetsHandler::selectedPuppet() {
 bool PuppetsHandler::isAPuppetSelected() {
     
     return selectedPuppet() != NULL;
-    
-}
-
-string PuppetsHandler::getSelectedVertexInfo() {
-    
-    string vertInfo = "";
-    
-    if(selectedPuppet() != NULL && selectedVertexIndex != -1) {
-        
-        vertInfo += "Mesh index " + ofToString(selectedVertexIndex) + "\n\n";
-        
-        ExpressionZone* eZone = selectedPuppet()->getExpressionZone(selectedVertexIndex);
-        
-        if(eZone != NULL) {
-            
-            if(eZone->oscNamespaces.size() > 0) vertInfo += "OSC namespaces:\n";
-            for(int i = 0; i < eZone->oscNamespaces.size(); i++) {
-                vertInfo += "    message:     " + eZone->oscNamespaces[i].message     + ":\n";
-                vertInfo += "    controlType: " + eZone->oscNamespaces[i].controlType + ":\n";
-            }
-            
-            if(eZone->leapFingerID != -1) {
-                vertInfo += "    fingerID: " + ofToString(eZone->leapFingerID) + ":\n";
-            }
-            
-        } else {
-            vertInfo += "Selected vertex has no expression zone.";
-        }
-        
-    }
-    
-    return vertInfo;
     
 }
 
@@ -366,7 +353,7 @@ void PuppetsHandler::updateWhichVertexIsHoveredOver(int x, int y) {
             selectedPuppet()->getDeformedMesh(),
             x-ofGetWidth()/2  + selectedPuppet()->getPosition().x,
             y-ofGetHeight()/2 + selectedPuppet()->getPosition().y,
-            20
+            VERTEX_SELECTION_RADIUS
         );
         
     }
@@ -375,13 +362,13 @@ void PuppetsHandler::updateWhichVertexIsHoveredOver(int x, int y) {
 bool PuppetsHandler::emptyVertexHoveredOver() {
     
     return hoveredVertexIndex != -1
-    && selectedVertexIndex != hoveredVertexIndex;
+        && selectedVertexIndex != hoveredVertexIndex;
     
 }
 bool PuppetsHandler::ezoneHoveredOver() {
     
     return selectedVertexIndex != -1
-    && selectedVertexIndex == hoveredVertexIndex;
+        && selectedVertexIndex == hoveredVertexIndex;
     
 }
 
@@ -434,7 +421,7 @@ void PuppetsHandler::setAnchorPointOnCurrentPuppet() {
 }
 void PuppetsHandler::exportCurrentPuppet() {
     
-    ofFileDialogResult saveFileResult = ofSystemSaveDialog("newpuppet", "Select location to export puppet:");
+    ofFileDialogResult saveFileResult = ofSystemSaveDialog(DEFAULT_PUPPET_NAME, "Select location to export puppet:");
     
     if (saveFileResult.bSuccess){
         string path = saveFileResult.getPath();
@@ -509,10 +496,12 @@ void PuppetsHandler::togglePuppetRecording() {
 
 void PuppetsHandler::setActiveLayer(int l) {
     
-    activeLayer = l;
-    
-    if(isAPuppetSelected()) {
-        selectedPuppet()->setLayer(activeLayer);
+    if(l <= numLayers) {
+        activeLayer = l;
+        
+        if(isAPuppetSelected()) {
+            selectedPuppet()->setLayer(activeLayer);
+        }
     }
     
 }
@@ -564,7 +553,7 @@ void PuppetsHandler::updateLeapUIControls(LeapDataHandler *leap,
                                                     selectedPuppet()->getDeformedMesh(),
                                                     leap->getFingerScreenPosition(leap->pointingFinger+1).x,
                                                     leap->getFingerScreenPosition(leap->pointingFinger+1).y,
-                                                    20);
+                                                    VERTEX_SELECTION_RADIUS);
         
     }
     
@@ -609,7 +598,7 @@ void PuppetsHandler::updateLeapUIControls(LeapDataHandler *leap,
             
         }
         
-        leapClickAgainTimer = 20;
+        leapClickAgainTimer = LEAP_CLICK_DELAY;
         
     }
     if(leapClickAgainTimer > 0) {
