@@ -1,6 +1,8 @@
-<numLayers>4</numLayers>
+<numLayers>3</numLayers>
 
 <OSCRecieverPort>8000</OSCRecieverPort>
+
+<syphonServersEnabled>0</syphonServersEnabled>
 
 <cameraInputEnabled>0</cameraInputEnabled>
 <cameraDeviceID>0</cameraDeviceID>

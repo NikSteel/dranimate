@@ -22,10 +22,13 @@ void PuppetsHandler::setup() {
     
     ofxXmlSettings settings; settings.load(LAUNCH_SETTINGS_PATH);
     numLayers = settings.getValue("numLayers", 0);
+    syphonServersEnabled = settings.getValue("syphonServersEnabled", false);
     
-    layerOutputSyphonServers.resize(numLayers+1);
-    for(int i = 1; i <= numLayers; i++) {
-        layerOutputSyphonServers[i].setName(LAYER_SYPHON_SERVER_NAME+ofToString(i));
+    if(syphonServersEnabled) {
+        layerOutputSyphonServers.resize(numLayers+1);
+        for(int i = 1; i <= numLayers; i++) {
+            layerOutputSyphonServers[i].setName(LAYER_SYPHON_SERVER_NAME+ofToString(i));
+        }
     }
     
     hand.loadImage("resources/hand.png");
@@ -164,29 +167,31 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
 
 void PuppetsHandler::publishSyphonOutput() {
     
-    ofPushMatrix();
-    ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+    if(syphonServersEnabled) {
     
-    for(int layer = 1; layer <= numLayers; layer++) {
+        ofPushMatrix();
+        ofTranslate(ofGetWidth()/2,
+                    ofGetHeight()/2);
         
-        ofBackground(0,0,0,0);
-        
-        // draw puppets
-        
-        glEnable(GL_BLEND);
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        for(int i = 0; i < puppets.size(); i++) {
-            if(layer == puppets[i].getLayer()) {
-                puppets[i].draw(false,false);
+        for(int layer = 1; layer <= numLayers; layer++) {
+            
+            ofBackground(0,0,0,0);
+            glEnable(GL_BLEND);
+            glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            
+            for(int i = 0; i < puppets.size(); i++) {
+                if(layer == puppets[i].getLayer()) {
+                    puppets[i].draw(false,false);
+                }
             }
+            
+            layerOutputSyphonServers[layer].publishScreen();
+            
         }
         
-        layerOutputSyphonServers[layer].publishScreen();
+        ofPopMatrix();
         
     }
-    
-    ofPopMatrix();
     
 }
 

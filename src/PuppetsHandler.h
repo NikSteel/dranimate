@@ -94,6 +94,7 @@ private:
     int numLayers;
     int activeLayer;
     
+    bool syphonServersEnabled;
     vector<ofxSyphonServer> layerOutputSyphonServers;
     
 };
