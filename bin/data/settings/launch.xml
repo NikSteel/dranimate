@@ -2,6 +2,7 @@
 
 <OSCRecieverPort>8000</OSCRecieverPort>
 
+<cameraInputEnabled>0</cameraInputEnabled>
 <cameraDeviceID>0</cameraDeviceID>
 <cameraCaptureWidth>1024</cameraCaptureWidth>
 <cameraCaptureHeight>768</cameraCaptureHeight>

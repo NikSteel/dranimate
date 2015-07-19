@@ -82,7 +82,6 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
     ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
     
     // draw puppets
-    
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
@@ -125,19 +124,41 @@ void PuppetsHandler::draw(LeapDataHandler *leap) {
     ofPopMatrix();
     
     // draw layer previews
-    ofSetColor(255,255,255);
-    ofDrawBitmapString(ofToString(getActiveLayer()), ofGetWidth()-100, 100);
-    
-    ofPushMatrix();
-    ofScale(0.1, 0.1);
-    
-    for(int i = 0; i < puppets.size(); i++) {
-        if(activeLayer == puppets[i].getLayer()) {
-            puppets[i].draw(false,false);
+    for(int layer = 1; layer <= numLayers; layer++) {
+        
+        int previewX = ofGetWidth()
+                     - (numLayers*LAYER_PREVIEW_WIDTH+LAYER_PREVIEW_WIDTH)
+                     + layer*LAYER_PREVIEW_WIDTH;
+        
+        ofNoFill();
+        ofSetColor(255,255,255);
+        ofRect(previewX,0,LAYER_PREVIEW_WIDTH,LAYER_PREVIEW_HEIGHT);
+        
+        ofFill();
+        if(layer == activeLayer) {
+            ofSetColor(ACTIVE_LAYER_PREVIEW_COLOR);
+            ofRect(previewX,0,LAYER_PREVIEW_WIDTH,LAYER_PREVIEW_HEIGHT);
         }
+        
+        ofSetColor(255,255,255);
+        ofDrawBitmapString(ofToString(layer),
+                           previewX + LAYER_PREVIEW_TEXT_OFFSET,
+                           LAYER_PREVIEW_HEIGHT - LAYER_PREVIEW_TEXT_OFFSET);
+        
+        ofPushMatrix();
+        ofTranslate(previewX+LAYER_PREVIEW_WIDTH/2,
+                    LAYER_PREVIEW_HEIGHT/2);
+        ofScale(LAYER_PREVIEW_PUPPET_SCALE,
+                LAYER_PREVIEW_PUPPET_SCALE);
+        
+        for(int i = 0; i < puppets.size(); i++) {
+            if(layer == puppets[i].getLayer()) {
+                puppets[i].draw(false,false);
+            }
+        }
+        
+        ofPopMatrix();
     }
-    
-    ofPopMatrix();
     
 }
 

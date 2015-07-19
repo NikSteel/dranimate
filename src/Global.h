@@ -1,8 +1,6 @@
 #ifndef __dranimate__globals__
 #define __dranimate__globals__
 
-#include <stdio.h>
-
 #define OSC_DEFAULT_PORT 8000
 
 #define LAUNCH_SETTINGS_PATH "settings/launch.xml"
@@ -32,7 +30,7 @@
 #define LEAP_CLICK_DELAY 20
 
 #define WIREFRAME_COLOR ofColor(30,200,255)
-#define RECORDING_COLOR ofColor(30,200,255)
+#define RECORDING_COLOR ofColor(255,0,0)
 
 #define EZONE_COLOR ofColor(255, 255, 0)
 #define EZONE_BORDER_COLOR ofColor::orangeRed
@@ -44,5 +42,11 @@
 #define CONTOUR_COLOR ofColor(255,0,0)
 #define UNUSED_CONTOUR_COLOR ofColor(155,100,100)
 #define CONTOUR_LINE_WIDTH 5
+
+#define LAYER_PREVIEW_HEIGHT 60
+#define LAYER_PREVIEW_WIDTH 90
+#define LAYER_PREVIEW_PUPPET_SCALE 0.05
+#define LAYER_PREVIEW_TEXT_OFFSET 3
+#define ACTIVE_LAYER_PREVIEW_COLOR ofColor(255,255,255,50)
 
 #endif

@@ -4,7 +4,10 @@
 
 void MeshGenerator::setup() {
     
-    cam.setup();
+    ofxXmlSettings launch; launch.load(LAUNCH_SETTINGS_PATH);
+    if(launch.getValue("cameraInputEnabled", false)) {
+        cam.setup();
+    }
     
     grid.loadImage("resources/grid.png");
     
@@ -329,7 +332,7 @@ void MeshGenerator::findImageContours() {
     // find contours from thresholded image
     
     contourFinder.setMinArea(1000);
-    contourFinder.setMaxArea(640*640);
+    contourFinder.setMaxArea(noAlphaImage.width*noAlphaImage.height);
     //contourFinder.setFindHoles(true);
     contourFinder.setSortBySize(true);
     
