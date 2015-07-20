@@ -14,7 +14,7 @@ void ImageFromCamera::setup() {
     videoTexture.allocate(camWidth,camHeight, GL_RGB);
     
     image.allocate(camWidth, camHeight, OF_IMAGE_COLOR);
-    
+
 }
 void ImageFromCamera::update() {
     

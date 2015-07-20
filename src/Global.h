@@ -6,8 +6,6 @@
 #define LAUNCH_SETTINGS_PATH "settings/launch.xml"
 #define MESHGEN_SETTINGS_PATH "settings/meshgen.xml"
 
-#define LAYER_SYPHON_SERVER_NAME "Dranimate Layer "
-
 #define LOAD_DEMO_PUPPET true
 #define DEMO_PUPPET_PATH "puppets/demo-killing-ashkeboos"
 

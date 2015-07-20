@@ -27,7 +27,7 @@ void PuppetsHandler::setup() {
     if(syphonServersEnabled) {
         layerOutputSyphonServers.resize(numLayers+1);
         for(int i = 1; i <= numLayers; i++) {
-            layerOutputSyphonServers[i].setName(LAYER_SYPHON_SERVER_NAME+ofToString(i));
+            layerOutputSyphonServers[i].setName(settings.getValue("syphonServersName","")+ofToString(i));
         }
     }
     
