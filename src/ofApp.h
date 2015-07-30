@@ -12,7 +12,6 @@
 #include "ofxXmlSettings.h"
 #include "ofxLeapMotion.h"
 #include "ofxClickDownMenu.h"
-#include "ofxLeapGestures.h"
 
 #include "Puppet.h"
 #include "PuppetsHandler.h"

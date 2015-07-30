@@ -1,5 +1,4 @@
-#ifndef __dranimate__MeshGenerator__
-#define __dranimate__MeshGenerator__
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -84,4 +83,3 @@ private:
     
 };
 
-#endif

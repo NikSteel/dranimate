@@ -21,9 +21,6 @@ void LeapDataHandler::setup() {
     calibrated = false;
     calibrationTimer = 0;
     
-    leapGestures.setup();
-    leapGestures.setClassifyMode();
-    
     light1.setPosition(200, 300, 50);
     light2.setPosition(-200, -200, 50);
     

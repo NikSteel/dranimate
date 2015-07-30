@@ -12,7 +12,6 @@ Instructions:
 <a href="https://github.com/ofZach/ofxTriangleMesh">ofxTriangleMesh</a><br />
 <a href="https://github.com/kylemcdonald/ofxCv">ofxCv</a><br />
 <a href="https://github.com/ofTheo/ofxLeapMotion">ofxLeapMotion</a><br />
-<a href="https://github.com/cmuartfab/ofxLeapGestures">ofxLeapGestures</a><br />
 <a href="https://github.com/loveandsheep/ofxClickDownMenu">ofxClickDownMenu</a><br />
 <a href="https://github.com/astellato/ofxSyphon">ofxSyphon</a><br />
 

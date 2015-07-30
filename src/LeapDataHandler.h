@@ -1,11 +1,9 @@
-#ifndef __dranimate__LeapDataHandler__
-#define __dranimate__LeapDataHandler__
+#pragma once
 
 #include <stdio.h>
 
 #include "ofMain.h"
 #include "ofxLeapMotion.h"
-#include "ofxLeapGestures.h"
 
 #include "Utils.h"
 
@@ -64,10 +62,6 @@ public:
     int pointingFinger = 5;
     int puppetFinger = 0;
     
-    ofxLeapGestures leapGestures;
-    
     ofTrueTypeFont font;
     
 };
-
-#endif

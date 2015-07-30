@@ -1,5 +1,4 @@
-#ifndef __dranimate__ImageFromCamera__
-#define __dranimate__ImageFromCamera__
+#pragma once
 
 #include <stdio.h>
 
@@ -23,5 +22,3 @@ public:
     ofImage image;
     
 };
-
-#endif

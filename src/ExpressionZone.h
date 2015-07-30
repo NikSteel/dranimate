@@ -1,5 +1,4 @@
-#ifndef __dranimate__ControlPoint__
-#define __dranimate__ControlPoint__
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -34,4 +33,3 @@ public:
     
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef __dranimate__Puppet__
-#define __dranimate__Puppet__
+#pragma once
 
 #include <iostream>
 
@@ -118,5 +117,3 @@ private:
     int layer;
     
 };
-
-#endif

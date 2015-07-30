@@ -1,5 +1,4 @@
-#ifndef __dranimate__PuppetsHandler__
-#define __dranimate__PuppetsHandler__
+#pragma once
 
 #include <stdio.h>
 
@@ -98,5 +97,3 @@ private:
     vector<ofxSyphonServer> layerOutputSyphonServers;
     
 };
-
-#endif

@@ -2,7 +2,7 @@
 
 <OSCRecieverPort>8000</OSCRecieverPort>
 
-<syphonServersEnabled>0</syphonServersEnabled>
+<syphonServersEnabled>1</syphonServersEnabled>
 <syphonServersName>"Dranimate_Syphon_"</syphonServersName>
 
 <cameraInputEnabled>0</cameraInputEnabled>
