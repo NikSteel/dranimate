@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-#include "ofxOscReceiver.h"
 #include "ofxClickDownMenu.h"
 #include "ofxSyphon.h"
 #include "ofxXmlSettings.h"
@@ -17,7 +16,6 @@ public:
     
     void setup();
     void update(LeapDataHandler *leap,
-                ofxOscReceiver *osc,
                 ofxClickDownMenu *cdmenu);
     void draw(LeapDataHandler *leap);
     

@@ -35,7 +35,6 @@ void PuppetsHandler::setup() {
     
 }
 void PuppetsHandler::update(LeapDataHandler *leap,
-                            ofxOscReceiver *osc,
                             ofxClickDownMenu *cdmenu) {
     
     // check which type of ui control we're using
@@ -55,13 +54,6 @@ void PuppetsHandler::update(LeapDataHandler *leap,
         if(puppets[i].isControllable()) {
             // send new leap data to puppet
             puppets[i].recieveLeapData(leap, i == selectedPuppetIndex);
-            
-            // send new osc messages to puppet
-            while(osc->hasWaitingMessages()) {
-                ofxOscMessage m;
-                osc->getNextMessage(&m);
-                puppets[i].recieveOSCMessage(m, m.getArgAsFloat(0));
-            }
         }
         
         // update puppet

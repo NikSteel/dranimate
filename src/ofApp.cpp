@@ -7,7 +7,6 @@ void ofApp::setup() {
     // setup all of the different things
     
     leapHandler.setup();
-    oscReceiver.setup(settings.getValue("OSCRecieverPort",OSC_DEFAULT_PORT));
     puppetsHandler.setup();
     mesher.setup();
     
@@ -35,7 +34,7 @@ void ofApp::update() {
             
         case PUPPET_STAGE:
             leapHandler.update();
-            puppetsHandler.update(&leapHandler, &oscReceiver, &clickDownMenu);
+            puppetsHandler.update(&leapHandler, &clickDownMenu);
             break;
             
         case LEAP_CALIBRATION:

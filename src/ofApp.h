@@ -8,7 +8,6 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxGui.h"
-#include "ofxOscReceiver.h"
 #include "ofxXmlSettings.h"
 #include "ofxLeapMotion.h"
 #include "ofxClickDownMenu.h"
@@ -43,7 +42,6 @@ public:
     PuppetsHandler puppetsHandler;
     ofxClickDownMenu clickDownMenu;
     LeapDataHandler leapHandler;
-    ofxOscReceiver oscReceiver;
     
     enum State {
         NEW_PUPPET_CREATION,

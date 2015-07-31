@@ -9,7 +9,6 @@
 #include "ofxCv.h"
 #include "ofxTriangleMesh.h"
 #include "ofxXmlSettings.h"
-#include "ofxOscReceiver.h"
 
 #include "ExpressionZone.h"
 #include "Utils.h"
@@ -66,7 +65,6 @@ public:
     void removeAllExpressionZones();
     ExpressionZone* getExpressionZone(int index);
     
-    void recieveOSCMessage(ofxOscMessage message, float value);
     void recieveLeapData(LeapDataHandler *leap, bool isSelected);
     
     void makeControllable();

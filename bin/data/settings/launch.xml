@@ -5,8 +5,8 @@
 <syphonServersEnabled>1</syphonServersEnabled>
 <syphonServersName>"Dranimate_Syphon_"</syphonServersName>
 
-<cameraInputEnabled>0</cameraInputEnabled>
+<cameraInputEnabled>1</cameraInputEnabled>
 <cameraDeviceID>0</cameraDeviceID>
-<cameraCaptureWidth>1024</cameraCaptureWidth>
-<cameraCaptureHeight>768</cameraCaptureHeight>
+<cameraCaptureWidth>960</cameraCaptureWidth>
+<cameraCaptureHeight>720</cameraCaptureHeight>
 <cameraCaptureFramerate>30</cameraCaptureFramerate>

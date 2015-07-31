@@ -346,41 +346,6 @@ ExpressionZone* Puppet::getExpressionZone(int meshIndex) {
     
 }
 
-void Puppet::recieveOSCMessage(ofxOscMessage message, float value) {
-    
-    ofLog() << message.getAddress();
-    
-    float wOffset = ofGetWidth()/2 - image.getWidth()/2;
-    float hOffset = ofGetHeight()/2 - image.getHeight()/2;
-    
-    // this is a bit messy, should fix it
-    
-    for(int i = 0; i < expressionZones.size(); i++) {
-        
-        ExpressionZone expressionZone = expressionZones[i];
-        vector<OSCNamespace> namespaces = expressionZone.oscNamespaces;
-        
-        ofVec3f expressionZonePosition = mesh.getVertex(expressionZone.meshIndex);
-        
-        for(int j = 0; j < namespaces.size(); j++) {
-            
-            OSCNamespace namesp = namespaces[j];
-            
-            if(namesp.message == message.getAddress()) {
-                
-                if(namesp.controlType == "x") {
-                    expressionZones[i].userControlledDisplacement.x = -mesh.getVertex(expressionZones[i].meshIndex).x+value;
-                } else if(namesp.controlType == "y") {
-                    expressionZones[i].userControlledDisplacement.y = -mesh.getVertex(expressionZones[i].meshIndex).y+value;
-                }
-                
-            }
-            
-        }
-        
-    }
-
-}
 void Puppet::recieveLeapData(LeapDataHandler *leap, bool isSelected) {
     
     int palmControlsPuppet = 1;
